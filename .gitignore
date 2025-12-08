@@ -24,3 +24,16 @@ android
 .metro-health-check*
 
 CLAUDE.md
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Environment
+.env
+.env.local
