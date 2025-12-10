@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronDown } from 'lucide-react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
@@ -11,6 +11,7 @@ import { ScreenContainer } from '@/components/presentational/screen-container';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
+import { useJBProjectCreate } from '@/hooks/juicebox';
 
 export default function CreateStorePage() {
   const router = useRouter();
@@ -19,10 +20,35 @@ export default function CreateStorePage() {
   const [cashBack, setCashBack] = useState(4);
   const [loyaltyBonus, setLoyaltyBonus] = useState(2);
 
+  const { createProject, isLoading } = useJBProjectCreate();
+
   const isValid = name.length > 0 && ticker.length > 1;
 
-  const handleCreate = () => {
-    // TODO: Implement store creation
+  const handleCreate = async () => {
+    try {
+      const result = await createProject({
+        name,
+        ticker: ticker.toUpperCase(),
+        cashBackPercent: cashBack,
+        loyaltyBonusPercent: loyaltyBonus,
+      });
+
+      Alert.alert(
+        'Store Created!',
+        `Your store "${name}" has been created.\n\nStore Code: ${result.storeCode}`,
+        [
+          {
+            text: 'View Store',
+            onPress: () => router.replace(`/store/${result.projectId.toString()}`),
+          },
+        ]
+      );
+    } catch (err) {
+      Alert.alert(
+        'Creation Failed',
+        err instanceof Error ? err.message : 'Failed to create store. Please try again.'
+      );
+    }
   };
 
   const handleBackPress = () => {
@@ -70,8 +96,12 @@ export default function CreateStorePage() {
           className="mb-8"
         />
 
-        <Button onPress={handleCreate} disabled={!isValid} className="h-14 rounded-xl">
-          <Text className="font-semibold text-primary-foreground">Create</Text>
+        <Button onPress={handleCreate} disabled={!isValid || isLoading} className="h-14 rounded-xl">
+          {isLoading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text className="font-semibold text-primary-foreground">Create</Text>
+          )}
         </Button>
 
         <Button variant="ghost" size="icon" onPress={handleBackPress} className="my-4 self-center">
