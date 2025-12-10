@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
 import { para } from '@/lib/para';
-import { useWallets } from '@/hooks/useWallets';
+import { useParaWallets } from '@/hooks/useParaWallets';
 import type { User, Wallet } from '@/types';
 
 interface ParaContextValue {
@@ -28,7 +28,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
-  const { wallets, loadWallets, clearWallets } = useWallets();
+  const { wallets, loadWallets, clearWallets } = useParaWallets();
 
   const checkAuth = useCallback(async () => {
     try {

@@ -12,4 +12,4 @@ config.resolver.extraNodeModules = {
   buffer: require.resolve('@craftzdog/react-native-buffer'),
 };
 
-module.exports = withNativeWind(config, { input: './global.css' });
+module.exports = withNativeWind(config, { input: './global.css', inlineRem: 16 });

@@ -2,10 +2,14 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePara } from '@/providers/ParaProvider';
-import { useOAuthLogin } from '@/hooks/useOAuthLogin';
-import { Text } from '@/components/ui/Text';
-import { Spinner } from '@/components/ui/Spinner';
-import { SignInButton } from '@/components/SignInButton';
+import { useParaOAuthLogin } from '@/hooks/useParaOAuthLogin';
+import { Text } from '@/components/ui/text';
+import { Skeleton } from '@/components/ui/skeleton';
+import { SignInButton } from '@/components/presentational/sign-in-button';
+import { ScreenContainer } from '@/components/presentational/screen-container';
+
+// TODO: Remove this bypass before production
+const BYPASS_AUTH = true;
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -15,43 +19,47 @@ export default function WelcomePage() {
     router.replace('/(app)/home');
   };
 
-  const { login, status, error } = useOAuthLogin(handleLoginSuccess);
+  const { login, status, error } = useParaOAuthLogin(handleLoginSuccess);
 
   useEffect(() => {
+    if (BYPASS_AUTH) {
+      router.replace('/(app)/home');
+      return;
+    }
     if (!isAuthLoading && isAuthenticated) {
       router.replace('/(app)/home');
     }
   }, [isAuthenticated, isAuthLoading, router]);
 
-  if (isAuthLoading) {
+  if (BYPASS_AUTH || isAuthLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <Spinner />
-      </View>
+      <ScreenContainer className="items-center justify-center">
+        <Skeleton className="h-12 w-48 rounded-xl" />
+      </ScreenContainer>
     );
   }
 
   const isSigningIn = status === 'loading';
 
   return (
-    <View className="flex-1 bg-white px-6">
+    <ScreenContainer>
       <View className="flex-1 items-center justify-center">
         <Text variant="heading" className="mb-4 text-center">
-          Welcome to Cocopay
+          CocoPay 🥥
         </Text>
-        <Text variant="body" className="mb-8 text-center text-gray-500">
+        <Text variant="body" className="mb-8 text-center text-muted-foreground">
           Payments and rewards powered by Juicebox
         </Text>
       </View>
 
-      <View className="pb-12">
+      <View className="gap-3">
         {error && (
-          <Text variant="caption" className="mb-4 text-center text-red-500">
+          <Text variant="caption" className="mb-4 text-center text-destructive">
             {error}
           </Text>
         )}
         <SignInButton onPress={login} isLoading={isSigningIn} />
       </View>
-    </View>
+    </ScreenContainer>
   );
 }
