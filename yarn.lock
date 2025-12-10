@@ -6808,6 +6808,8 @@ __metadata:
     expo-status-bar: "npm:~3.0.8"
     expo-system-ui: "npm:~6.0.7"
     expo-web-browser: "npm:~15.0.7"
+    graphql: "npm:^16.12.0"
+    graphql-request: "npm:^7.3.5"
     juice-sdk-core: "npm:^2.1.2"
     juice-sdk-react: "npm:^5.0.2"
     lucide-react-native: "npm:^0.556.0"
@@ -8925,7 +8927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:^7.2.0":
+"graphql-request@npm:^7.2.0, graphql-request@npm:^7.3.5":
   version: 7.3.5
   resolution: "graphql-request@npm:7.3.5"
   dependencies:
@@ -8933,6 +8935,13 @@ __metadata:
   peerDependencies:
     graphql: 14 - 16
   checksum: 10c0/97f48d48dd14ccd1e7fd51f3eb4c7c537dfc0aac8c27f01764ec917e7cf5b4c2a17f19369de1f692a26c12476f2432e67220a89941240323edcf75c44895632d
+  languageName: node
+  linkType: hard
+
+"graphql@npm:^16.12.0":
+  version: 16.12.0
+  resolution: "graphql@npm:16.12.0"
+  checksum: 10c0/b6fffa4e8a4e4a9933ebe85e7470b346dbf49050c1a482fac5e03e4a1a7bed2ecd3a4c97e29f04457af929464bc5e4f2aac991090c2f320111eef26e902a5c75
   languageName: node
   linkType: hard
 
