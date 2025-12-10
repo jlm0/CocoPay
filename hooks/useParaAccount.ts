@@ -1,0 +1,32 @@
+import { useMemo } from 'react';
+import type { LocalAccount, Hex } from 'viem';
+import { createParaAccount } from '@getpara/viem-v2-integration';
+import { para } from '@/lib/para';
+import { usePara } from '@/providers/ParaProvider';
+
+interface UseParaAccountResult {
+  account: LocalAccount | null;
+  address: Hex | null;
+  isReady: boolean;
+}
+
+export function useParaAccount(): UseParaAccountResult {
+  const { isAuthenticated, wallets } = usePara();
+
+  const { account, address } = useMemo(() => {
+    if (!isAuthenticated || wallets.length === 0) {
+      return { account: null, address: null };
+    }
+
+    const walletAddress = wallets[0].address as Hex;
+    const paraAccount = createParaAccount(para, walletAddress);
+
+    return { account: paraAccount, address: walletAddress };
+  }, [isAuthenticated, wallets]);
+
+  return {
+    account,
+    address,
+    isReady: account !== null,
+  };
+}

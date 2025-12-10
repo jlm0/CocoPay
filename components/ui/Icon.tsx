@@ -1,15 +1,47 @@
-import { Ionicons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
+import { cn } from '@/lib/utils';
+import type { LucideIcon, LucideProps } from 'lucide-react-native';
+import { cssInterop } from 'nativewind';
 
-type IoniconsName = ComponentProps<typeof Ionicons>['name'];
+type IconProps = LucideProps & {
+  as: LucideIcon;
+};
 
-interface IconProps {
-  name: IoniconsName;
-  size?: number;
-  color?: string;
-  className?: string;
+function IconImpl({ as: IconComponent, ...props }: IconProps) {
+  return <IconComponent {...props} />;
 }
 
-export function Icon({ name, size = 24, color = '#374151', className = '' }: IconProps) {
-  return <Ionicons name={name} size={size} color={color} className={className} />;
+cssInterop(IconImpl, {
+  className: {
+    target: 'style',
+    nativeStyleToProp: {
+      height: 'size',
+      width: 'size',
+      color: true,
+    },
+  },
+});
+
+function Icon({ as: IconComponent, className, size = 14, ...props }: IconProps) {
+  return (
+    <IconImpl
+      as={IconComponent}
+      className={cn('text-foreground', className)}
+      size={size}
+      {...props}
+    />
+  );
 }
+
+export function iconWithClassName(IconComponent: LucideIcon) {
+  cssInterop(IconComponent, {
+    className: {
+      target: 'style',
+      nativeStyleToProp: {
+        color: true,
+        opacity: true,
+      },
+    },
+  });
+}
+
+export { Icon };
