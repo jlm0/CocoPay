@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { para } from '@/lib/para';
 import type { Wallet } from '@/types';
 
-interface UseWalletsResult {
+interface UseParaWalletsResult {
   wallets: Wallet[];
   isLoading: boolean;
   error: string | null;
@@ -10,7 +10,7 @@ interface UseWalletsResult {
   clearWallets: () => void;
 }
 
-export function useWallets(): UseWalletsResult {
+export function useParaWallets(): UseParaWalletsResult {
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,12 +20,7 @@ export function useWallets(): UseWalletsResult {
     setError(null);
 
     try {
-      let evmWallets = await para.getWalletsByType('EVM');
-
-      if (!evmWallets || Object.keys(evmWallets).length === 0) {
-        await para.createWallet({ type: 'EVM' });
-        evmWallets = await para.getWalletsByType('EVM');
-      }
+      const evmWallets = await para.getWalletsByType('EVM');
 
       const walletList: Wallet[] = Object.values(evmWallets || {}).map((w) => ({
         id: w.id,
