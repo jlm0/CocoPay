@@ -1,15 +1,64 @@
-import { View, type ViewProps } from 'react-native';
+import * as React from 'react';
+import { View } from 'react-native';
+import { TextClassContext } from '@/components/ui/text';
+import { cn } from '@/lib/utils';
 
-interface CardProps extends ViewProps {
-  className?: string;
-}
-
-export function Card({ className = '', children, ...props }: CardProps) {
-  return (
+const Card = React.forwardRef<React.ComponentRef<typeof View>, React.ComponentProps<typeof View>>(
+  ({ className, ...props }, ref) => (
     <View
-      className={`rounded-2xl border border-gray-100 bg-white p-4 shadow-sm ${className}`}
-      {...props}>
-      {children}
-    </View>
-  );
-}
+      ref={ref}
+      className={cn(
+        'rounded-xl border border-border bg-card text-card-foreground shadow-sm shadow-foreground/10',
+        className
+      )}
+      {...props}
+    />
+  )
+);
+Card.displayName = 'Card';
+
+const CardHeader = React.forwardRef<
+  React.ComponentRef<typeof View>,
+  React.ComponentProps<typeof View>
+>(({ className, ...props }, ref) => (
+  <View ref={ref} className={cn('flex flex-col gap-1.5 p-6', className)} {...props} />
+));
+CardHeader.displayName = 'CardHeader';
+
+const CardTitle = React.forwardRef<
+  React.ComponentRef<typeof View>,
+  React.ComponentProps<typeof View>
+>(({ className, ...props }, ref) => (
+  <TextClassContext.Provider value="text-2xl font-semibold leading-none tracking-tight">
+    <View ref={ref} className={cn(className)} {...props} />
+  </TextClassContext.Provider>
+));
+CardTitle.displayName = 'CardTitle';
+
+const CardDescription = React.forwardRef<
+  React.ComponentRef<typeof View>,
+  React.ComponentProps<typeof View>
+>(({ className, ...props }, ref) => (
+  <TextClassContext.Provider value="text-sm text-muted-foreground">
+    <View ref={ref} className={cn(className)} {...props} />
+  </TextClassContext.Provider>
+));
+CardDescription.displayName = 'CardDescription';
+
+const CardContent = React.forwardRef<
+  React.ComponentRef<typeof View>,
+  React.ComponentProps<typeof View>
+>(({ className, ...props }, ref) => (
+  <View ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+));
+CardContent.displayName = 'CardContent';
+
+const CardFooter = React.forwardRef<
+  React.ComponentRef<typeof View>,
+  React.ComponentProps<typeof View>
+>(({ className, ...props }, ref) => (
+  <View ref={ref} className={cn('flex flex-row items-center p-6 pt-0', className)} {...props} />
+));
+CardFooter.displayName = 'CardFooter';
+
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
