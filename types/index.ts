@@ -15,3 +15,26 @@ export interface OAuthLoginResult {
   success: boolean;
   error?: string;
 }
+
+export interface Store {
+  id: string;
+  name: string;
+  tokenSymbol: string;
+  storeCode: string;
+  balance: number;
+  isOwned: boolean;
+}
+
+export interface StoreDetails extends Store {
+  valueAtStore: number;
+  cashOutValue: number;
+  borrowValue: number;
+}
+
+export type TokenType = 'USDC' | 'ETH';
+
+export interface Balance {
+  token: TokenType;
+  amount: number;
+  usdValue: number;
+}
