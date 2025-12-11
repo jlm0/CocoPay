@@ -1,7 +1,15 @@
+import { useMemo } from 'react';
 import { View } from 'react-native';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  type Option,
+} from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
 
 type PaymentToken = 'USDC' | 'ETH' | string;
@@ -25,10 +33,21 @@ export function PaymentAmountInput({
   savingsHint,
   className = '',
 }: PaymentAmountInputProps) {
+  const selectedOption = useMemo<Option>(
+    () => ({ value: selectedToken, label: selectedToken }),
+    [selectedToken]
+  );
+
+  const handleValueChange = (option: Option | undefined) => {
+    if (option?.value) {
+      onTokenChange(option.value);
+    }
+  };
+
   return (
     <View className={className}>
-      <Label className="mb-2 font-sans-semibold">Amount</Label>
-      <View className="flex-row items-start">
+      <Label className="mb-2">Amount</Label>
+      <View className="flex-row items-center gap-3">
         <View className="flex-1">
           <Input
             value={value}
@@ -38,23 +57,18 @@ export function PaymentAmountInput({
             className="text-xl"
           />
         </View>
-        <View className="ml-4 overflow-hidden rounded border border-border">
-          {availableTokens.map((token) => (
-            <Button
-              key={token}
-              variant="ghost"
-              onPress={() => onTokenChange(token)}
-              className={`h-auto rounded-none px-4 py-2 ${selectedToken === token ? 'bg-muted' : ''}`}>
-              <Text
-                variant="caption"
-                className={
-                  selectedToken === token ? 'font-sans-semibold' : 'text-muted-foreground'
-                }>
+        <Select value={selectedOption} onValueChange={handleValueChange}>
+          <SelectTrigger className="min-w-[100px]">
+            <SelectValue placeholder="Token" />
+          </SelectTrigger>
+          <SelectContent>
+            {availableTokens.map((token) => (
+              <SelectItem key={token} value={token} label={token}>
                 {token}
-              </Text>
-            </Button>
-          ))}
-        </View>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </View>
       {savingsHint && (
         <Text variant="caption" className="mt-2 text-muted-foreground">
