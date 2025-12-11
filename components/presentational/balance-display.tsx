@@ -14,12 +14,10 @@ export function BalanceDisplay({ amount, tokenSymbol, className = '' }: BalanceD
 
   return (
     <View className={className}>
-      <Text variant="caption" className="text-gray-500">
-        Balance
-      </Text>
+      <Text variant="caption">Balance</Text>
       <Text variant="heading" className="text-4xl">
         {formatAmount(amount)}{' '}
-        <Text variant="heading" className="text-4xl text-gray-500">
+        <Text variant="heading" className="text-4xl text-muted-foreground">
           {tokenSymbol}
         </Text>
       </Text>

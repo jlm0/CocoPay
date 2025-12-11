@@ -74,11 +74,11 @@ export default function PayPage() {
 
       <View className="gap-3">
         <Button variant="secondary" onPress={handleScanQR} className="h-14 rounded-xl">
-          <Text className="font-semibold text-secondary-foreground">Scan QR</Text>
+          <Text className="font-sans-semibold text-secondary-foreground">Scan QR</Text>
         </Button>
 
         <Button onPress={handlePay} disabled={!isValid} className="h-14 rounded-xl">
-          <Text className="font-semibold text-primary-foreground">Pay</Text>
+          <Text className="font-sans-semibold text-primary-foreground">Pay</Text>
         </Button>
       </View>
 

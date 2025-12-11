@@ -31,14 +31,14 @@ export function TokenAmountInput({
 
   return (
     <View className={className}>
-      <Label className="mb-2 font-semibold">{label}</Label>
+      <Label className="mb-2 font-sans-semibold">{label}</Label>
       <View className="flex-row items-center gap-2">
         <Input
           value={value}
           onChangeText={onChangeText}
           keyboardType="numeric"
           placeholder="0"
-          className="flex-1 text-2xl font-semibold"
+          className="flex-1 font-sans-semibold text-2xl"
         />
         <Text variant="body" className="text-xl text-muted-foreground">
           {tokenSymbol}

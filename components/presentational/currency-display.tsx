@@ -10,9 +10,7 @@ type CurrencyDisplayProps = {
 export function CurrencyDisplay({ label, value, className = '' }: CurrencyDisplayProps) {
   return (
     <View className={className}>
-      <Text variant="caption" className="text-gray-500">
-        {label}
-      </Text>
+      <Text variant="caption">{label}</Text>
       <Text variant="heading" className="text-2xl">
         {value}
       </Text>

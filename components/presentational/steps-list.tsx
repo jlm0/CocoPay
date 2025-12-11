@@ -11,16 +11,16 @@ type StepsListProps = {
 export function StepsList({ title, steps, className }: StepsListProps) {
   return (
     <View className={cn(className)}>
-      <Text variant="body" className="mb-2 font-semibold">
+      <Text variant="body" className="mb-2 font-sans-semibold">
         {title}
       </Text>
       <View className="gap-1">
         {steps.map((step, index) => (
           <View key={index} className="flex-row">
-            <Text variant="caption" className="mr-2 text-gray-500">
+            <Text variant="caption" className="mr-2">
               {index + 1}.
             </Text>
-            <Text variant="caption" className="flex-1 text-gray-500">
+            <Text variant="caption" className="flex-1">
               {step}
             </Text>
           </View>

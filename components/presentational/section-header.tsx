@@ -19,7 +19,7 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <View className={`flex-row items-center justify-between ${className}`}>
-      <Text variant="heading" className="text-xl font-semibold">
+      <Text variant="heading" className="font-sans-semibold text-xl">
         {title}
       </Text>
       {showAddButton && (

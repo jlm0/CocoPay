@@ -50,11 +50,11 @@ export default function BalancePage() {
 
       <View className="gap-3">
         <Button variant="secondary" onPress={handleCopyAddress} className="h-14 rounded-xl">
-          <Text className="font-semibold text-secondary-foreground">Copy deposit address</Text>
+          <Text className="font-sans-semibold text-secondary-foreground">Copy deposit address</Text>
         </Button>
 
         <Button onPress={handleWithdraw} className="h-14 rounded-xl">
-          <Text className="font-semibold text-primary-foreground">Withdraw</Text>
+          <Text className="font-sans-semibold text-primary-foreground">Withdraw</Text>
         </Button>
       </View>
 

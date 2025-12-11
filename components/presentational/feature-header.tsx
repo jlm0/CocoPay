@@ -17,11 +17,7 @@ export function FeatureHeader({ title, subtitle, className }: FeatureHeaderProps
         </Text>
         <Text className="text-2xl">🥥</Text>
       </View>
-      {subtitle && (
-        <Text variant="caption" className="text-gray-500">
-          {subtitle}
-        </Text>
-      )}
+      {subtitle && <Text variant="caption">{subtitle}</Text>}
     </View>
   );
 }

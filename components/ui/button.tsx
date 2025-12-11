@@ -38,6 +38,14 @@ const buttonVariants = cva(
           Platform.select({ web: 'hover:bg-accent dark:hover:bg-accent/50' })
         ),
         link: '',
+        success: cn(
+          'bg-success active:bg-success/90 shadow-sm shadow-black/5',
+          Platform.select({ web: 'hover:bg-success/90' })
+        ),
+        warning: cn(
+          'bg-warning active:bg-warning/90 shadow-sm shadow-black/5',
+          Platform.select({ web: 'hover:bg-warning/90' })
+        ),
       },
       size: {
         default: cn('h-10 px-4 py-2 sm:h-9', Platform.select({ web: 'has-[>svg]:px-3' })),
@@ -55,7 +63,7 @@ const buttonVariants = cva(
 
 const buttonTextVariants = cva(
   cn(
-    'text-foreground text-sm font-medium',
+    'text-foreground text-sm font-sans-medium',
     Platform.select({ web: 'pointer-events-none transition-colors' })
   ),
   {
@@ -73,6 +81,8 @@ const buttonTextVariants = cva(
           'text-primary group-active:underline',
           Platform.select({ web: 'underline-offset-4 hover:underline group-hover:underline' })
         ),
+        success: 'text-success-foreground',
+        warning: 'text-warning-foreground',
       },
       size: {
         default: '',

@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Text } from '@/components/ui/text';
+import { NATIVE_SLIDER } from '@/lib/theme';
 
 type PrepaySliderProps = {
   value: number;
@@ -19,14 +20,14 @@ export function PrepaySlider({
 }: PrepaySliderProps) {
   return (
     <View className={className}>
-      <Text variant="body" className="mb-1 font-semibold">
+      <Text variant="body" className="mb-1 font-sans-semibold">
         Prepay
       </Text>
-      <Text variant="caption" className="mb-4 text-gray-500">
+      <Text variant="caption" className="mb-4">
         Pay for loan time upfront to save money.
       </Text>
 
-      <Text variant="body" className="mb-2 text-center font-semibold">
+      <Text variant="body" className="mb-2 text-center font-sans-semibold">
         {value} months
       </Text>
 
@@ -36,18 +37,14 @@ export function PrepaySlider({
         minimumValue={minMonths}
         maximumValue={maxMonths}
         step={1}
-        minimumTrackTintColor="#2DD4BF"
-        maximumTrackTintColor="#E5E7EB"
-        thumbTintColor="#2DD4BF"
+        minimumTrackTintColor={NATIVE_SLIDER.minimumTrackTintColor}
+        maximumTrackTintColor={NATIVE_SLIDER.maximumTrackTintColor}
+        thumbTintColor={NATIVE_SLIDER.thumbTintColor}
       />
 
       <View className="flex-row justify-between">
-        <Text variant="caption" className="text-gray-500">
-          {minMonths} months
-        </Text>
-        <Text variant="caption" className="text-gray-500">
-          {maxMonths} months
-        </Text>
+        <Text variant="caption">{minMonths} months</Text>
+        <Text variant="caption">{maxMonths} months</Text>
       </View>
     </View>
   );

@@ -11,7 +11,7 @@ type NameInputProps = {
 export function NameInput({ value, onChangeText, className = '' }: NameInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-semibold">Name</Label>
+      <Label className="mb-2 font-sans-semibold">Name</Label>
       <Input
         value={value}
         onChangeText={onChangeText}

@@ -59,13 +59,13 @@ export default function CashOutPage() {
 
       <Text variant="body" className="mb-6">
         You get{' '}
-        <Text variant="body" className="font-semibold">
+        <Text variant="body" className="font-sans-semibold">
           {formatCurrency(usdcValue)} USDC
         </Text>
       </Text>
 
       <Button onPress={handleCashOut} disabled={numericAmount <= 0} className="h-14 rounded-xl">
-        <Text className="font-semibold text-primary-foreground">Cash out</Text>
+        <Text className="font-sans-semibold text-primary-foreground">Cash out</Text>
       </Button>
 
       <View className="mt-8 items-center">

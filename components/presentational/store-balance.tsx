@@ -14,12 +14,10 @@ export function StoreBalance({ balance, tokenSymbol, className = '' }: StoreBala
 
   return (
     <View className={className}>
-      <Text variant="caption" className="text-gray-500">
-        Your balance
-      </Text>
+      <Text variant="caption">Your balance</Text>
       <Text variant="heading" className="text-4xl">
         {formatBalance(balance)}{' '}
-        <Text variant="heading" className="text-4xl text-gray-500">
+        <Text variant="heading" className="text-4xl text-muted-foreground">
           {tokenSymbol}
         </Text>
       </Text>

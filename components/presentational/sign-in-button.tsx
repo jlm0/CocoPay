@@ -51,7 +51,7 @@ export function SignInButton({
       ) : (
         <>
           <Icon as={config.IconComponent} size={24} className={config.iconClassName} />
-          <Text className={`ml-3 text-lg font-semibold ${config.textClassName}`}>
+          <Text className={`ml-3 font-sans-semibold text-lg ${config.textClassName}`}>
             Sign in with {config.label}
           </Text>
         </>

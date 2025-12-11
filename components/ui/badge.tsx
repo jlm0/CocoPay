@@ -27,6 +27,14 @@ const badgeVariants = cva(
           Platform.select({ web: '[a&]:hover:bg-destructive/90' })
         ),
         outline: Platform.select({ web: '[a&]:hover:bg-accent [a&]:hover:text-accent-foreground' }),
+        success: cn(
+          'bg-success border-transparent',
+          Platform.select({ web: '[a&]:hover:bg-success/90' })
+        ),
+        warning: cn(
+          'bg-warning border-transparent',
+          Platform.select({ web: '[a&]:hover:bg-warning/90' })
+        ),
       },
     },
     defaultVariants: {
@@ -35,13 +43,15 @@ const badgeVariants = cva(
   }
 );
 
-const badgeTextVariants = cva('text-xs font-medium', {
+const badgeTextVariants = cva('text-xs font-sans-medium', {
   variants: {
     variant: {
       default: 'text-primary-foreground',
       secondary: 'text-secondary-foreground',
       destructive: 'text-white',
       outline: 'text-foreground',
+      success: 'text-success-foreground',
+      warning: 'text-warning-foreground',
     },
   },
   defaultVariants: {

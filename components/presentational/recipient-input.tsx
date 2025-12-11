@@ -11,7 +11,7 @@ type RecipientInputProps = {
 export function RecipientInput({ value, onChangeText, className = '' }: RecipientInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-semibold">Recipient</Label>
+      <Label className="mb-2 font-sans-semibold">Recipient</Label>
       <Input
         value={value}
         onChangeText={onChangeText}

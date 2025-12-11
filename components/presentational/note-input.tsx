@@ -11,7 +11,7 @@ type NoteInputProps = {
 export function NoteInput({ value, onChangeText, className = '' }: NoteInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-semibold">Note</Label>
+      <Label className="mb-2 font-sans-semibold">Note</Label>
       <Input value={value} onChangeText={onChangeText} placeholder="Add a note" />
     </View>
   );

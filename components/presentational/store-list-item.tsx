@@ -19,7 +19,7 @@ export function StoreListItem({ store, onPress }: StoreListItemProps) {
       disabled={!onPress}
       className="h-auto justify-start py-3">
       <Text variant="body">
-        <Text variant="body" className="font-semibold">
+        <Text variant="body" className="font-sans-semibold">
           {formatCurrency(store.balance)}
         </Text>{' '}
         of {store.tokenSymbol}

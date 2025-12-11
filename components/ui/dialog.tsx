@@ -110,7 +110,7 @@ function DialogTitle({
 }: DialogPrimitive.TitleProps & React.RefAttributes<DialogPrimitive.TitleRef>) {
   return (
     <DialogPrimitive.Title
-      className={cn('text-lg font-semibold leading-none text-foreground', className)}
+      className={cn('font-sans-semibold text-lg leading-none text-foreground', className)}
       {...props}
     />
   );

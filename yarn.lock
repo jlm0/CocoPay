@@ -1913,6 +1913,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo-google-fonts/plus-jakarta-sans@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@expo-google-fonts/plus-jakarta-sans@npm:0.4.2"
+  checksum: 10c0/a2c90e344dd974c6f332b3285173ac28b0de5e37517d5ea959117578ae02550720ab233417d7da42637db7ebbfded86648814198795ca35bd2b49fc164084bb7
+  languageName: node
+  linkType: hard
+
 "@expo/cli@npm:54.0.18":
   version: 54.0.18
   resolution: "@expo/cli@npm:54.0.18"
@@ -6783,6 +6790,7 @@ __metadata:
     "@account-kit/smart-contracts": "npm:^4.81.2"
     "@babel/core": "npm:^7.20.0"
     "@craftzdog/react-native-buffer": "npm:^6.1.1"
+    "@expo-google-fonts/plus-jakarta-sans": "npm:^0.4.2"
     "@expo/vector-icons": "npm:^15.0.2"
     "@getpara/react-native-wallet": "npm:^2.0.0"
     "@getpara/viem-v2-integration": "npm:^2.0.0"
@@ -6816,6 +6824,7 @@ __metadata:
     expo-clipboard: "npm:^8.0.8"
     expo-constants: "npm:~18.0.9"
     expo-font: "npm:^14.0.10"
+    expo-linear-gradient: "npm:~15.0.8"
     expo-linking: "npm:~8.0.8"
     expo-router: "npm:~6.0.10"
     expo-status-bar: "npm:~3.0.8"
@@ -8242,6 +8251,17 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: 10c0/23064b18285498e70be0aa525dc875cc809fc723b9a101d51e4721a09b1460eb041c73ebeb6d51e9175bb4c9b7a668bc08a48b99ebddac4cfaadb5a47194d329
+  languageName: node
+  linkType: hard
+
+"expo-linear-gradient@npm:~15.0.8":
+  version: 15.0.8
+  resolution: "expo-linear-gradient@npm:15.0.8"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/2ac3bff62143083e3d5b894fccc4c76de058277f65ed123232636cf26c88da6d566fa3cd46be4101f86e66b89ede7c058e12c93493b752df562da2fa971dcd66
   languageName: node
   linkType: hard
 

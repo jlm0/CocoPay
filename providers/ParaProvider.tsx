@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { para } from '@/lib/para';
 import { useParaWallets } from '@/hooks/useParaWallets';
 import type { User, Wallet } from '@/types';
@@ -95,20 +95,11 @@ export function ParaProvider({ children }: ParaProviderProps) {
 
   if (initError) {
     return (
-      <View className="flex-1 items-center justify-center bg-white p-6">
-        <Text className="mb-2 text-center text-lg font-semibold text-red-500">
+      <View className="flex-1 items-center justify-center bg-background p-6">
+        <Text className="mb-2 text-center font-sans-semibold text-lg text-destructive">
           Initialization Error
         </Text>
-        <Text className="text-center text-gray-600">{initError}</Text>
-      </View>
-    );
-  }
-
-  if (!isReady) {
-    return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#4F46E5" />
-        <Text className="mt-4 text-gray-500">Initializing...</Text>
+        <Text className="text-center text-muted-foreground">{initError}</Text>
       </View>
     );
   }

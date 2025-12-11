@@ -27,7 +27,7 @@ export function PaymentAmountInput({
 }: PaymentAmountInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-semibold">Amount</Label>
+      <Label className="mb-2 font-sans-semibold">Amount</Label>
       <View className="flex-row items-start">
         <View className="flex-1">
           <Input
@@ -47,7 +47,9 @@ export function PaymentAmountInput({
               className={`h-auto rounded-none px-4 py-2 ${selectedToken === token ? 'bg-muted' : ''}`}>
               <Text
                 variant="caption"
-                className={selectedToken === token ? 'font-semibold' : 'text-muted-foreground'}>
+                className={
+                  selectedToken === token ? 'font-sans-semibold' : 'text-muted-foreground'
+                }>
                 {token}
               </Text>
             </Button>

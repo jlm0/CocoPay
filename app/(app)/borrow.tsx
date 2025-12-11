@@ -71,14 +71,14 @@ export default function BorrowPage() {
 
         <Text variant="body" className="mb-6">
           You&apos;re borrowing{' '}
-          <Text variant="body" className="font-semibold">
+          <Text variant="body" className="font-sans-semibold">
             {formatCurrency(usdcValue)} USDC
           </Text>
           .
         </Text>
 
         <Button onPress={handleBorrow} disabled={numericAmount <= 0} className="h-14 rounded-xl">
-          <Text className="font-semibold text-primary-foreground">Borrow</Text>
+          <Text className="font-sans-semibold text-primary-foreground">Borrow</Text>
         </Button>
 
         <Button variant="ghost" size="icon" onPress={handleBackPress} className="my-4 self-center">

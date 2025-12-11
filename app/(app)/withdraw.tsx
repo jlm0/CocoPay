@@ -47,7 +47,7 @@ export default function WithdrawPage() {
       <RecipientInput value={recipient} onChangeText={setRecipient} className="mb-8" />
 
       <Button onPress={handleWithdraw} disabled={!isValid} className="h-14 rounded-xl">
-        <Text className="font-semibold text-primary-foreground">Withdraw</Text>
+        <Text className="font-sans-semibold text-primary-foreground">Withdraw</Text>
       </Button>
 
       <View className="mt-8 items-center">

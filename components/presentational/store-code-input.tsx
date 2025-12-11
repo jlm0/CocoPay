@@ -18,7 +18,7 @@ export function StoreCodeInput({
 }: StoreCodeInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-semibold">Store Code</Label>
+      <Label className="mb-2 font-sans-semibold">Store Code</Label>
       <Input
         value={value}
         onChangeText={onChangeText}

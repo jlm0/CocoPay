@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronDown } from 'lucide-react-native';
+import { HEX_COLORS } from '@/lib/theme';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StepsList } from '@/components/presentational/steps-list';
 import { NameInput } from '@/components/presentational/name-input';
@@ -98,9 +99,9 @@ export default function CreateStorePage() {
 
         <Button onPress={handleCreate} disabled={!isValid || isLoading} className="h-14 rounded-xl">
           {isLoading ? (
-            <ActivityIndicator color="#ffffff" />
+            <ActivityIndicator color={HEX_COLORS.background} />
           ) : (
-            <Text className="font-semibold text-primary-foreground">Create</Text>
+            <Text className="font-sans-semibold text-primary-foreground">Create</Text>
           )}
         </Button>
 
