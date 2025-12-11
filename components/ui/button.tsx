@@ -63,7 +63,7 @@ const buttonVariants = cva(
 
 const buttonTextVariants = cva(
   cn(
-    'text-foreground text-sm font-sans-medium',
+    'text-foreground font-sans-medium',
     Platform.select({ web: 'pointer-events-none transition-colors' })
   ),
   {
@@ -85,10 +85,10 @@ const buttonTextVariants = cva(
         warning: 'text-warning-foreground',
       },
       size: {
-        default: '',
-        sm: '',
-        lg: '',
-        icon: '',
+        default: 'text-sm',
+        sm: 'text-sm',
+        lg: 'text-base font-sans-semibold',
+        icon: 'text-sm',
       },
     },
     defaultVariants: {
