@@ -59,12 +59,9 @@ export default function CreateStorePage() {
           <Button
             onPress={handleCreate}
             disabled={!isValid || isLoading}
+            size="lg"
             className="h-14 rounded-xl">
-            {isLoading ? (
-              <ActivityIndicator color={HEX_COLORS.background} />
-            ) : (
-              <Text className="font-sans-semibold text-primary-foreground">Create</Text>
-            )}
+            {isLoading ? <ActivityIndicator color={HEX_COLORS.background} /> : <Text>Create</Text>}
           </Button>
         </BottomActionBar>
       }>

@@ -21,9 +21,7 @@ export function StoreValueRow({ values, className = '' }: StoreValueRowProps) {
       {values.map((item) => (
         <View key={item.label} className="flex-1">
           <Text variant="caption">{item.label}</Text>
-          <Text variant="body" className="font-sans-semibold">
-            {formatCurrency(item.value)}
-          </Text>
+          <Text variant="body-emphasis">{formatCurrency(item.value)}</Text>
         </View>
       ))}
     </View>

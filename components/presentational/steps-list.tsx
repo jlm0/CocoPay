@@ -11,7 +11,7 @@ type StepsListProps = {
 export function StepsList({ title, steps, className }: StepsListProps) {
   return (
     <View className={cn(className)}>
-      <Text variant="body" className="mb-2 font-sans-semibold">
+      <Text variant="body-emphasis" className="mb-2">
         {title}
       </Text>
       <View className="gap-1">

@@ -16,7 +16,7 @@ export function TickerInput({ value, onChangeText, className = '' }: TickerInput
 
   return (
     <View className={className}>
-      <Label className="mb-2 font-sans-semibold">Stablecoin ticker</Label>
+      <Label className="mb-2">Stablecoin ticker</Label>
       <Input
         value={value}
         onChangeText={handleChange}

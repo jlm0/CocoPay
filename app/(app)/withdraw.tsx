@@ -28,8 +28,12 @@ export default function WithdrawPage() {
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button onPress={handleWithdraw} disabled={!isValid} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-primary-foreground">Withdraw</Text>
+          <Button
+            onPress={handleWithdraw}
+            disabled={!isValid}
+            size="lg"
+            className="h-14 rounded-xl">
+            <Text>Withdraw</Text>
           </Button>
         </BottomActionBar>
       }>

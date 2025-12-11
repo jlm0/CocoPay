@@ -20,14 +20,14 @@ export function PrepaySlider({
 }: PrepaySliderProps) {
   return (
     <View className={className}>
-      <Text variant="body" className="mb-1 font-sans-semibold">
+      <Text variant="body-emphasis" className="mb-1">
         Prepay
       </Text>
       <Text variant="caption" className="mb-4">
         Pay for loan time upfront to save money.
       </Text>
 
-      <Text variant="body" className="mb-2 text-center font-sans-semibold">
+      <Text variant="body-emphasis" className="mb-2 text-center">
         {value} months
       </Text>
 

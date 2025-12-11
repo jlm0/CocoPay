@@ -35,8 +35,12 @@ export default function BorrowPage() {
       horizontalPadding={false}
       bottomActionBar={
         <BottomActionBar>
-          <Button onPress={handleBorrow} disabled={numericAmount <= 0} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-primary-foreground">Borrow</Text>
+          <Button
+            onPress={handleBorrow}
+            disabled={numericAmount <= 0}
+            size="lg"
+            className="h-14 rounded-xl">
+            <Text>Borrow</Text>
           </Button>
         </BottomActionBar>
       }>
@@ -75,10 +79,7 @@ export default function BorrowPage() {
 
         <Text variant="body">
           You&apos;re borrowing{' '}
-          <Text variant="body" className="font-sans-semibold">
-            {formatCurrency(usdcValue)} USDC
-          </Text>
-          .
+          <Text variant="body-emphasis">{formatCurrency(usdcValue)} USDC</Text>.
         </Text>
       </ScrollView>
     </ScreenContainer>

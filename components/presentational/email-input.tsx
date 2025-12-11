@@ -11,7 +11,7 @@ type EmailInputProps = {
 export function EmailInput({ value, onChangeText, className = '' }: EmailInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-sans-semibold">Email</Label>
+      <Label className="mb-2">Email</Label>
       <Input
         value={value}
         onChangeText={onChangeText}

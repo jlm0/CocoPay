@@ -36,12 +36,17 @@ export default function ChargePage() {
             variant="secondary"
             onPress={handleSendInvoice}
             disabled={!isValid}
+            size="lg"
             className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-secondary-foreground">Send invoice</Text>
+            <Text>Send invoice</Text>
           </Button>
 
-          <Button onPress={handleGenerateQR} disabled={!isValid} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-primary-foreground">Generate QR</Text>
+          <Button
+            onPress={handleGenerateQR}
+            disabled={!isValid}
+            size="lg"
+            className="h-14 rounded-xl">
+            <Text>Generate QR</Text>
           </Button>
         </BottomActionBar>
       }>

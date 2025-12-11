@@ -32,8 +32,12 @@ export default function CashOutPage() {
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button onPress={handleCashOut} disabled={numericAmount <= 0} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-primary-foreground">Cash out</Text>
+          <Button
+            onPress={handleCashOut}
+            disabled={numericAmount <= 0}
+            size="lg"
+            className="h-14 rounded-xl">
+            <Text>Cash out</Text>
           </Button>
         </BottomActionBar>
       }>
@@ -59,10 +63,7 @@ export default function CashOutPage() {
         />
 
         <Text variant="body">
-          You get{' '}
-          <Text variant="body" className="font-sans-semibold">
-            {formatCurrency(usdcValue)} USDC
-          </Text>
+          You get <Text variant="body-emphasis">{formatCurrency(usdcValue)} USDC</Text>
         </Text>
       </ScrollView>
     </ScreenContainer>

@@ -8,8 +8,8 @@ type PayButtonProps = {
 
 export function PayButton({ onPress, className = '' }: PayButtonProps) {
   return (
-    <Button onPress={onPress} className={`h-14 rounded-xl ${className}`}>
-      <Text className="font-sans-semibold text-lg text-primary-foreground">Pay</Text>
+    <Button onPress={onPress} size="lg" className={`h-14 rounded-xl ${className}`}>
+      <Text>Pay</Text>
     </Button>
   );
 }

@@ -50,6 +50,7 @@ export function SignInButton({
   return (
     <Button
       disabled={isDisabled}
+      size="lg"
       className={`h-14 flex-row items-center justify-center rounded-[28px] shadow-md ${config.buttonClassName} ${className || ''}`}
       {...buttonProps}>
       {isLoading ? (
@@ -61,9 +62,7 @@ export function SignInButton({
           ) : (
             <Icon as={Chrome} size={24} className={config.iconClassName} />
           )}
-          <Text className={`ml-3 font-sans-semibold text-lg ${config.textClassName}`}>
-            Sign in with {config.label}
-          </Text>
+          <Text className={`ml-3 ${config.textClassName}`}>Sign in with {config.label}</Text>
         </>
       )}
     </Button>

@@ -48,12 +48,12 @@ export default function PayPage() {
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button variant="secondary" onPress={handleScanQR} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-secondary-foreground">Scan QR</Text>
+          <Button variant="secondary" onPress={handleScanQR} size="lg" className="h-14 rounded-xl">
+            <Text>Scan QR</Text>
           </Button>
 
-          <Button onPress={handlePay} disabled={!isValid} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-primary-foreground">Pay</Text>
+          <Button onPress={handlePay} disabled={!isValid} size="lg" className="h-14 rounded-xl">
+            <Text>Pay</Text>
           </Button>
         </BottomActionBar>
       }>

@@ -39,14 +39,16 @@ export default function BalancePage() {
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button variant="secondary" onPress={handleCopyAddress} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-secondary-foreground">
-              Copy deposit address
-            </Text>
+          <Button
+            variant="secondary"
+            onPress={handleCopyAddress}
+            size="lg"
+            className="h-14 rounded-xl">
+            <Text>Copy deposit address</Text>
           </Button>
 
-          <Button onPress={handleWithdraw} className="h-14 rounded-xl">
-            <Text className="font-sans-semibold text-primary-foreground">Withdraw</Text>
+          <Button onPress={handleWithdraw} size="lg" className="h-14 rounded-xl">
+            <Text>Withdraw</Text>
           </Button>
         </BottomActionBar>
       }>

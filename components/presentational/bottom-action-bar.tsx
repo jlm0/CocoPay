@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronDown } from 'lucide-react-native';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { HEX_COLORS } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 
 type BottomActionBarProps = {
@@ -37,7 +38,7 @@ export function BottomActionBar({
   return (
     <View className={cn('absolute bottom-0 left-0 right-0', className)}>
       <LinearGradient
-        colors={['transparent', 'white']}
+        colors={['rgba(255,255,255,0)', HEX_COLORS.background]}
         style={{ height: GRADIENT_HEIGHT }}
         pointerEvents="none"
       />
@@ -50,11 +51,9 @@ export function BottomActionBar({
         <View className="gap-3 pb-2">
           {children}
           {showBackButton && (
-            <View className="items-center">
-              <Button variant="ghost" size="icon" onPress={handleBack}>
-                <Icon as={ChevronDown} size={32} className="text-primary" />
-              </Button>
-            </View>
+            <Button variant="ghost" className="h-12 w-full" onPress={handleBack}>
+              <Icon as={ChevronDown} size={32} className="text-primary" />
+            </Button>
           )}
         </View>
       </View>
