@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 
-export function WelcomeSkeleton() {
+export function AppSkeleton() {
   return (
     <ScreenContainer>
       <LinearGradient

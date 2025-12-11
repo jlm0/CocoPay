@@ -39,7 +39,7 @@ export default function AuthPage() {
         </View>
 
         <View className="mt-8">
-          <Text variant="display-medium">Welcome back</Text>
+          <Text variant="title">Welcome back</Text>
           <Text variant="body" className="mt-2 text-muted-foreground">
             Enter your email to continue
           </Text>
@@ -59,13 +59,12 @@ export default function AuthPage() {
           <Button
             onPress={handleContinue}
             disabled={!isValidEmail || isLoading}
+            size="lg"
             className="h-14 rounded-xl">
             {isLoading ? (
               <ActivityIndicator color={HEX_COLORS.background} />
             ) : (
-              <Text className="font-sans-semibold text-primary-foreground">
-                Continue with email
-              </Text>
+              <Text>Continue with email</Text>
             )}
           </Button>
         </View>

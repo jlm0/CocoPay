@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { View, Text } from 'react-native';
+import { useRouter, useSegments } from 'expo-router';
 import { para } from '@/lib/para';
 import { useParaWallets } from '@/hooks/useParaWallets';
+import { AppSkeleton } from '@/components/presentational/app-skeleton';
 import type { User, Wallet } from '@/types';
 
 interface ParaContextValue {
@@ -78,6 +80,9 @@ export function ParaProvider({ children }: ParaProviderProps) {
     [loadWallets, clearWallets]
   );
 
+  const router = useRouter();
+  const segments = useSegments();
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -93,6 +98,18 @@ export function ParaProvider({ children }: ParaProviderProps) {
     initialize();
   }, [checkAuth]);
 
+  useEffect(() => {
+    if (!isReady || isLoading) return;
+
+    const inAuthGroup = segments[0] === '(app)';
+
+    if (isAuthenticated && !inAuthGroup) {
+      router.replace('/(app)/home');
+    } else if (!isAuthenticated && inAuthGroup) {
+      router.replace('/');
+    }
+  }, [isReady, isLoading, isAuthenticated, segments, router]);
+
   if (initError) {
     return (
       <View className="flex-1 items-center justify-center bg-background p-6">
@@ -102,6 +119,10 @@ export function ParaProvider({ children }: ParaProviderProps) {
         <Text className="text-center text-muted-foreground">{initError}</Text>
       </View>
     );
+  }
+
+  if (!isReady || isLoading) {
+    return <AppSkeleton />;
   }
 
   return (

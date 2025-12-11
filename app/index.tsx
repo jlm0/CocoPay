@@ -2,11 +2,9 @@ import { useEffect, useRef } from 'react';
 import { View, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { usePara } from '@/providers/ParaProvider';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
-import { WelcomeSkeleton } from '@/components/presentational/welcome-skeleton';
 
 function useEntryAnimation() {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -88,23 +86,10 @@ function AccentLine() {
 
 export default function WelcomePage() {
   const router = useRouter();
-  const { isReady, isAuthenticated, isLoading: isAuthLoading } = usePara();
 
   const brandAnim = useEntryAnimation();
   const valueAnim = useStaggeredAnimation(80);
   const buttonAnim = useStaggeredAnimation(160);
-
-  useEffect(() => {
-    if (!isAuthLoading && isAuthenticated) {
-      router.replace('/(app)/home');
-    }
-  }, [isAuthenticated, isAuthLoading, router]);
-
-  const isLoading = !isReady || isAuthLoading;
-
-  if (isLoading) {
-    return <WelcomeSkeleton />;
-  }
 
   const handleGetStarted = () => {
     router.push('/auth');
@@ -141,7 +126,7 @@ export default function WelcomePage() {
           opacity: valueAnim.opacity,
           transform: [{ translateY: valueAnim.translateY }],
         }}>
-        <Text variant="display-medium" className="text-center">
+        <Text variant="heading" className="text-center">
           Payments that reward you
         </Text>
         <Text variant="body" className="text-center text-muted-foreground">
@@ -157,8 +142,8 @@ export default function WelcomePage() {
           opacity: buttonAnim.opacity,
           transform: [{ translateY: buttonAnim.translateY }],
         }}>
-        <Button onPress={handleGetStarted} className="h-14 rounded-xl">
-          <Text className="font-sans-semibold text-primary-foreground">Get started</Text>
+        <Button onPress={handleGetStarted} size="lg" className="h-14 rounded-xl">
+          <Text>Get started</Text>
         </Button>
       </Animated.View>
     </ScreenContainer>
