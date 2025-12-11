@@ -1,13 +1,11 @@
-import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ChevronDown } from 'lucide-react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreBalance } from '@/components/presentational/store-balance';
 import { StoreValueRow } from '@/components/presentational/store-value-row';
 import { StoreActions } from '@/components/presentational/store-actions';
 import { ScreenContainer } from '@/components/presentational/screen-container';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
+import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import type { StoreDetails } from '@/types';
 
 const MOCK_STORE_DETAILS: Record<string, StoreDetails> = {
@@ -79,10 +77,6 @@ export default function StoreDetailPage() {
     router.push('/(app)/charge');
   };
 
-  const handleBackPress = () => {
-    router.back();
-  };
-
   const valueItems = [
     { label: 'Value at store', value: store.valueAtStore },
     { label: 'Cash out value', value: store.cashOutValue },
@@ -90,31 +84,29 @@ export default function StoreDetailPage() {
   ];
 
   return (
-    <ScreenContainer>
-      <FeatureHeader
-        title={store.name}
-        subtitle={`Store code ${store.storeCode}`}
-        className="mb-6"
-      />
+    <ScreenContainer
+      bottomActionBar={
+        <BottomActionBar>
+          <StoreActions
+            isOwned={store.isOwned}
+            onBorrowPress={handleBorrowPress}
+            onCashOutPress={handleCashOutPress}
+            onSpendPress={handleSpendPress}
+            onChargePress={handleChargePress}
+          />
+        </BottomActionBar>
+      }>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-64">
+        <FeatureHeader
+          title={store.name}
+          subtitle={`Store code ${store.storeCode}`}
+          className="mb-6"
+        />
 
-      <StoreBalance balance={store.balance} tokenSymbol={store.tokenSymbol} className="mb-6" />
+        <StoreBalance balance={store.balance} tokenSymbol={store.tokenSymbol} className="mb-6" />
 
-      <StoreValueRow values={valueItems} className="mb-8" />
-
-      <StoreActions
-        isOwned={store.isOwned}
-        onBorrowPress={handleBorrowPress}
-        onCashOutPress={handleCashOutPress}
-        onSpendPress={handleSpendPress}
-        onChargePress={handleChargePress}
-        className="mb-8"
-      />
-
-      <View className="items-center">
-        <Button variant="ghost" size="icon" onPress={handleBackPress}>
-          <Icon as={ChevronDown} size={32} className="text-primary" />
-        </Button>
-      </View>
+        <StoreValueRow values={valueItems} />
+      </ScrollView>
     </ScreenContainer>
   );
 }

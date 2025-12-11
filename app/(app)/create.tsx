@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronDown } from 'lucide-react-native';
 import { HEX_COLORS } from '@/lib/theme';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StepsList } from '@/components/presentational/steps-list';
@@ -9,9 +8,9 @@ import { NameInput } from '@/components/presentational/name-input';
 import { TickerInput } from '@/components/presentational/ticker-input';
 import { PercentageSlider } from '@/components/presentational/percentage-slider';
 import { ScreenContainer } from '@/components/presentational/screen-container';
+import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { Icon } from '@/components/ui/icon';
 import { useJBProjectCreate } from '@/hooks/juicebox';
 
 export default function CreateStorePage() {
@@ -52,13 +51,27 @@ export default function CreateStorePage() {
     }
   };
 
-  const handleBackPress = () => {
-    router.back();
-  };
-
   return (
-    <ScreenContainer horizontalPadding={false}>
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+    <ScreenContainer
+      horizontalPadding={false}
+      bottomActionBar={
+        <BottomActionBar>
+          <Button
+            onPress={handleCreate}
+            disabled={!isValid || isLoading}
+            className="h-14 rounded-xl">
+            {isLoading ? (
+              <ActivityIndicator color={HEX_COLORS.background} />
+            ) : (
+              <Text className="font-sans-semibold text-primary-foreground">Create</Text>
+            )}
+          </Button>
+        </BottomActionBar>
+      }>
+      <ScrollView
+        className="flex-1 px-6"
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName="pb-64">
         <FeatureHeader title="Create a store" className="mb-6" />
 
         <StepsList
@@ -94,20 +107,7 @@ export default function CreateStorePage() {
           onValueChange={setLoyaltyBonus}
           minPercent={0}
           maxPercent={5}
-          className="mb-8"
         />
-
-        <Button onPress={handleCreate} disabled={!isValid || isLoading} className="h-14 rounded-xl">
-          {isLoading ? (
-            <ActivityIndicator color={HEX_COLORS.background} />
-          ) : (
-            <Text className="font-sans-semibold text-primary-foreground">Create</Text>
-          )}
-        </Button>
-
-        <Button variant="ghost" size="icon" onPress={handleBackPress} className="my-4 self-center">
-          <Icon as={ChevronDown} size={32} className="text-primary" />
-        </Button>
       </ScrollView>
     </ScreenContainer>
   );

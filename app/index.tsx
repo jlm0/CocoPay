@@ -3,9 +3,8 @@ import { View, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePara } from '@/providers/ParaProvider';
-import { useParaOAuthLogin } from '@/hooks/useParaOAuthLogin';
 import { Text } from '@/components/ui/text';
-import { SignInButton } from '@/components/presentational/sign-in-button';
+import { Button } from '@/components/ui/button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { WelcomeSkeleton } from '@/components/presentational/welcome-skeleton';
 
@@ -87,24 +86,16 @@ function AccentLine() {
   );
 }
 
-const BYPASS_AUTH = true;
-
 export default function WelcomePage() {
   const router = useRouter();
   const { isReady, isAuthenticated, isLoading: isAuthLoading } = usePara();
-
-  const handleLoginSuccess = () => {
-    router.replace('/(app)/home');
-  };
-
-  const { login, status, error } = useParaOAuthLogin(handleLoginSuccess);
 
   const brandAnim = useEntryAnimation();
   const valueAnim = useStaggeredAnimation(80);
   const buttonAnim = useStaggeredAnimation(160);
 
   useEffect(() => {
-    if (BYPASS_AUTH || (!isAuthLoading && isAuthenticated)) {
+    if (!isAuthLoading && isAuthenticated) {
       router.replace('/(app)/home');
     }
   }, [isAuthenticated, isAuthLoading, router]);
@@ -115,7 +106,9 @@ export default function WelcomePage() {
     return <WelcomeSkeleton />;
   }
 
-  const isSigningIn = status === 'loading';
+  const handleGetStarted = () => {
+    router.push('/auth');
+  };
 
   return (
     <ScreenContainer>
@@ -164,12 +157,9 @@ export default function WelcomePage() {
           opacity: buttonAnim.opacity,
           transform: [{ translateY: buttonAnim.translateY }],
         }}>
-        {error && (
-          <Text variant="caption" className="mb-2 text-center text-destructive">
-            {error}
-          </Text>
-        )}
-        <SignInButton onPress={login} isLoading={isSigningIn} />
+        <Button onPress={handleGetStarted} className="h-14 rounded-xl">
+          <Text className="font-sans-semibold text-primary-foreground">Get started</Text>
+        </Button>
       </Animated.View>
     </ScreenContainer>
   );

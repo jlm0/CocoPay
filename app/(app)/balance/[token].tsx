@@ -1,14 +1,13 @@
-import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { ChevronDown } from 'lucide-react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { BalanceDisplay } from '@/components/presentational/balance-display';
 import { DepositAddress } from '@/components/presentational/deposit-address';
 import { ScreenContainer } from '@/components/presentational/screen-container';
+import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { Icon } from '@/components/ui/icon';
 
 const MOCK_BALANCES: Record<string, { amount: number; address: string }> = {
   ETH: {
@@ -36,33 +35,28 @@ export default function BalancePage() {
     router.push('/(app)/withdraw');
   };
 
-  const handleBackPress = () => {
-    router.back();
-  };
-
   return (
-    <ScreenContainer>
-      <FeatureHeader title={tokenSymbol} className="mb-8" />
+    <ScreenContainer
+      bottomActionBar={
+        <BottomActionBar>
+          <Button variant="secondary" onPress={handleCopyAddress} className="h-14 rounded-xl">
+            <Text className="font-sans-semibold text-secondary-foreground">
+              Copy deposit address
+            </Text>
+          </Button>
 
-      <BalanceDisplay amount={balance.amount} tokenSymbol={tokenSymbol} className="mb-8" />
+          <Button onPress={handleWithdraw} className="h-14 rounded-xl">
+            <Text className="font-sans-semibold text-primary-foreground">Withdraw</Text>
+          </Button>
+        </BottomActionBar>
+      }>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-64">
+        <FeatureHeader title={tokenSymbol} className="mb-8" />
 
-      <DepositAddress tokenName={tokenSymbol} address={balance.address} className="mb-8" />
+        <BalanceDisplay amount={balance.amount} tokenSymbol={tokenSymbol} className="mb-8" />
 
-      <View className="gap-3">
-        <Button variant="secondary" onPress={handleCopyAddress} className="h-14 rounded-xl">
-          <Text className="font-sans-semibold text-secondary-foreground">Copy deposit address</Text>
-        </Button>
-
-        <Button onPress={handleWithdraw} className="h-14 rounded-xl">
-          <Text className="font-sans-semibold text-primary-foreground">Withdraw</Text>
-        </Button>
-      </View>
-
-      <View className="mt-8 items-center">
-        <Button variant="ghost" size="icon" onPress={handleBackPress}>
-          <Icon as={ChevronDown} size={32} className="text-primary" />
-        </Button>
-      </View>
+        <DepositAddress tokenName={tokenSymbol} address={balance.address} />
+      </ScrollView>
     </ScreenContainer>
   );
 }

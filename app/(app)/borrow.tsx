@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronDown } from 'lucide-react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StepsList } from '@/components/presentational/steps-list';
 import { PrepaySlider } from '@/components/presentational/prepay-slider';
 import { TokenAmountInput } from '@/components/presentational/token-amount-input';
 import { ScreenContainer } from '@/components/presentational/screen-container';
+import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { Icon } from '@/components/ui/icon';
 
 const MOCK_STORE = {
   tokenSymbol: '$OM',
@@ -18,7 +16,6 @@ const MOCK_STORE = {
 };
 
 export default function BorrowPage() {
-  const router = useRouter();
   const [collateralAmount, setCollateralAmount] = useState('');
   const [prepayMonths, setPrepayMonths] = useState(40);
 
@@ -33,13 +30,20 @@ export default function BorrowPage() {
     // TODO: Implement borrow transaction
   };
 
-  const handleBackPress = () => {
-    router.back();
-  };
-
   return (
-    <ScreenContainer horizontalPadding={false}>
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+    <ScreenContainer
+      horizontalPadding={false}
+      bottomActionBar={
+        <BottomActionBar>
+          <Button onPress={handleBorrow} disabled={numericAmount <= 0} className="h-14 rounded-xl">
+            <Text className="font-sans-semibold text-primary-foreground">Borrow</Text>
+          </Button>
+        </BottomActionBar>
+      }>
+      <ScrollView
+        className="flex-1 px-6"
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName="pb-64">
         <FeatureHeader title={`Borrow against ${MOCK_STORE.tokenSymbol}`} className="mb-6" />
 
         <StepsList
@@ -69,21 +73,13 @@ export default function BorrowPage() {
           className="mb-6"
         />
 
-        <Text variant="body" className="mb-6">
+        <Text variant="body">
           You&apos;re borrowing{' '}
           <Text variant="body" className="font-sans-semibold">
             {formatCurrency(usdcValue)} USDC
           </Text>
           .
         </Text>
-
-        <Button onPress={handleBorrow} disabled={numericAmount <= 0} className="h-14 rounded-xl">
-          <Text className="font-sans-semibold text-primary-foreground">Borrow</Text>
-        </Button>
-
-        <Button variant="ghost" size="icon" onPress={handleBackPress} className="my-4 self-center">
-          <Icon as={ChevronDown} size={32} className="text-primary" />
-        </Button>
       </ScrollView>
     </ScreenContainer>
   );

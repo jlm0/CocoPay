@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
-import { Apple, Chrome } from 'lucide-react-native';
+import { Chrome } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
@@ -12,19 +13,24 @@ type SignInButtonProps = {
   provider?: Provider;
 } & Omit<ButtonProps, 'children' | 'variant' | 'size'>;
 
-const providerConfig = {
+type ProviderConfig = {
+  buttonClassName: string;
+  textClassName: string;
+  iconClassName: string;
+  label: string;
+};
+
+const providerConfig: Record<Provider, ProviderConfig> = {
   apple: {
     buttonClassName: 'bg-foreground',
     textClassName: 'text-background',
     iconClassName: 'text-background',
-    IconComponent: Apple,
     label: 'Apple',
   },
   google: {
     buttonClassName: 'bg-background border border-border',
     textClassName: 'text-foreground',
     iconClassName: 'text-foreground',
-    IconComponent: Chrome,
     label: 'Google',
   },
 };
@@ -50,7 +56,11 @@ export function SignInButton({
         <Skeleton className="h-6 w-40 rounded-md" />
       ) : (
         <>
-          <Icon as={config.IconComponent} size={24} className={config.iconClassName} />
+          {activeProvider === 'apple' ? (
+            <Ionicons name="logo-apple" size={24} color="#ffffff" />
+          ) : (
+            <Icon as={Chrome} size={24} className={config.iconClassName} />
+          )}
           <Text className={`ml-3 font-sans-semibold text-lg ${config.textClassName}`}>
             Sign in with {config.label}
           </Text>
