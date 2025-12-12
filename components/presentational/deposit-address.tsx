@@ -31,7 +31,7 @@ export function DepositAddress({
       <Text variant="body" className="mb-2">
         Deposit more {tokenName} by sending to
       </Text>
-      <Text variant="caption" className="mb-2 font-mono font-semibold">
+      <Text variant="caption" className="mb-2 font-mono">
         {address}
       </Text>
       <View className="flex-row gap-2">

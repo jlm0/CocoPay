@@ -58,7 +58,7 @@ export function HomeStores() {
 
   return (
     <View className="flex-1">
-      <SectionHeader title="Stores" showAddButton onAddPress={handleAddPress} className="mb-2" />
+      <SectionHeader title="Stores" showAddButton onAddPress={handleAddPress} className="mb-1" />
       <StoreList stores={sortedStores} onStorePress={handleStorePress} />
     </View>
   );

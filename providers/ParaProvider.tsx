@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { useRouter, useSegments } from 'expo-router';
 import { para } from '@/lib/para';
 import { useParaWallets } from '@/hooks/useParaWallets';
+import { AppSkeleton } from '@/components/presentational/app-skeleton';
 import type { User, Wallet } from '@/types';
 
 interface ParaContextValue {
@@ -78,6 +80,9 @@ export function ParaProvider({ children }: ParaProviderProps) {
     [loadWallets, clearWallets]
   );
 
+  const router = useRouter();
+  const segments = useSegments();
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -93,24 +98,31 @@ export function ParaProvider({ children }: ParaProviderProps) {
     initialize();
   }, [checkAuth]);
 
+  useEffect(() => {
+    if (!isReady || isLoading) return;
+
+    const inAuthGroup = segments[0] === '(app)';
+
+    if (isAuthenticated && !inAuthGroup) {
+      router.replace('/(app)/home');
+    } else if (!isAuthenticated && inAuthGroup) {
+      router.replace('/');
+    }
+  }, [isReady, isLoading, isAuthenticated, segments, router]);
+
   if (initError) {
     return (
-      <View className="flex-1 items-center justify-center bg-white p-6">
-        <Text className="mb-2 text-center text-lg font-semibold text-red-500">
+      <View className="flex-1 items-center justify-center bg-background p-6">
+        <Text className="mb-2 text-center font-sans-semibold text-lg text-destructive">
           Initialization Error
         </Text>
-        <Text className="text-center text-gray-600">{initError}</Text>
+        <Text className="text-center text-muted-foreground">{initError}</Text>
       </View>
     );
   }
 
-  if (!isReady) {
-    return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#4F46E5" />
-        <Text className="mt-4 text-gray-500">Initializing...</Text>
-      </View>
-    );
+  if (!isReady || isLoading) {
+    return <AppSkeleton />;
   }
 
   return (

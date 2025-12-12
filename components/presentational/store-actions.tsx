@@ -21,18 +21,19 @@ export function StoreActions({
 }: StoreActionsProps) {
   return (
     <View className={`gap-3 ${className}`}>
-      <Button variant="secondary" onPress={onBorrowPress} className="h-14 rounded-xl">
-        <Text className="font-semibold text-secondary-foreground">Borrow</Text>
+      <Button variant="secondary" onPress={onBorrowPress} size="lg" className="h-14 rounded-xl">
+        <Text>Borrow</Text>
       </Button>
 
-      <Button variant="secondary" onPress={onCashOutPress} className="h-14 rounded-xl">
-        <Text className="font-semibold text-secondary-foreground">Cash out</Text>
+      <Button variant="secondary" onPress={onCashOutPress} size="lg" className="h-14 rounded-xl">
+        <Text>Cash out</Text>
       </Button>
 
-      <Button onPress={isOwned ? onChargePress : onSpendPress} className="h-14 rounded-xl">
-        <Text className="font-semibold text-primary-foreground">
-          {isOwned ? 'Charge' : 'Spend at store'}
-        </Text>
+      <Button
+        onPress={isOwned ? onChargePress : onSpendPress}
+        size="lg"
+        className="h-14 rounded-xl">
+        <Text>{isOwned ? 'Charge' : 'Spend at store'}</Text>
       </Button>
     </View>
   );

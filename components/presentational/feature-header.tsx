@@ -12,16 +12,10 @@ export function FeatureHeader({ title, subtitle, className }: FeatureHeaderProps
   return (
     <View className={cn(className)}>
       <View className="flex-row items-center justify-between">
-        <Text variant="heading" className="text-2xl">
-          {title}
-        </Text>
+        <Text variant="title">{title}</Text>
         <Text className="text-2xl">🥥</Text>
       </View>
-      {subtitle && (
-        <Text variant="caption" className="text-gray-500">
-          {subtitle}
-        </Text>
-      )}
+      {subtitle && <Text variant="caption">{subtitle}</Text>}
     </View>
   );
 }

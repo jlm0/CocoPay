@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Platform } from 'react-native';
 import { para } from '@/lib/para';
-import { openAuthUrl } from '@/lib/auth';
 import type { AuthStatus } from '@/types';
 
 interface UseParaOAuthLoginResult {
@@ -26,30 +25,64 @@ export function useParaOAuthLogin(onSuccess: () => void): UseParaOAuthLoginResul
     try {
       reset();
       setStatus('loading');
+      console.log('[Para Auth] Starting Apple OAuth flow...');
 
+      console.log('[Para Auth] Getting OAuth URL...');
       const oauthUrl = await para.getOAuthUrl({ method: 'APPLE' });
-      const result = await openAuthUrl(oauthUrl);
+      console.log('[Para Auth] Apple OAuth URL:', oauthUrl);
+      // TODO: Restore browser auth
+      // const result = await openAuthUrl(oauthUrl);
+      // if (!result.success) {
+      //   throw new Error('Authentication was cancelled');
+      // }
 
-      if (!result.success) {
-        throw new Error('Authentication was cancelled');
-      }
-
+      console.log('[Para Auth] Calling verifyOAuth...');
       const authState = await para.verifyOAuth({ method: 'APPLE' });
+      console.log('[Para Auth] verifyOAuth returned:', JSON.stringify(authState, null, 2));
 
-      if (authState.stage === 'done') {
-        if (authState.isNewUser) {
-          await para.waitForWalletCreation({});
-        } else {
-          await para.waitForLogin({});
-        }
-
+      if (authState.stage === 'signup') {
+        console.log('[Para Auth] Stage: signup - calling waitForWalletCreation...');
+        const walletResult = await para.waitForWalletCreation({});
+        console.log(
+          '[Para Auth] waitForWalletCreation result:',
+          JSON.stringify(walletResult, null, 2)
+        );
         setStatus('success');
         onSuccess();
         return true;
       }
 
-      throw new Error('Unexpected OAuth state');
+      if (authState.stage === 'login') {
+        console.log('[Para Auth] Stage: login - calling waitForLogin...');
+        const loginResult = await para.waitForLogin({});
+        console.log('[Para Auth] waitForLogin result:', JSON.stringify(loginResult, null, 2));
+        setStatus('success');
+        onSuccess();
+        return true;
+      }
+
+      if (authState.stage === 'done') {
+        console.log('[Para Auth] Stage: done - isNewUser:', authState.isNewUser);
+        if (authState.isNewUser) {
+          console.log('[Para Auth] New user - calling waitForWalletCreation...');
+          const walletResult = await para.waitForWalletCreation({});
+          console.log(
+            '[Para Auth] waitForWalletCreation result:',
+            JSON.stringify(walletResult, null, 2)
+          );
+        } else {
+          console.log('[Para Auth] Existing user - calling waitForLogin...');
+          const loginResult = await para.waitForLogin({});
+          console.log('[Para Auth] waitForLogin result:', JSON.stringify(loginResult, null, 2));
+        }
+        setStatus('success');
+        onSuccess();
+        return true;
+      }
+
+      throw new Error(`Unexpected OAuth state: ${(authState as { stage: string }).stage}`);
     } catch (err) {
+      console.log('[Para Auth] Apple OAuth error:', err);
       const message = err instanceof Error ? err.message : 'Apple login failed';
       setError(message);
       setStatus('error');
@@ -61,30 +94,64 @@ export function useParaOAuthLogin(onSuccess: () => void): UseParaOAuthLoginResul
     try {
       reset();
       setStatus('loading');
+      console.log('[Para Auth] Starting Google OAuth flow...');
 
+      console.log('[Para Auth] Getting OAuth URL...');
       const oauthUrl = await para.getOAuthUrl({ method: 'GOOGLE' });
-      const result = await openAuthUrl(oauthUrl);
+      console.log('[Para Auth] Google OAuth URL:', oauthUrl);
+      // TODO: Restore browser auth
+      // const result = await openAuthUrl(oauthUrl);
+      // if (!result.success) {
+      //   throw new Error('Authentication was cancelled');
+      // }
 
-      if (!result.success) {
-        throw new Error('Authentication was cancelled');
-      }
-
+      console.log('[Para Auth] Calling verifyOAuth...');
       const authState = await para.verifyOAuth({ method: 'GOOGLE' });
+      console.log('[Para Auth] verifyOAuth returned:', JSON.stringify(authState, null, 2));
 
-      if (authState.stage === 'done') {
-        if (authState.isNewUser) {
-          await para.waitForWalletCreation({});
-        } else {
-          await para.waitForLogin({});
-        }
-
+      if (authState.stage === 'signup') {
+        console.log('[Para Auth] Stage: signup - calling waitForWalletCreation...');
+        const walletResult = await para.waitForWalletCreation({});
+        console.log(
+          '[Para Auth] waitForWalletCreation result:',
+          JSON.stringify(walletResult, null, 2)
+        );
         setStatus('success');
         onSuccess();
         return true;
       }
 
-      throw new Error('Unexpected OAuth state');
+      if (authState.stage === 'login') {
+        console.log('[Para Auth] Stage: login - calling waitForLogin...');
+        const loginResult = await para.waitForLogin({});
+        console.log('[Para Auth] waitForLogin result:', JSON.stringify(loginResult, null, 2));
+        setStatus('success');
+        onSuccess();
+        return true;
+      }
+
+      if (authState.stage === 'done') {
+        console.log('[Para Auth] Stage: done - isNewUser:', authState.isNewUser);
+        if (authState.isNewUser) {
+          console.log('[Para Auth] New user - calling waitForWalletCreation...');
+          const walletResult = await para.waitForWalletCreation({});
+          console.log(
+            '[Para Auth] waitForWalletCreation result:',
+            JSON.stringify(walletResult, null, 2)
+          );
+        } else {
+          console.log('[Para Auth] Existing user - calling waitForLogin...');
+          const loginResult = await para.waitForLogin({});
+          console.log('[Para Auth] waitForLogin result:', JSON.stringify(loginResult, null, 2));
+        }
+        setStatus('success');
+        onSuccess();
+        return true;
+      }
+
+      throw new Error(`Unexpected OAuth state: ${(authState as { stage: string }).stage}`);
     } catch (err) {
+      console.log('[Para Auth] Google OAuth error:', err);
       const message = err instanceof Error ? err.message : 'Google login failed';
       setError(message);
       setStatus('error');

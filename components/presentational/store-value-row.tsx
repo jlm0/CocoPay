@@ -20,12 +20,8 @@ export function StoreValueRow({ values, className = '' }: StoreValueRowProps) {
     <View className={`flex-row justify-between ${className}`}>
       {values.map((item) => (
         <View key={item.label} className="flex-1">
-          <Text variant="caption" className="text-gray-500">
-            {item.label}
-          </Text>
-          <Text variant="body" className="font-semibold">
-            {formatCurrency(item.value)}
-          </Text>
+          <Text variant="caption">{item.label}</Text>
+          <Text variant="body-emphasis">{formatCurrency(item.value)}</Text>
         </View>
       ))}
     </View>

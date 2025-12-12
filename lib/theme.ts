@@ -61,3 +61,23 @@ export const NAV_THEME = {
     text: COLORS.dark.foreground,
   },
 } as const;
+
+export const HEX_COLORS = {
+  primary: '#2DD4BF',
+  primarySoft: '#ECFDF5',
+  accentWarm: '#E89B3E',
+  success: '#22C55E',
+  warning: '#F59E0B',
+  destructive: '#EF4444',
+  muted: '#F3F4F6',
+  mutedForeground: '#6B7280',
+  border: '#E5E7EB',
+  background: '#FFFFFF',
+  foreground: '#0F172A',
+} as const;
+
+export const NATIVE_SLIDER = {
+  minimumTrackTintColor: HEX_COLORS.primary,
+  maximumTrackTintColor: HEX_COLORS.border,
+  thumbTintColor: HEX_COLORS.primary,
+} as const;

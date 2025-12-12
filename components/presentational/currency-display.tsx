@@ -4,18 +4,20 @@ import { Text } from '@/components/ui/text';
 type CurrencyDisplayProps = {
   label: string;
   value: string;
+  size?: 'default' | 'large';
   className?: string;
 };
 
-export function CurrencyDisplay({ label, value, className = '' }: CurrencyDisplayProps) {
+export function CurrencyDisplay({
+  label,
+  value,
+  size = 'default',
+  className = '',
+}: CurrencyDisplayProps) {
   return (
     <View className={className}>
-      <Text variant="caption" className="text-gray-500">
-        {label}
-      </Text>
-      <Text variant="heading" className="text-2xl">
-        {value}
-      </Text>
+      <Text variant="caption">{label}</Text>
+      <Text variant={size === 'large' ? 'display' : 'display-value'}>{value}</Text>
     </View>
   );
 }

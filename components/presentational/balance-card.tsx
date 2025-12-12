@@ -1,5 +1,4 @@
-import { View } from 'react-native';
-import { Button } from '@/components/ui/button';
+import { View, Pressable } from 'react-native';
 import { CurrencyDisplay } from './currency-display';
 import type { Balance } from '@/types';
 
@@ -17,14 +16,13 @@ export function BalanceCard({ balances, onBalancePress, className = '' }: Balanc
   return (
     <View className={`flex-row justify-between ${className}`}>
       {balances.map((balance) => (
-        <Button
+        <Pressable
           key={balance.token}
-          variant="ghost"
           onPress={() => onBalancePress?.(balance.token)}
           disabled={!onBalancePress}
-          className="h-auto flex-1 items-start p-0">
+          className="flex-1">
           <CurrencyDisplay label={balance.token} value={formatCurrency(balance.usdValue)} />
-        </Button>
+        </Pressable>
       ))}
     </View>
   );

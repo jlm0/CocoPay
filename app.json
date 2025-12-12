@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "cocopay",
+    "name": "CocoPay",
     "slug": "cocopay",
     "version": "1.0.0",
 
@@ -9,9 +9,19 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/coconut.png"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.0"
+          }
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true,
 
@@ -19,12 +29,12 @@
     },
 
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/coconut.png",
 
     "userInterfaceStyle": "light",
 
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/coconut.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -36,7 +46,7 @@
     "android": {
       "package": "com.cocopay.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/coconut.png",
         "backgroundColor": "#ffffff"
       }
     }

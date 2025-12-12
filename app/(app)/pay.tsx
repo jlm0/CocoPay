@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import { View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronDown } from 'lucide-react-native';
+import { ScrollView } from 'react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreCodeInput } from '@/components/presentational/store-code-input';
 import { PaymentAmountInput } from '@/components/presentational/payment-amount-input';
 import { ScreenContainer } from '@/components/presentational/screen-container';
+import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { Icon } from '@/components/ui/icon';
 
 const MOCK_STORES: Record<string, string> = {
   'eth:83': 'Ohm Coffee',
@@ -17,7 +15,6 @@ const MOCK_STORES: Record<string, string> = {
 };
 
 export default function PayPage() {
-  const router = useRouter();
   const [storeCode, setStoreCode] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedToken, setSelectedToken] = useState<string>('USDC');
@@ -47,46 +44,38 @@ export default function PayPage() {
     // TODO: Implement payment transaction
   };
 
-  const handleBackPress = () => {
-    router.back();
-  };
-
   return (
-    <ScreenContainer>
-      <FeatureHeader title="Make a payment" className="mb-8" />
+    <ScreenContainer
+      bottomActionBar={
+        <BottomActionBar>
+          <Button variant="secondary" onPress={handleScanQR} size="lg" className="h-14 rounded-xl">
+            <Text>Scan QR</Text>
+          </Button>
 
-      <StoreCodeInput
-        value={storeCode}
-        onChangeText={setStoreCode}
-        storeName={storeName}
-        className="mb-6"
-      />
+          <Button onPress={handlePay} disabled={!isValid} size="lg" className="h-14 rounded-xl">
+            <Text>Pay</Text>
+          </Button>
+        </BottomActionBar>
+      }>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-64">
+        <FeatureHeader title="Make a payment" className="mb-8" />
 
-      <PaymentAmountInput
-        value={amount}
-        onChangeText={setAmount}
-        selectedToken={selectedToken}
-        onTokenChange={setSelectedToken}
-        availableTokens={availableTokens}
-        savingsHint={savingsHint}
-        className="mb-8"
-      />
+        <StoreCodeInput
+          value={storeCode}
+          onChangeText={setStoreCode}
+          storeName={storeName}
+          className="mb-6"
+        />
 
-      <View className="gap-3">
-        <Button variant="secondary" onPress={handleScanQR} className="h-14 rounded-xl">
-          <Text className="font-semibold text-secondary-foreground">Scan QR</Text>
-        </Button>
-
-        <Button onPress={handlePay} disabled={!isValid} className="h-14 rounded-xl">
-          <Text className="font-semibold text-primary-foreground">Pay</Text>
-        </Button>
-      </View>
-
-      <View className="mt-8 items-center">
-        <Button variant="ghost" size="icon" onPress={handleBackPress}>
-          <Icon as={ChevronDown} size={32} className="text-primary" />
-        </Button>
-      </View>
+        <PaymentAmountInput
+          value={amount}
+          onChangeText={setAmount}
+          selectedToken={selectedToken}
+          onTokenChange={setSelectedToken}
+          availableTokens={availableTokens}
+          savingsHint={savingsHint}
+        />
+      </ScrollView>
     </ScreenContainer>
   );
 }

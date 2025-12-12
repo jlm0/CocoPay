@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Text } from '@/components/ui/text';
+import { NATIVE_SLIDER } from '@/lib/theme';
 
 type PercentageSliderProps = {
   label: string;
@@ -23,14 +24,14 @@ export function PercentageSlider({
 }: PercentageSliderProps) {
   return (
     <View className={className}>
-      <Text variant="body" className="mb-1 font-semibold">
+      <Text variant="body-emphasis" className="mb-1">
         {label}
       </Text>
-      <Text variant="caption" className="mb-4 text-gray-500">
+      <Text variant="caption" className="mb-4">
         {description}
       </Text>
 
-      <Text variant="body" className="mb-2 text-center font-semibold">
+      <Text variant="body-emphasis" className="mb-2 text-center">
         {value}%
       </Text>
 
@@ -40,18 +41,14 @@ export function PercentageSlider({
         minimumValue={minPercent}
         maximumValue={maxPercent}
         step={1}
-        minimumTrackTintColor="#2DD4BF"
-        maximumTrackTintColor="#E5E7EB"
-        thumbTintColor="#2DD4BF"
+        minimumTrackTintColor={NATIVE_SLIDER.minimumTrackTintColor}
+        maximumTrackTintColor={NATIVE_SLIDER.maximumTrackTintColor}
+        thumbTintColor={NATIVE_SLIDER.thumbTintColor}
       />
 
       <View className="flex-row justify-between">
-        <Text variant="caption" className="text-gray-500">
-          {minPercent}%
-        </Text>
-        <Text variant="caption" className="text-gray-500">
-          {maxPercent}%
-        </Text>
+        <Text variant="caption">{minPercent}%</Text>
+        <Text variant="caption">{maxPercent}%</Text>
       </View>
     </View>
   );
