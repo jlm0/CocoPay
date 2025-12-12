@@ -1,51 +1,73 @@
 import type { Address } from 'viem';
+import type {
+  project,
+  participant,
+  payEvent,
+  activityEvent,
+  activityEventType,
+  projectFilter,
+  participantFilter,
+  payEventFilter,
+  activityEventFilter,
+} from './generated/schema';
 
-export interface BendystrawProject {
-  id: string;
-  projectId: number;
-  chainId: number;
-  handle: string | null;
-  deployer: Address;
-  owner: Address;
-  createdAt: number;
-  metadataUri: string | null;
-  contributorsCount: number;
-  paymentsCount: number;
-  volume: string;
-  volumeUsd: string;
-  balance: string;
-  tokenSupply: string;
-  trendingScore: string;
-  trendingVolume: string;
-  trendingPaymentsCount: number;
-}
+export type { projectFilter, participantFilter, payEventFilter, activityEventFilter };
 
-export interface BendystrawParticipant {
-  id: string;
-  projectId: number;
-  chainId: number;
-  address: Address;
-  volume: string;
-  volumeUsd: string;
-  balance: string;
-  stakedBalance: string;
-  erc20Balance: string;
-  lastPaidTimestamp: number;
-}
+export type BendystrawProject = Pick<
+  project,
+  | 'id'
+  | 'projectId'
+  | 'chainId'
+  | 'handle'
+  | 'deployer'
+  | 'owner'
+  | 'createdAt'
+  | 'metadataUri'
+  | 'contributorsCount'
+  | 'paymentsCount'
+  | 'volume'
+  | 'volumeUsd'
+  | 'balance'
+  | 'tokenSupply'
+  | 'trendingScore'
+  | 'trendingVolume'
+  | 'trendingPaymentsCount'
+>;
 
-export interface BendystrawPayEvent {
-  id: string;
-  projectId: number;
-  chainId: number;
-  timestamp: number;
-  txHash: string;
-  caller: Address;
-  beneficiary: Address;
-  amount: string;
-  amountUsd: string;
-  beneficiaryTokenCount: string;
-  memo: string | null;
-}
+export type BendystrawParticipant = Pick<
+  participant,
+  | 'address'
+  | 'projectId'
+  | 'chainId'
+  | 'volume'
+  | 'volumeUsd'
+  | 'balance'
+  | 'creditBalance'
+  | 'erc20Balance'
+  | 'lastPaidTimestamp'
+>;
+
+export type BendystrawPayEvent = Pick<
+  payEvent,
+  | 'id'
+  | 'projectId'
+  | 'chainId'
+  | 'timestamp'
+  | 'txHash'
+  | 'caller'
+  | 'beneficiary'
+  | 'amount'
+  | 'amountUsd'
+  | 'newlyIssuedTokenCount'
+  | 'memo'
+>;
+
+export type BendystrawActivityEvent = Pick<
+  activityEvent,
+  'id' | 'projectId' | 'chainId' | 'timestamp' | 'txHash' | 'from' | 'type'
+>;
+
+export type BendystrawActivityEventType = activityEventType;
 
 export interface BendystrawCashOutEvent {
   id: string;
@@ -61,38 +83,8 @@ export interface BendystrawCashOutEvent {
   metadata: string | null;
 }
 
-export interface BendystrawActivityEvent {
-  id: string;
-  projectId: number;
-  chainId: number;
-  timestamp: number;
-  txHash: string;
-  caller: Address;
-  from: Address;
-  type: BendystrawActivityEventType;
-}
-
-export type BendystrawActivityEventType =
-  | 'pay'
-  | 'addToBalance'
-  | 'burn'
-  | 'cashOut'
-  | 'mintTokens'
-  | 'deployErc20'
-  | 'projectCreate'
-  | 'sendPayouts'
-  | 'useAllowance'
-  | 'borrowLoan'
-  | 'repayLoan'
-  | 'liquidateLoan';
-
 export interface BendystrawProjectsQueryParams {
-  where?: {
-    projectId?: number;
-    chainId?: number;
-    owner?: Address;
-    deployer?: Address;
-  };
+  where?: projectFilter;
   orderBy?: 'createdAt' | 'volume' | 'trendingScore' | 'paymentsCount';
   orderDirection?: 'asc' | 'desc';
   limit?: number;

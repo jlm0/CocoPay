@@ -33,14 +33,13 @@ const PROJECT_FIELDS = `
 `;
 
 const PARTICIPANT_FIELDS = `
-  id
   projectId
   chainId
   address
   volume
   volumeUsd
   balance
-  stakedBalance
+  creditBalance
   erc20Balance
   lastPaidTimestamp
 `;
@@ -55,7 +54,7 @@ const PAY_EVENT_FIELDS = `
   beneficiary
   amount
   amountUsd
-  beneficiaryTokenCount
+  newlyIssuedTokenCount
   memo
 `;
 
@@ -65,7 +64,6 @@ const ACTIVITY_EVENT_FIELDS = `
   chainId
   timestamp
   txHash
-  caller
   from
   type
 `;

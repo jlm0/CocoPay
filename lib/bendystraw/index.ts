@@ -20,4 +20,8 @@ export type {
   BendystrawParticipantsQueryParams,
   BendystrawActivityQueryParams,
   BendystrawPayEventsQueryParams,
+  projectFilter,
+  participantFilter,
+  payEventFilter,
+  activityEventFilter,
 } from './types';
