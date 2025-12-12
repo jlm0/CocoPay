@@ -5,7 +5,7 @@ import { Platform, Pressable } from 'react-native';
 
 const buttonVariants = cva(
   cn(
-    'group shrink-0 flex-row items-center justify-center gap-2 rounded-md shadow-none',
+    'group shrink-0 flex-row items-center justify-center gap-2 rounded-md shadow-none active:scale-[0.98]',
     Platform.select({
       web: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap outline-none transition-all focus-visible:ring-[3px] disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
     })
@@ -14,11 +14,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: cn(
-          'bg-primary active:bg-primary/90 shadow-sm shadow-black/5',
+          'bg-primary active:bg-primary/70 shadow-sm shadow-black/5',
           Platform.select({ web: 'hover:bg-primary/90' })
         ),
         destructive: cn(
-          'bg-destructive active:bg-destructive/90 dark:bg-destructive/60 shadow-sm shadow-black/5',
+          'bg-destructive active:bg-destructive/70 dark:bg-destructive/60 shadow-sm shadow-black/5',
           Platform.select({
             web: 'hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
           })
@@ -30,7 +30,7 @@ const buttonVariants = cva(
           })
         ),
         secondary: cn(
-          'bg-secondary active:bg-secondary/80 shadow-sm shadow-black/5',
+          'bg-secondary active:bg-secondary/60 shadow-sm shadow-black/5',
           Platform.select({ web: 'hover:bg-secondary/80' })
         ),
         ghost: cn(
@@ -39,11 +39,11 @@ const buttonVariants = cva(
         ),
         link: '',
         success: cn(
-          'bg-success active:bg-success/90 shadow-sm shadow-black/5',
+          'bg-success active:bg-success/70 shadow-sm shadow-black/5',
           Platform.select({ web: 'hover:bg-success/90' })
         ),
         warning: cn(
-          'bg-warning active:bg-warning/90 shadow-sm shadow-black/5',
+          'bg-warning active:bg-warning/70 shadow-sm shadow-black/5',
           Platform.select({ web: 'hover:bg-warning/90' })
         ),
       },

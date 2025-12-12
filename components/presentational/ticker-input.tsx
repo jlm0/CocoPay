@@ -1,16 +1,21 @@
 import { View } from 'react-native';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Text } from '@/components/ui/text';
 
 type TickerInputProps = {
   value: string;
   onChangeText: (text: string) => void;
+  warning?: string;
   className?: string;
 };
 
-export function TickerInput({ value, onChangeText, className = '' }: TickerInputProps) {
+export const TICKER_MAX_LENGTH = 5;
+
+export function TickerInput({ value, onChangeText, warning, className = '' }: TickerInputProps) {
   const handleChange = (text: string) => {
-    const formatted = text.startsWith('$') ? text.toUpperCase() : `$${text.toUpperCase()}`;
+    const cleaned = text.replace(/^\$/, '');
+    const formatted = `$${cleaned.toUpperCase()}`;
     onChangeText(formatted);
   };
 
@@ -25,6 +30,7 @@ export function TickerInput({ value, onChangeText, className = '' }: TickerInput
         autoCorrect={false}
         className="text-xl"
       />
+      {warning && <Text className="mt-1 text-sm text-yellow-500">{warning}</Text>}
     </View>
   );
 }

@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { HEX_COLORS } from '@/lib/theme';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StepsList } from '@/components/presentational/steps-list';
-import { NameInput } from '@/components/presentational/name-input';
-import { TickerInput } from '@/components/presentational/ticker-input';
+import { NameInput, NAME_MAX_LENGTH } from '@/components/presentational/name-input';
+import { TickerInput, TICKER_MAX_LENGTH } from '@/components/presentational/ticker-input';
 import { PercentageSlider } from '@/components/presentational/percentage-slider';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useJBProjectCreate } from '@/hooks/juicebox';
+
+function getTickerSymbol(ticker: string): string {
+  return ticker.replace(/^\$/, '');
+}
 
 export default function CreateStorePage() {
   const router = useRouter();
@@ -22,13 +26,33 @@ export default function CreateStorePage() {
 
   const { createProject, isLoading } = useJBProjectCreate();
 
-  const isValid = name.length > 0 && ticker.length > 1;
+  const tickerSymbol = getTickerSymbol(ticker);
+
+  const nameWarning = useMemo(() => {
+    if (name.length > NAME_MAX_LENGTH) {
+      return `Name should be ${NAME_MAX_LENGTH} characters or less`;
+    }
+    return undefined;
+  }, [name]);
+
+  const tickerWarning = useMemo(() => {
+    if (tickerSymbol.length > TICKER_MAX_LENGTH) {
+      return `Ticker should be ${TICKER_MAX_LENGTH} characters or less`;
+    }
+    return undefined;
+  }, [tickerSymbol]);
+
+  const isValid =
+    name.length > 0 &&
+    name.length <= NAME_MAX_LENGTH &&
+    tickerSymbol.length > 0 &&
+    tickerSymbol.length <= TICKER_MAX_LENGTH;
 
   const handleCreate = async () => {
     try {
       const result = await createProject({
-        name,
-        ticker: ticker.toUpperCase(),
+        name: name.trim(),
+        ticker: tickerSymbol.toUpperCase(),
         cashBackPercent: cashBack,
         loyaltyBonusPercent: loyaltyBonus,
       });
@@ -83,9 +107,14 @@ export default function CreateStorePage() {
           className="mb-8"
         />
 
-        <NameInput value={name} onChangeText={setName} className="mb-6" />
+        <NameInput value={name} onChangeText={setName} warning={nameWarning} className="mb-6" />
 
-        <TickerInput value={ticker} onChangeText={setTicker} className="mb-6" />
+        <TickerInput
+          value={ticker}
+          onChangeText={setTicker}
+          warning={tickerWarning}
+          className="mb-6"
+        />
 
         <PercentageSlider
           label="Cash back"

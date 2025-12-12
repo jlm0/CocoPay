@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { para } from '@/lib/para';
 import { openAuthUrl } from '@/lib/auth';
+import { usePara } from '@/providers/ParaProvider';
 import type { AuthStatus } from '@/types';
 
 interface UseParaEmailLoginResult {
@@ -10,7 +11,8 @@ interface UseParaEmailLoginResult {
   reset: () => void;
 }
 
-export function useParaEmailLogin(onSuccess: () => void): UseParaEmailLoginResult {
+export function useParaEmailLogin(): UseParaEmailLoginResult {
+  const { setAuthenticated } = usePara();
   const [status, setStatus] = useState<AuthStatus>('idle');
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +49,7 @@ export function useParaEmailLogin(onSuccess: () => void): UseParaEmailLoginResul
           }
 
           setStatus('success');
-          onSuccess();
+          setAuthenticated(true);
           return true;
         }
 
@@ -59,7 +61,7 @@ export function useParaEmailLogin(onSuccess: () => void): UseParaEmailLoginResul
         return false;
       }
     },
-    [reset, onSuccess]
+    [reset, setAuthenticated]
   );
 
   return {

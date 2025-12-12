@@ -1,24 +1,62 @@
 import { View } from 'react-native';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { Text } from '@/components/ui/text';
 
 type RecipientInputProps = {
   value: string;
   onChangeText: (text: string) => void;
+  resolvedAddress?: string;
+  isResolving?: boolean;
+  error?: string;
   className?: string;
 };
 
-export function RecipientInput({ value, onChangeText, className = '' }: RecipientInputProps) {
+function truncateAddress(address: string): string {
+  if (address.length <= 12) return address;
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+export function RecipientInput({
+  value,
+  onChangeText,
+  resolvedAddress,
+  isResolving = false,
+  error,
+  className = '',
+}: RecipientInputProps) {
+  const isEnsInput = value.trim().toLowerCase().endsWith('.eth');
+  const showResolved = isEnsInput && resolvedAddress && !isResolving;
+
   return (
     <View className={className}>
       <Label className="mb-2 font-sans-semibold">Recipient</Label>
-      <Input
-        value={value}
-        onChangeText={onChangeText}
-        placeholder="Address or ENS"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
+      <View className="relative">
+        <Input
+          value={value}
+          onChangeText={onChangeText}
+          placeholder="Address or ENS"
+          autoCapitalize="none"
+          autoCorrect={false}
+          className={error ? 'border-destructive' : ''}
+        />
+        {isResolving && (
+          <View className="absolute right-3 top-1/2 -translate-y-1/2">
+            <Spinner size="small" />
+          </View>
+        )}
+      </View>
+      {error && (
+        <Text variant="small" className="mt-1 text-destructive">
+          {error}
+        </Text>
+      )}
+      {showResolved && (
+        <Text variant="small" className="mt-1 text-muted-foreground">
+          Resolves to {truncateAddress(resolvedAddress)}
+        </Text>
+      )}
     </View>
   );
 }

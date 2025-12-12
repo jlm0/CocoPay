@@ -62,11 +62,11 @@ export function useJBLoanBorrow(projectId: bigint): UseJBLoanBorrowResult {
           ],
         });
 
-        const receipt = await sendTransaction(loanContractAddress, 0n, data);
-        const txHash = receipt.receipt.transactionHash as Hash;
+        const result = await sendTransaction(loanContractAddress, 0n, data);
+        const txHash = result.receipt.transactionHash as Hash;
 
         let loanId = 0n;
-        for (const log of receipt.receipt.logs) {
+        for (const log of result.receipt.logs) {
           if (log.topics[1]) {
             loanId = BigInt(log.topics[1]);
             break;

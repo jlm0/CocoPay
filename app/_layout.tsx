@@ -4,12 +4,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PortalHost } from '@rn-primitives/portal';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ParaProvider } from '@/providers/ParaProvider';
 import { useLoadFonts } from '@/hooks/useLoadFonts';
+import { queryClient } from '@/lib/query';
 import { View } from 'react-native';
-
-const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const fontsLoaded = useLoadFonts();

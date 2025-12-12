@@ -1,6 +1,12 @@
 import { useCallback, useState } from 'react';
-import type { Hex, Chain } from 'viem';
+import type { Hex, Chain, TransactionReceipt } from 'viem';
 import { useAlchemySmartAccountClient } from './useAlchemySmartAccountClient';
+import { invalidateBalances } from '@/lib/query';
+
+export interface SendTransactionResult {
+  receipt: TransactionReceipt;
+  userOpHash: Hex;
+}
 
 export function useAlchemySendTransaction(chain?: Chain) {
   const client = useAlchemySmartAccountClient(chain);
@@ -8,18 +14,29 @@ export function useAlchemySendTransaction(chain?: Chain) {
   const [error, setError] = useState<string | null>(null);
 
   const sendTransaction = useCallback(
-    async (to: Hex, value: bigint = 0n, data: Hex = '0x') => {
+    async (to: Hex, value: bigint = 0n, data: Hex = '0x'): Promise<SendTransactionResult> => {
       if (!client) throw new Error('Smart account client not ready');
 
       setIsLoading(true);
       setError(null);
 
       try {
-        const { hash } = await client.sendUserOperation({
+        const { hash: userOpHash } = await client.sendUserOperation({
           uo: { target: to, value, data },
         });
-        const receipt = await client.waitForUserOperationReceipt({ hash });
-        return receipt;
+
+        let userOpReceipt = await client.getUserOperationReceipt(userOpHash);
+        while (!userOpReceipt) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          userOpReceipt = await client.getUserOperationReceipt(userOpHash);
+        }
+
+        invalidateBalances();
+
+        return {
+          receipt: userOpReceipt.receipt,
+          userOpHash,
+        };
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Transaction failed';
         setError(message);

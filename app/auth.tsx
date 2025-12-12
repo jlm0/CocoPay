@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { View, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HEX_COLORS } from '@/lib/theme';
 import { EmailInput } from '@/components/presentational/email-input';
@@ -9,15 +8,10 @@ import { Text } from '@/components/ui/text';
 import { useParaEmailLogin } from '@/hooks/useParaEmailLogin';
 
 export default function AuthPage() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
 
-  const handleLoginSuccess = () => {
-    router.replace('/(app)/home');
-  };
-
-  const { loginWithEmail, status, error } = useParaEmailLogin(handleLoginSuccess);
+  const { loginWithEmail, status, error } = useParaEmailLogin();
 
   const isValidEmail = email.includes('@') && email.includes('.');
   const isLoading = status === 'loading';

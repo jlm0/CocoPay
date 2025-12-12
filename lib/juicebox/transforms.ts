@@ -1,7 +1,5 @@
-import type { Address } from 'viem';
 import type { StoreCreationParams, JBRulesetConfig, JBLaunchProjectConfig } from '@/types/juicebox';
 import { MAX_RESERVED_PERCENT, MAX_WEIGHT_CUT_PERCENT, COCOPAY_CHAIN_ID } from './constants';
-import { JB_CONTROLLER_ADDRESS } from './contracts';
 import {
   DEFAULT_WEIGHT,
   DEFAULT_RULESET_METADATA,
@@ -11,7 +9,7 @@ import {
 } from './config';
 
 export function cashBackToReservedPercent(cashBackPercent: number): number {
-  return Math.round((cashBackPercent / 100) * MAX_RESERVED_PERCENT);
+  return Math.round(((100 - cashBackPercent) / 100) * MAX_RESERVED_PERCENT);
 }
 
 export function loyaltyBonusToWeightCutPercent(loyaltyBonusPercent: number): number {
@@ -19,7 +17,7 @@ export function loyaltyBonusToWeightCutPercent(loyaltyBonusPercent: number): num
 }
 
 export function reservedPercentToCashBack(reservedPercent: number): number {
-  return (reservedPercent / MAX_RESERVED_PERCENT) * 100;
+  return 100 - (reservedPercent / MAX_RESERVED_PERCENT) * 100;
 }
 
 export function weightCutPercentToLoyaltyBonus(weightCutPercent: number): number {
@@ -77,10 +75,6 @@ export function parseStoreCode(storeCode: string): { chainId: number; projectId:
   }
 
   return { chainId, projectId };
-}
-
-export function getControllerAddress(): Address {
-  return JB_CONTROLLER_ADDRESS;
 }
 
 export function generateSalt(): `0x${string}` {

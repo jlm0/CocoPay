@@ -7,13 +7,24 @@ import {
   extractCidFromUri as extractCid,
 } from '@/lib/pinata';
 
+export interface CocoPayMetadata {
+  version: number;
+  ticker: string;
+  cashBackPercent: number;
+  loyaltyBonusPercent: number;
+  createdAt: string;
+}
+
 export interface ProjectMetadata {
   name: string;
   description?: string;
   logoUri?: string;
   projectTagline?: string;
   tags?: string[];
+  cocopay?: CocoPayMetadata;
 }
+
+export const COCOPAY_METADATA_VERSION = 1;
 
 export function buildProjectMetadata(params: StoreCreationParams): ProjectMetadata {
   return {
@@ -22,6 +33,13 @@ export function buildProjectMetadata(params: StoreCreationParams): ProjectMetada
     logoUri: params.logoUri,
     projectTagline: `${params.ticker} rewards program`,
     tags: ['business'],
+    cocopay: {
+      version: COCOPAY_METADATA_VERSION,
+      ticker: params.ticker,
+      cashBackPercent: params.cashBackPercent,
+      loyaltyBonusPercent: params.loyaltyBonusPercent,
+      createdAt: new Date().toISOString(),
+    },
   };
 }
 
