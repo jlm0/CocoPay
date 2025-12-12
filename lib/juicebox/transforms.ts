@@ -1,5 +1,11 @@
 import type { StoreCreationParams, JBRulesetConfig, JBLaunchProjectConfig } from '@/types/juicebox';
-import { MAX_RESERVED_PERCENT, MAX_WEIGHT_CUT_PERCENT, COCOPAY_CHAIN_ID } from './constants';
+import {
+  MAX_RESERVED_PERCENT,
+  MAX_WEIGHT_CUT_PERCENT,
+  COCOPAY_CHAIN_ID,
+  CHAIN_PREFIXES,
+  PREFIX_TO_CHAIN,
+} from './constants';
 import {
   DEFAULT_WEIGHT,
   DEFAULT_RULESET_METADATA,
@@ -57,24 +63,30 @@ export function buildLaunchProjectConfig(
   };
 }
 
-export function buildStoreCode(projectId: bigint): string {
-  return `coco:${COCOPAY_CHAIN_ID}:${projectId.toString()}`;
+export function buildStoreCode(projectId: bigint, chainId: number = COCOPAY_CHAIN_ID): string {
+  const prefix = CHAIN_PREFIXES[chainId] ?? 'sep';
+  return `${prefix}:${projectId.toString()}`;
 }
 
 export function parseStoreCode(storeCode: string): { chainId: number; projectId: bigint } | null {
   const parts = storeCode.split(':');
-  if (parts.length !== 3 || parts[0] !== 'coco') {
+  if (parts.length !== 2) {
     return null;
   }
 
-  const chainId = parseInt(parts[1], 10);
-  const projectId = BigInt(parts[2]);
+  const [prefix, idStr] = parts;
+  const chainId = PREFIX_TO_CHAIN[prefix];
 
-  if (isNaN(chainId)) {
+  if (!chainId) {
     return null;
   }
 
-  return { chainId, projectId };
+  try {
+    const projectId = BigInt(idStr);
+    return { chainId, projectId };
+  } catch {
+    return null;
+  }
 }
 
 export function generateSalt(): `0x${string}` {

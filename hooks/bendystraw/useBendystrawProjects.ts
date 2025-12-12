@@ -22,9 +22,27 @@ export function useBendystrawProjects(
       params.orderBy,
       params.limit,
     ],
-    queryFn: () => fetchProjects(params),
+    queryFn: async () => {
+      console.log('[useBendystrawProjects] Fetching projects with params:', params);
+      try {
+        const result = await fetchProjects(params);
+        console.log('[useBendystrawProjects] Projects result:', {
+          totalCount: result.totalCount,
+          itemCount: result.items.length,
+          projectIds: result.items.map((p) => p.projectId),
+        });
+        return result;
+      } catch (err) {
+        console.error('[useBendystrawProjects] Fetch error:', err);
+        throw err;
+      }
+    },
     staleTime: 30_000,
   });
+
+  if (query.error) {
+    console.error('[useBendystrawProjects] Query error state:', query.error);
+  }
 
   return {
     projects: query.data?.items ?? [],

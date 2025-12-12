@@ -2380,33 +2380,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getpara/core-sdk@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@getpara/core-sdk@npm:2.0.0"
+"@getpara/core-sdk@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@getpara/core-sdk@npm:2.1.0"
   dependencies:
     "@celo/utils": "npm:^8.0.2"
     "@cosmjs/encoding": "npm:^0.32.4"
     "@ethereumjs/util": "npm:^9.1.0"
-    "@getpara/user-management-client": "npm:2.0.0"
+    "@getpara/user-management-client": "npm:2.1.0"
     "@noble/hashes": "npm:^1.5.0"
     base64url: "npm:^3.0.1"
     libphonenumber-js: "npm:^1.11.7"
     node-forge: "npm:^1.3.1"
     uuid: "npm:^11.1.0"
-  checksum: 10c0/b3ed420a4e01dddd8f852435e98d71d4df73565ee808eb84b02a047fd59b0c77e04d414d48e9e1b9b050714401c338e4ebb48890c72b33a555ad84317d5c781e
+  checksum: 10c0/c4b2cef509d962fe0b1e9d0f3fd974819a13edc2720fada98655d78e5f2b5f1be1863c39a824e0ef40c2afbd2ada926d4db4168ab30dbc3c66fbe376661ccadd
   languageName: node
   linkType: hard
 
-"@getpara/react-native-wallet@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@getpara/react-native-wallet@npm:2.0.0"
+"@getpara/react-native-wallet@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "@getpara/react-native-wallet@npm:2.1.0"
   dependencies:
-    "@getpara/core-sdk": "npm:2.0.0"
-    "@getpara/user-management-client": "npm:2.0.0"
-    "@getpara/web-sdk": "npm:2.0.0"
+    "@getpara/core-sdk": "npm:2.1.0"
+    "@getpara/user-management-client": "npm:2.1.0"
+    "@getpara/web-sdk": "npm:2.1.0"
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@ungap/structured-clone": "npm:1.3.0"
-    node-forge: "npm:1.3.1"
     react-native-url-polyfill: "npm:2.0.0"
     text-encoding: "npm:0.7.0"
   peerDependencies:
@@ -2420,7 +2419,7 @@ __metadata:
     react-native-quick-base64: "*"
     react-native-quick-crypto: "*"
     readable-stream: "*"
-  checksum: 10c0/9816aab4018c15c8ff270eb08bf8dabefaac29b15667c3f0765c6c30f29bde3aa24b5601c99404c98a33d083ebf604ceb228cdc24cd60a6760b76807a4d2391c
+  checksum: 10c0/be0541ef8eb9330adef85b58578862f17a88ead3cca00c04c5451c13cee330234b365090c68bf718bdcddf3f6e4b0fb2a77ca120334ff2834b8f16099d2776b3
   languageName: node
   linkType: hard
 
@@ -2431,34 +2430,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getpara/user-management-client@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@getpara/user-management-client@npm:2.0.0"
+"@getpara/user-management-client@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@getpara/user-management-client@npm:2.1.0"
   dependencies:
     "@getpara/shared": "npm:1.8.0"
     axios: "npm:^1.8.4"
     libphonenumber-js: "npm:^1.11.7"
-  checksum: 10c0/67c7bbc3256cb9c69101284b8bcb3374112f8fa784aed5e6cd64aeea0099555db296d5386afb8d6cec7339fd4b8d2858dfefbcff544bb0685818bd9059e55020
+  checksum: 10c0/41791904c2fe3166c83435cb6fea53d600495b2d2a1fe50c1481ba002eb77bb8d4ff03a13cfbde5b3c1838a6c625eb2ef34a747e56a553c148cbb2101fdbfa99
   languageName: node
   linkType: hard
 
-"@getpara/viem-v2-integration@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@getpara/viem-v2-integration@npm:2.0.0"
+"@getpara/viem-v2-integration@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "@getpara/viem-v2-integration@npm:2.1.0"
   dependencies:
-    "@getpara/core-sdk": "npm:2.0.0"
+    "@getpara/core-sdk": "npm:2.1.0"
   peerDependencies:
     viem: 2.x
-  checksum: 10c0/93c37fae1b43258d876d5a4e638b25947b14df2ee52a815ae772882984fc8a60566de9fa5e8f3b76a369dbd602f9a2e901bfa6d98ed50418a9238486474ee06b
+  checksum: 10c0/08ea9df11da7c0a4c76a8bb809fdd0302299b290e419054ce59390a1ef3881c34eca11825fd450236dc364637a046fba28cc64c02e3be72711f168ed744311d2
   languageName: node
   linkType: hard
 
-"@getpara/web-sdk@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@getpara/web-sdk@npm:2.0.0"
+"@getpara/web-sdk@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@getpara/web-sdk@npm:2.1.0"
   dependencies:
-    "@getpara/core-sdk": "npm:2.0.0"
-    "@getpara/user-management-client": "npm:2.0.0"
+    "@getpara/core-sdk": "npm:2.1.0"
+    "@getpara/user-management-client": "npm:2.1.0"
     base64url: "npm:^3.0.1"
     buffer: "npm:6.0.3"
     cbor-web: "npm:^9.0.2"
@@ -2469,7 +2468,7 @@ __metadata:
   peerDependenciesMeta:
     "@farcaster/miniapp-sdk":
       optional: true
-  checksum: 10c0/17b9156cca0349407ce923599ca14db00e79b7e14a7c02aad2806744dfed6aefd882188f1a87e577712bc4110dac5b1ff7ddd2426ca4f9baf97acc2c51413b25
+  checksum: 10c0/59bd91dc3abcefe445e91c53009878d7629e2103dc7387113d78236d1a1042ed90ab79cb4c472cd8e4c422984017af621c530b2601108a4f7ded191810ec3532
   languageName: node
   linkType: hard
 
@@ -6792,8 +6791,8 @@ __metadata:
     "@craftzdog/react-native-buffer": "npm:^6.1.1"
     "@expo-google-fonts/plus-jakarta-sans": "npm:^0.4.2"
     "@expo/vector-icons": "npm:^15.0.2"
-    "@getpara/react-native-wallet": "npm:^2.0.0"
-    "@getpara/viem-v2-integration": "npm:^2.0.0"
+    "@getpara/react-native-wallet": "npm:^2.0.1"
+    "@getpara/viem-v2-integration": "npm:^2.0.1"
     "@react-native-async-storage/async-storage": "npm:^2.2.0"
     "@react-native-community/slider": "npm:^5.1.1"
     "@react-navigation/native": "npm:^7.1.6"

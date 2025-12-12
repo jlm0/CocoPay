@@ -14,7 +14,6 @@ export interface BendystrawProject {
   volume: string;
   volumeUsd: string;
   balance: string;
-  balanceUsd: string;
   tokenSupply: string;
   trendingScore: string;
   trendingVolume: string;

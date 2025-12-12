@@ -26,6 +26,22 @@ export const USDC_CURRENCY = USD_CURRENCY_ID(JB_VERSION);
 
 export const QUARTERLY_DURATION = 7_776_000;
 
+export const CHAIN_PREFIXES: Record<number, string> = {
+  1: 'eth',
+  11155111: 'sep',
+  10: 'opt',
+  8453: 'base',
+  42161: 'arb',
+};
+
+export const PREFIX_TO_CHAIN: Record<string, number> = {
+  eth: 1,
+  sep: 11155111,
+  opt: 10,
+  base: 8453,
+  arb: 42161,
+};
+
 export {
   NATIVE_TOKEN,
   USD_CURRENCY_ID,

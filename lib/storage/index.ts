@@ -18,3 +18,14 @@ export {
   clearPrices,
   initializePriceStorage,
 } from './price-storage';
+
+export {
+  getStoredProjects,
+  getStoredProjectsSync,
+  addStoredProject,
+  removeStoredProject,
+  setStoredProjects,
+  clearStoredProjects,
+  initializeProjectStorage,
+  type StoredProject,
+} from './cocopay-projects';

@@ -26,7 +26,18 @@ export function useBendystrawParticipants(
       if (!params) {
         throw new Error('Params are required');
       }
-      return fetchParticipants(params);
+      console.log('[useBendystrawParticipants] Fetching participants with params:', params);
+      const result = await fetchParticipants(params);
+      console.log('[useBendystrawParticipants] Participants result:', {
+        projectId: params.projectId,
+        totalCount: result.totalCount,
+        itemCount: result.items.length,
+        participants: result.items.map((p) => ({
+          address: p.address,
+          balance: p.balance,
+        })),
+      });
+      return result;
     },
     enabled: !!params,
     staleTime: 30_000,

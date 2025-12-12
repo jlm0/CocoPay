@@ -1,4 +1,4 @@
-import { ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreBalance } from '@/components/presentational/store-balance';
@@ -6,60 +6,34 @@ import { StoreValueRow } from '@/components/presentational/store-value-row';
 import { StoreActions } from '@/components/presentational/store-actions';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
-import type { StoreDetails } from '@/types';
-
-const MOCK_STORE_DETAILS: Record<string, StoreDetails> = {
-  '1': {
-    id: '1',
-    name: 'Chris Coffee',
-    tokenSymbol: '$CHRISCOFFEE',
-    storeCode: 'eth:12',
-    balance: 1389,
-    isOwned: true,
-    valueAtStore: 69.13,
-    cashOutValue: 53.23,
-    borrowValue: 49.23,
-  },
-  '2': {
-    id: '2',
-    name: 'Daterra',
-    tokenSymbol: '$DATERRA',
-    storeCode: 'eth:45',
-    balance: 2032,
-    isOwned: false,
-    valueAtStore: 101.6,
-    cashOutValue: 78.24,
-    borrowValue: 65.12,
-  },
-  '3': {
-    id: '3',
-    name: 'Paradisio',
-    tokenSymbol: '$PARADISIO',
-    storeCode: 'eth:78',
-    balance: 524,
-    isOwned: false,
-    valueAtStore: 26.2,
-    cashOutValue: 20.18,
-    borrowValue: 16.82,
-  },
-  '4': {
-    id: '4',
-    name: 'Vizu',
-    tokenSymbol: '$VIZU',
-    storeCode: 'eth:99',
-    balance: 10,
-    isOwned: false,
-    valueAtStore: 0.5,
-    cashOutValue: 0.38,
-    borrowValue: 0.32,
-  },
-};
+import { useStoreDetails } from '@/hooks/useStoreDetails';
+import { parseStoreCode } from '@/lib/juicebox/transforms';
+import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { Text } from '@/components/ui/text';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function StoreDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
-  const store = MOCK_STORE_DETAILS[id ?? '1'];
+  const parsedId = (() => {
+    if (!id) return { chainId: COCOPAY_CHAIN_ID, projectId: 0 };
+    if (id.includes('-')) {
+      return {
+        chainId: parseInt(id.split('-')[0], 10),
+        projectId: parseInt(id.split('-')[1], 10),
+      };
+    }
+    if (id.includes(':')) {
+      const parsed = parseStoreCode(id);
+      if (parsed) {
+        return { chainId: parsed.chainId, projectId: Number(parsed.projectId) };
+      }
+    }
+    return { chainId: COCOPAY_CHAIN_ID, projectId: parseInt(id, 10) };
+  })();
+
+  const { store, isLoading, error } = useStoreDetails(parsedId.projectId, parsedId.chainId);
 
   const handleBorrowPress = () => {
     router.push('/(app)/borrow');
@@ -76,6 +50,26 @@ export default function StoreDetailPage() {
   const handleChargePress = () => {
     router.push('/(app)/charge');
   };
+
+  if (isLoading) {
+    return (
+      <ScreenContainer>
+        <View className="flex-1 items-center justify-center">
+          <Spinner size="large" />
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  if (error || !store) {
+    return (
+      <ScreenContainer>
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-destructive">Store not found</Text>
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   const valueItems = [
     { label: 'Value at store', value: store.valueAtStore },

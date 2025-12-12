@@ -12,6 +12,8 @@ import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useJBProjectCreate } from '@/hooks/juicebox';
+import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
+import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 
 function getTickerSymbol(ticker: string): string {
   return ticker.replace(/^\$/, '');
@@ -25,6 +27,7 @@ export default function CreateStorePage() {
   const [loyaltyBonus, setLoyaltyBonus] = useState(2);
 
   const { createProject, isLoading } = useJBProjectCreate();
+  const { addProject } = useCocoPayProjectRegistry();
 
   const tickerSymbol = getTickerSymbol(ticker);
 
@@ -49,7 +52,16 @@ export default function CreateStorePage() {
     tickerSymbol.length <= TICKER_MAX_LENGTH;
 
   const handleCreate = async () => {
+    console.log('[CreateStorePage] handleCreate called');
+    console.log('[CreateStorePage] Form values:', {
+      name: name.trim(),
+      ticker: tickerSymbol.toUpperCase(),
+      cashBackPercent: cashBack,
+      loyaltyBonusPercent: loyaltyBonus,
+    });
+
     try {
+      console.log('[CreateStorePage] Calling createProject...');
       const result = await createProject({
         name: name.trim(),
         ticker: tickerSymbol.toUpperCase(),
@@ -57,17 +69,37 @@ export default function CreateStorePage() {
         loyaltyBonusPercent: loyaltyBonus,
       });
 
+      console.log('[CreateStorePage] createProject SUCCESS:', {
+        projectId: result.projectId.toString(),
+        storeCode: result.storeCode,
+        txHash: result.txHash,
+      });
+
+      console.log('[CreateStorePage] Adding project to registry...');
+      await addProject({
+        projectId: Number(result.projectId),
+        chainId: COCOPAY_CHAIN_ID,
+      });
+      console.log('[CreateStorePage] Project added to registry');
+
+      const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
+      console.log('[CreateStorePage] Will navigate to store:', storeId);
+
       Alert.alert(
         'Store Created!',
         `Your store "${name}" has been created.\n\nStore Code: ${result.storeCode}`,
         [
           {
             text: 'View Store',
-            onPress: () => router.replace(`/store/${result.projectId.toString()}`),
+            onPress: () => {
+              console.log('[CreateStorePage] Navigating to store...');
+              router.replace(`/store/${storeId}` as const);
+            },
           },
         ]
       );
     } catch (err) {
+      console.error('[CreateStorePage] ERROR:', err);
       Alert.alert(
         'Creation Failed',
         err instanceof Error ? err.message : 'Failed to create store. Please try again.'

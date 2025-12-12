@@ -26,7 +26,6 @@ const PROJECT_FIELDS = `
   volume
   volumeUsd
   balance
-  balanceUsd
   tokenSupply
   trendingScore
   trendingVolume
@@ -101,7 +100,7 @@ export async function fetchProjects(
 
   const query = gql`
     query GetProjects(
-      $where: ProjectFilter
+      $where: projectFilter
       $orderBy: String
       $orderDirection: String
       $limit: Int
@@ -137,7 +136,7 @@ export async function fetchParticipants(
 
   const query = gql`
     query GetParticipants(
-      $where: ParticipantFilter
+      $where: participantFilter
       $orderBy: String
       $orderDirection: String
       $limit: Int
@@ -175,7 +174,7 @@ export async function fetchPayEvents(
   const client = getBendystrawClient(getNetworkFromChainId(params.chainId));
 
   const query = gql`
-    query GetPayEvents($where: PayEventFilter, $limit: Int) {
+    query GetPayEvents($where: payEventFilter, $limit: Int) {
       payEvents(where: $where, orderBy: "timestamp", orderDirection: "desc", limit: $limit) {
         items {
           ${PAY_EVENT_FIELDS}
@@ -202,7 +201,7 @@ export async function fetchActivityEvents(
   const client = getBendystrawClient(getNetworkFromChainId(params.chainId));
 
   const query = gql`
-    query GetActivityEvents($where: ActivityEventFilter, $limit: Int) {
+    query GetActivityEvents($where: activityEventFilter, $limit: Int) {
       activityEvents(where: $where, orderBy: "timestamp", orderDirection: "desc", limit: $limit) {
         items {
           ${ACTIVITY_EVENT_FIELDS}
