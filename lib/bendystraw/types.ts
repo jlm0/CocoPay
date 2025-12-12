@@ -1,10 +1,10 @@
-import type { Address } from 'viem';
 import type {
   project,
   participant,
   payEvent,
   activityEvent,
   activityEventType,
+  cashOutTokensEvent,
   projectFilter,
   participantFilter,
   payEventFilter,
@@ -69,19 +69,20 @@ export type BendystrawActivityEvent = Pick<
 
 export type BendystrawActivityEventType = activityEventType;
 
-export interface BendystrawCashOutEvent {
-  id: string;
-  projectId: number;
-  chainId: number;
-  timestamp: number;
-  txHash: string;
-  holder: Address;
-  beneficiary: Address;
-  cashOutCount: string;
-  reclaimAmount: string;
-  reclaimAmountUsd: string;
-  metadata: string | null;
-}
+export type BendystrawCashOutEvent = Pick<
+  cashOutTokensEvent,
+  | 'id'
+  | 'projectId'
+  | 'chainId'
+  | 'timestamp'
+  | 'txHash'
+  | 'holder'
+  | 'beneficiary'
+  | 'cashOutCount'
+  | 'reclaimAmount'
+  | 'reclaimAmountUsd'
+  | 'metadata'
+>;
 
 export interface BendystrawProjectsQueryParams {
   where?: projectFilter;
