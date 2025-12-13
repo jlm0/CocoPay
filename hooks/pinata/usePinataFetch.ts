@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import type { GetCIDResponse } from 'pinata';
-import { fetchByCid } from '@/lib/pinata';
+import { fetchByCid, type FetchResponse } from '@/lib/pinata';
 
-interface UsePinataFetchResult {
-  data: GetCIDResponse | null;
+interface UsePinataFetchResult<T = unknown> {
+  data: FetchResponse<T> | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;

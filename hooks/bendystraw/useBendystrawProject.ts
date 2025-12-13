@@ -19,15 +19,7 @@ export function useBendystrawProject(
       if (projectId === null) {
         throw new Error('Project ID is required');
       }
-      console.log(`[useBendystrawProject] Fetching project ${projectId} on chain ${chainId}...`);
-      const result = await fetchProject(projectId, chainId);
-      console.log(`[useBendystrawProject] Project ${projectId} result:`, {
-        found: !!result,
-        owner: result?.owner,
-        metadataUri: result?.metadataUri,
-        tokenSupply: result?.tokenSupply,
-      });
-      return result;
+      return fetchProject(projectId, chainId);
     },
     enabled: projectId !== null,
     staleTime: 30_000,

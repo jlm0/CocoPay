@@ -8070,7 +8070,6 @@ __metadata:
     juice-sdk-react: "npm:^5.0.2"
     lucide-react-native: "npm:^0.556.0"
     nativewind: "npm:latest"
-    pinata: "npm:^2.5.1"
     prettier: "npm:^3.2.5"
     prettier-plugin-tailwindcss: "npm:^0.5.11"
     react: "npm:19.1.0"
@@ -13683,21 +13682,6 @@ __metadata:
   version: 2.3.0
   resolution: "pify@npm:2.3.0"
   checksum: 10c0/551ff8ab830b1052633f59cb8adc9ae8407a436e06b4a9718bcb27dc5844b83d535c3a8512b388b6062af65a98c49bdc0dd523d8b2617b188f7c8fee457158dc
-  languageName: node
-  linkType: hard
-
-"pinata@npm:^2.5.1":
-  version: 2.5.1
-  resolution: "pinata@npm:2.5.1"
-  peerDependencies:
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/898b06868fef0ee3a316d99255a29177366c3454e4c832bf6952a1f68f5f0ac0c6a7a645faacc66cf51cfc2a051d461768e0682ef7d4a67468d19416aaf25f87
   languageName: node
   linkType: hard
 

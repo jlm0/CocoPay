@@ -1,28 +1,29 @@
-import { PinataSDK } from 'pinata';
+import type { PinataConfig } from './types';
 
 const PINATA_JWT = process.env.EXPO_PUBLIC_PINATA_JWT;
 const PINATA_GATEWAY = process.env.EXPO_PUBLIC_PINATA_GATEWAY ?? 'gateway.pinata.cloud';
+const PINATA_UPLOAD_URL = 'https://uploads.pinata.cloud/v3/files';
 
-function createPinataClient(): PinataSDK {
+let cachedConfig: PinataConfig | null = null;
+
+export function getPinataConfig(): PinataConfig {
+  if (cachedConfig) {
+    return cachedConfig;
+  }
+
   if (!PINATA_JWT) {
     throw new Error('EXPO_PUBLIC_PINATA_JWT environment variable is not set');
   }
 
-  return new PinataSDK({
-    pinataJwt: PINATA_JWT,
-    pinataGateway: PINATA_GATEWAY,
-  });
+  cachedConfig = {
+    jwt: PINATA_JWT,
+    gateway: PINATA_GATEWAY,
+    uploadUrl: PINATA_UPLOAD_URL,
+  };
+
+  return cachedConfig;
 }
 
-let pinataClient: PinataSDK | null = null;
-
-export function getPinataClient(): PinataSDK {
-  if (!pinataClient) {
-    pinataClient = createPinataClient();
-  }
-  return pinataClient;
-}
-
-export function resetPinataClient(): void {
-  pinataClient = null;
+export function resetPinataConfig(): void {
+  cachedConfig = null;
 }

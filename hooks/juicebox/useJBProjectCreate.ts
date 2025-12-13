@@ -35,22 +35,11 @@ export function useJBProjectCreate(): UseJBProjectCreateResult {
 
   const createProject = useCallback(
     async (params: StoreCreationParams): Promise<StoreCreationResult> => {
-      console.log('[useJBProjectCreate] createProject called with params:', {
-        name: params.name,
-        ticker: params.ticker,
-        cashBackPercent: params.cashBackPercent,
-        loyaltyBonusPercent: params.loyaltyBonusPercent,
-      });
-      console.log('[useJBProjectCreate] wallet address:', address);
-      console.log('[useJBProjectCreate] isReady:', isReady);
-
       if (!address) {
-        console.error('[useJBProjectCreate] Error: Wallet not connected');
         throw new Error('Wallet not connected');
       }
 
       if (!isReady) {
-        console.error('[useJBProjectCreate] Error: Transaction client not ready');
         throw new Error('Transaction client not ready');
       }
 
@@ -58,25 +47,12 @@ export function useJBProjectCreate(): UseJBProjectCreateResult {
 
       try {
         setIsUploading(true);
-        console.log('[useJBProjectCreate] Building project metadata...');
         const metadata = buildProjectMetadata(params);
-        console.log('[useJBProjectCreate] Metadata built:', JSON.stringify(metadata, null, 2));
-
-        console.log('[useJBProjectCreate] Uploading metadata to IPFS...');
         const cid = await uploadMetadataToIPFS(metadata);
-        console.log('[useJBProjectCreate] IPFS CID:', cid);
-
         const projectUri = getIPFSUri(cid);
-        console.log('[useJBProjectCreate] Project URI:', projectUri);
         setIsUploading(false);
 
-        console.log('[useJBProjectCreate] Building launch config...');
         const launchConfig = buildLaunchProjectConfig(params, projectUri);
-        console.log('[useJBProjectCreate] Launch config built:', {
-          projectUri: launchConfig.projectUri,
-          rulesetCount: launchConfig.rulesetConfigurations.length,
-          terminalCount: launchConfig.terminalConfigurations.length,
-        });
 
         const rulesetConfigs = launchConfig.rulesetConfigurations.map((config) => ({
           mustStartAtOrAfter: config.mustStartAtOrAfter,
@@ -139,16 +115,6 @@ export function useJBProjectCreate(): UseJBProjectCreateResult {
           })),
         }));
 
-        console.log(
-          '[useJBProjectCreate] Ruleset configs:',
-          JSON.stringify(rulesetConfigs, null, 2)
-        );
-        console.log(
-          '[useJBProjectCreate] Terminal configs:',
-          JSON.stringify(terminalConfigs, null, 2)
-        );
-
-        console.log('[useJBProjectCreate] Encoding function data for launchProjectFor...');
         const data = encodeFunctionData({
           abi: jbControllerAbi,
           functionName: 'launchProjectFor',
@@ -160,53 +126,33 @@ export function useJBProjectCreate(): UseJBProjectCreateResult {
             launchConfig.memo,
           ],
         });
-        console.log('[useJBProjectCreate] Encoded data length:', data.length);
 
-        console.log(
-          '[useJBProjectCreate] Sending transaction to JB_CONTROLLER:',
-          JB_CONTROLLER_ADDRESS
-        );
         const receipt = await sendTransaction(JB_CONTROLLER_ADDRESS, 0n, data);
         const txHash = receipt.receipt.transactionHash as Hash;
-        console.log('[useJBProjectCreate] Transaction hash:', txHash);
 
-        console.log('[useJBProjectCreate] Fetching transaction receipt...');
         const logs = await publicClient.getTransactionReceipt({ hash: txHash });
-        console.log('[useJBProjectCreate] Transaction logs count:', logs.logs.length);
 
         let projectId = 1n;
         for (const log of logs.logs) {
-          console.log('[useJBProjectCreate] Log topic[0]:', log.topics[0]);
           if (
             log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
           ) {
             const tokenId = log.topics[3];
-            console.log('[useJBProjectCreate] Found Transfer event, tokenId:', tokenId);
             if (tokenId) {
               projectId = BigInt(tokenId);
-              console.log('[useJBProjectCreate] Extracted projectId:', projectId.toString());
               break;
             }
           }
         }
 
         const storeCode = buildStoreCode(projectId);
-        console.log('[useJBProjectCreate] Store code:', storeCode);
 
-        const result = {
+        return {
           projectId,
           storeCode,
           txHash,
         };
-        console.log('[useJBProjectCreate] SUCCESS - returning result:', {
-          projectId: result.projectId.toString(),
-          storeCode: result.storeCode,
-          txHash: result.txHash,
-        });
-
-        return result;
       } catch (err) {
-        console.error('[useJBProjectCreate] ERROR:', err);
         const error = err instanceof Error ? err : new Error('Failed to create project');
         setError(error);
         throw error;

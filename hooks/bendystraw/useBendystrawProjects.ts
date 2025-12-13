@@ -6,6 +6,7 @@ interface UseBendystrawProjectsResult {
   projects: BendystrawProject[];
   totalCount: number;
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => void;
 }
@@ -22,32 +23,15 @@ export function useBendystrawProjects(
       params.orderBy,
       params.limit,
     ],
-    queryFn: async () => {
-      console.log('[useBendystrawProjects] Fetching projects with params:', params);
-      try {
-        const result = await fetchProjects(params);
-        console.log('[useBendystrawProjects] Projects result:', {
-          totalCount: result.totalCount,
-          itemCount: result.items.length,
-          projectIds: result.items.map((p) => p.projectId),
-        });
-        return result;
-      } catch (err) {
-        console.error('[useBendystrawProjects] Fetch error:', err);
-        throw err;
-      }
-    },
+    queryFn: () => fetchProjects(params),
     staleTime: 30_000,
   });
-
-  if (query.error) {
-    console.error('[useBendystrawProjects] Query error state:', query.error);
-  }
 
   return {
     projects: query.data?.items ?? [],
     totalCount: query.data?.totalCount ?? 0,
     isLoading: query.isLoading,
+    isFetching: query.isFetching,
     error: query.error as Error | null,
     refetch: query.refetch,
   };

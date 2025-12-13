@@ -1,20 +1,36 @@
-import type { GetCIDResponse } from 'pinata';
-import { getPinataClient } from './client';
+import { getPinataConfig } from './client';
+import type { FetchResponse } from './types';
 
-const PINATA_GATEWAY = process.env.EXPO_PUBLIC_PINATA_GATEWAY ?? 'gateway.pinata.cloud';
+export async function fetchByCid<T = unknown>(cid: string): Promise<FetchResponse<T>> {
+  const config = getPinataConfig();
+  const url = `https://${config.gateway}/ipfs/${cid}`;
 
-export async function fetchByCid(cid: string): Promise<GetCIDResponse> {
-  const client = getPinataClient();
-  return client.gateways.public.get(cid);
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Pinata fetch failed (${response.status}): ${response.statusText}`);
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+
+  let data: T;
+  if (contentType.includes('application/json')) {
+    data = (await response.json()) as T;
+  } else {
+    data = (await response.text()) as unknown as T;
+  }
+
+  return { data, contentType };
 }
 
 export async function convertToGatewayUrl(cid: string): Promise<string> {
-  const client = getPinataClient();
-  return client.gateways.public.convert(cid);
+  const config = getPinataConfig();
+  return `https://${config.gateway}/ipfs/${cid}`;
 }
 
 export function getGatewayUrl(cid: string): string {
-  return `https://${PINATA_GATEWAY}/ipfs/${cid}`;
+  const config = getPinataConfig();
+  return `https://${config.gateway}/ipfs/${cid}`;
 }
 
 export function getIpfsUri(cid: string): string {

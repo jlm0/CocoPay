@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FeatureHeader } from '@/components/presentational/feature-header';
@@ -33,7 +34,19 @@ export default function StoreDetailPage() {
     return { chainId: COCOPAY_CHAIN_ID, projectId: parseInt(id, 10) };
   })();
 
+  useEffect(() => {
+    console.log(
+      `[StoreDetailPage] id param="${id}" parsed: projectId=${parsedId.projectId} chainId=${parsedId.chainId}`
+    );
+  }, [id, parsedId.projectId, parsedId.chainId]);
+
   const { store, isLoading, error } = useStoreDetails(parsedId.projectId, parsedId.chainId);
+
+  useEffect(() => {
+    console.log(
+      `[StoreDetailPage] store state: loading=${isLoading} error=${error?.message ?? 'none'} hasStore=${!!store}`
+    );
+  }, [store, isLoading, error]);
 
   const handleBorrowPress = () => {
     router.push('/(app)/borrow');

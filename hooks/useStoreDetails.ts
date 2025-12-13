@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useBendystrawProject, useBendystrawParticipants } from '@/hooks/bendystraw';
 import { useProjectMetadata } from '@/hooks/useProjectMetadata';
 import { useJBCashOutQuote } from '@/hooks/juicebox/useJBCashOutQuote';
@@ -16,10 +16,11 @@ interface UseStoreDetailsResult {
 }
 
 export function useStoreDetails(projectId: number, chainId: number): UseStoreDetailsResult {
-  console.log('[useStoreDetails] Called with:', { projectId, chainId });
-
   const { address } = useParaAccount();
-  console.log('[useStoreDetails] User address:', address);
+
+  useEffect(() => {
+    console.log(`[useStoreDetails] MOUNT projectId=${projectId} chainId=${chainId}`);
+  }, [projectId, chainId]);
 
   const {
     project,
@@ -28,23 +29,19 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
     refetch,
   } = useBendystrawProject(projectId, chainId);
 
-  console.log('[useStoreDetails] Bendystraw project:', {
-    found: !!project,
-    isLoading: projectLoading,
-    owner: project?.owner,
-    metadataUri: project?.metadataUri,
-    tokenSupply: project?.tokenSupply,
-  });
+  useEffect(() => {
+    console.log(
+      `[useStoreDetails] project state: loading=${projectLoading} error=${projectError?.message ?? 'none'} hasProject=${!!project} metadataUri=${project?.metadataUri ?? 'none'}`
+    );
+  }, [project, projectLoading, projectError]);
 
   const { metadata, isLoading: metadataLoading } = useProjectMetadata(project?.metadataUri);
 
-  console.log('[useStoreDetails] Metadata:', {
-    found: !!metadata,
-    isLoading: metadataLoading,
-    name: metadata?.name,
-    hasCocopay: !!metadata?.cocopay,
-    ticker: metadata?.cocopay?.ticker,
-  });
+  useEffect(() => {
+    console.log(
+      `[useStoreDetails] metadata state: loading=${metadataLoading} hasMetadata=${!!metadata} hasCocopay=${!!metadata?.cocopay}`
+    );
+  }, [metadata, metadataLoading]);
 
   const { participants, isLoading: participantsLoading } = useBendystrawParticipants(
     project
@@ -57,25 +54,13 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       : null
   );
 
-  console.log('[useStoreDetails] Participants:', {
-    count: participants.length,
-    isLoading: participantsLoading,
-    participants: participants.map((p) => ({ address: p.address, balance: p.balance })),
-  });
-
   const userBalance = useMemo(() => {
     if (!address || !participants.length) {
-      console.log('[useStoreDetails] No address or participants, balance = 0');
       return 0n;
     }
     const lowerAddress = address.toLowerCase();
     const participant = participants.find((p) => p.address.toLowerCase() === lowerAddress);
-    const balance = participant ? BigInt(participant.balance) : 0n;
-    console.log('[useStoreDetails] User balance:', {
-      found: !!participant,
-      rawBalance: balance.toString(),
-    });
-    return balance;
+    return participant ? BigInt(participant.balance) : 0n;
   }, [address, participants]);
 
   const { quote: cashOutQuote, isLoading: cashOutLoading } = useJBCashOutQuote(
@@ -87,11 +72,6 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       : null
   );
 
-  console.log('[useStoreDetails] Cash out quote:', {
-    isLoading: cashOutLoading,
-    netAmount: cashOutQuote?.netAmount?.toString(),
-  });
-
   const { quote: loanQuote, isLoading: loanLoading } = useJBLoanQuote(
     userBalance > 0n
       ? {
@@ -101,16 +81,8 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       : null
   );
 
-  console.log('[useStoreDetails] Loan quote:', {
-    isLoading: loanLoading,
-    borrowableAmount: loanQuote?.borrowableAmount?.toString(),
-  });
-
   const store = useMemo((): StoreDetails | null => {
-    console.log('[useStoreDetails] Building store details...');
-
     if (!project || !metadata?.cocopay) {
-      console.log('[useStoreDetails] Missing project or cocopay metadata, returning null');
       return null;
     }
 
@@ -127,7 +99,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       ? Number(loanQuote.borrowableAmount) / 10 ** USDC_DECIMALS
       : 0;
 
-    const storeDetails = {
+    return {
       id: `${chainId}-${projectId}`,
       name: metadata.name,
       tokenSymbol: `$${metadata.cocopay.ticker}`,
@@ -138,9 +110,6 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       cashOutValue,
       borrowValue,
     };
-
-    console.log('[useStoreDetails] Built store details:', storeDetails);
-    return storeDetails;
   }, [project, metadata, userBalance, address, cashOutQuote, loanQuote, chainId, projectId]);
 
   const isLoading =
@@ -148,12 +117,6 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
     metadataLoading ||
     participantsLoading ||
     (userBalance > 0n && (cashOutLoading || loanLoading));
-
-  console.log('[useStoreDetails] Final return:', {
-    hasStore: !!store,
-    isLoading,
-    hasError: !!projectError,
-  });
 
   return {
     store,

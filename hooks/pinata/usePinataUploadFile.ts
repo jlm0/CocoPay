@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import type { UploadResponse } from 'pinata';
-import { uploadFile, type UploadFileOptions } from '@/lib/pinata';
+import { uploadFile, type UploadFileOptions, type UploadResponse } from '@/lib/pinata';
 
 interface UploadFileParams {
   file: File;

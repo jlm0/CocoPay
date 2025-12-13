@@ -1,24 +1,28 @@
 import { useState, useCallback } from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { HomeBalances } from '@/components/containers/HomeBalances';
 import { HomeStores } from '@/components/containers/HomeStores';
 import { PayButton } from '@/components/presentational/pay-button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
-import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { HEX_COLORS } from '@/lib/theme';
 
 export default function HomePage() {
   const router = useRouter();
-  const { refetch } = useTokenBalances();
+  const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await refetch();
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['token-balances'] }),
+      queryClient.invalidateQueries({ queryKey: ['bendystraw'] }),
+      queryClient.invalidateQueries({ queryKey: ['project-metadata'] }),
+    ]);
     setIsRefreshing(false);
-  }, [refetch]);
+  }, [queryClient]);
 
   const handlePayPress = () => {
     router.push('/(app)/pay');

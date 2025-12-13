@@ -70,13 +70,17 @@ const ACTIVITY_EVENT_FIELDS = `
 
 export async function fetchProject(
   projectId: number,
-  chainId: number
+  chainId: number,
+  version: number = 5
 ): Promise<BendystrawProjectResponse['project']> {
+  const start = Date.now();
+  console.log(`[fetchProject] START projectId=${projectId} chainId=${chainId} version=${version}`);
+
   const client = getBendystrawClient(getNetworkFromChainId(chainId));
 
   const query = gql`
-    query GetProject($projectId: Int!, $chainId: Int!) {
-      project(projectId: $projectId, chainId: $chainId) {
+    query GetProject($projectId: Float!, $chainId: Float!, $version: Float!) {
+      project(projectId: $projectId, chainId: $chainId, version: $version) {
         ${PROJECT_FIELDS}
       }
     }
@@ -85,7 +89,12 @@ export async function fetchProject(
   const data = await client.request<BendystrawProjectResponse>(query, {
     projectId,
     chainId,
+    version,
   });
+
+  console.log(
+    `[fetchProject] END ${Date.now() - start}ms projectId=${projectId} result=${data.project ? 'found' : 'null'}`
+  );
 
   return data.project;
 }
@@ -93,7 +102,11 @@ export async function fetchProject(
 export async function fetchProjects(
   params: BendystrawProjectsQueryParams = {}
 ): Promise<BendystrawProjectsResponse['projects']> {
+  const start = Date.now();
   const chainId = params.where?.chainId ?? 11155111;
+  const owner = params.where?.owner ?? 'none';
+  console.log(`[fetchProjects] START chainId=${chainId} owner=${owner}`);
+
   const client = getBendystrawClient(getNetworkFromChainId(chainId));
 
   const query = gql`
@@ -123,6 +136,10 @@ export async function fetchProjects(
     orderDirection: params.orderDirection,
     limit: params.limit ?? 50,
   });
+
+  console.log(
+    `[fetchProjects] END ${Date.now() - start}ms count=${data.projects.items.length} total=${data.projects.totalCount}`
+  );
 
   return data.projects;
 }

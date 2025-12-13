@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import type { UploadResponse } from 'pinata';
-import { uploadJson, type UploadJsonOptions } from '@/lib/pinata';
+import { uploadJson, type UploadJsonOptions, type UploadResponse } from '@/lib/pinata';
 
 interface UploadJsonParams<T extends Record<string, unknown>> {
   data: T;

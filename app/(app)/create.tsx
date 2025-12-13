@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { ScrollView, Alert, ActivityIndicator } from 'react-native';
+import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { HEX_COLORS } from '@/lib/theme';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StepsList } from '@/components/presentational/steps-list';
@@ -21,6 +23,7 @@ function getTickerSymbol(ticker: string): string {
 
 export default function CreateStorePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [ticker, setTicker] = useState('');
   const [cashBack, setCashBack] = useState(4);
@@ -52,16 +55,7 @@ export default function CreateStorePage() {
     tickerSymbol.length <= TICKER_MAX_LENGTH;
 
   const handleCreate = async () => {
-    console.log('[CreateStorePage] handleCreate called');
-    console.log('[CreateStorePage] Form values:', {
-      name: name.trim(),
-      ticker: tickerSymbol.toUpperCase(),
-      cashBackPercent: cashBack,
-      loyaltyBonusPercent: loyaltyBonus,
-    });
-
     try {
-      console.log('[CreateStorePage] Calling createProject...');
       const result = await createProject({
         name: name.trim(),
         ticker: tickerSymbol.toUpperCase(),
@@ -69,37 +63,20 @@ export default function CreateStorePage() {
         loyaltyBonusPercent: loyaltyBonus,
       });
 
-      console.log('[CreateStorePage] createProject SUCCESS:', {
-        projectId: result.projectId.toString(),
-        storeCode: result.storeCode,
-        txHash: result.txHash,
-      });
-
-      console.log('[CreateStorePage] Adding project to registry...');
       await addProject({
         projectId: Number(result.projectId),
         chainId: COCOPAY_CHAIN_ID,
       });
-      console.log('[CreateStorePage] Project added to registry');
+
+      await queryClient.invalidateQueries({ queryKey: ['bendystraw'] });
+      await queryClient.invalidateQueries({ queryKey: ['project-metadata'] });
 
       const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
-      console.log('[CreateStorePage] Will navigate to store:', storeId);
 
-      Alert.alert(
-        'Store Created!',
-        `Your store "${name}" has been created.\n\nStore Code: ${result.storeCode}`,
-        [
-          {
-            text: 'View Store',
-            onPress: () => {
-              console.log('[CreateStorePage] Navigating to store...');
-              router.replace(`/store/${storeId}` as const);
-            },
-          },
-        ]
-      );
+      const successUrl =
+        `/store/success?name=${encodeURIComponent(name.trim())}&storeId=${encodeURIComponent(storeId)}` as Href;
+      router.replace(successUrl);
     } catch (err) {
-      console.error('[CreateStorePage] ERROR:', err);
       Alert.alert(
         'Creation Failed',
         err instanceof Error ? err.message : 'Failed to create store. Please try again.'

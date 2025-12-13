@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import type { Address } from 'viem';
 import { useQueries } from '@tanstack/react-query';
 import { useBendystrawProjects } from '@/hooks/bendystraw';
@@ -10,16 +10,20 @@ import type { Store } from '@/types';
 interface UseOwnedStoresResult {
   stores: Store[];
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => void;
 }
 
 export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResult {
-  console.log('[useOwnedStores] Called with ownerAddress:', ownerAddress);
+  useEffect(() => {
+    console.log(`[useOwnedStores] MOUNT owner=${ownerAddress ?? 'none'}`);
+  }, [ownerAddress]);
 
   const {
     projects,
     isLoading: projectsLoading,
+    isFetching: projectsFetching,
     error: projectsError,
     refetch,
   } = useBendystrawProjects({
@@ -29,11 +33,18 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     },
   });
 
-  console.log('[useOwnedStores] Bendystraw projects:', {
-    count: projects.length,
-    isLoading: projectsLoading,
-    projectIds: projects.map((p) => p.projectId),
-  });
+  useEffect(() => {
+    console.log(
+      `[useOwnedStores] projects state: loading=${projectsLoading} error=${projectsError?.message ?? 'none'} count=${projects.length}`
+    );
+    if (projects.length > 0) {
+      projects.forEach((p) => {
+        console.log(
+          `[useOwnedStores] project: id=${p.projectId} chainId=${p.chainId} uri=${p.metadataUri}`
+        );
+      });
+    }
+  }, [projects, projectsLoading, projectsError]);
 
   const metadataQueries = useQueries({
     queries: projects.map((project) => {
@@ -42,17 +53,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
         queryKey: ['project-metadata', cid],
         queryFn: async () => {
           if (!cid) throw new Error('No CID');
-          console.log(
-            `[useOwnedStores] Fetching metadata for project ${project.projectId}, CID:`,
-            cid
-          );
-          const metadata = await fetchMetadataFromIPFS(cid);
-          console.log(`[useOwnedStores] Metadata for project ${project.projectId}:`, {
-            name: metadata.name,
-            hasCocopay: !!metadata.cocopay,
-            ticker: metadata.cocopay?.ticker,
-          });
-          return metadata;
+          return fetchMetadataFromIPFS(cid);
         },
         enabled: !!cid && !!ownerAddress,
         staleTime: Infinity,
@@ -62,9 +63,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
   });
 
   const stores = useMemo(() => {
-    console.log('[useOwnedStores] Building stores list...');
     if (!ownerAddress) {
-      console.log('[useOwnedStores] No owner address, returning empty');
       return [];
     }
 
@@ -74,41 +73,39 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
       const project = projects[i];
       const metadataQuery = metadataQueries[i];
 
-      console.log(`[useOwnedStores] Processing project ${project.projectId}:`, {
-        hasMetadata: !!metadataQuery?.data,
-        hasCocopay: !!metadataQuery?.data?.cocopay,
-        isLoading: metadataQuery?.isLoading,
-      });
+      console.log(
+        `[useOwnedStores] processing project ${project.projectId}: metadataLoading=${metadataQuery?.isLoading} hasData=${!!metadataQuery?.data} hasCocopay=${!!metadataQuery?.data?.cocopay}`
+      );
 
       if (!metadataQuery?.data?.cocopay) {
-        console.log(`[useOwnedStores] Skipping project ${project.projectId} - no cocopay metadata`);
         continue;
       }
 
       const metadata = metadataQuery.data;
 
-      const store = {
+      result.push({
         id: `${project.chainId}-${project.projectId}`,
         name: metadata.name,
         tokenSymbol: `$${metadata.cocopay!.ticker}`,
         storeCode: buildStoreCode(BigInt(project.projectId), project.chainId),
         balance: 0,
         isOwned: true,
-      };
-      console.log(`[useOwnedStores] Adding owned store:`, store);
-      result.push(store);
+      });
     }
 
-    console.log('[useOwnedStores] Total owned stores:', result.length);
+    console.log(`[useOwnedStores] built ${result.length} stores from ${projects.length} projects`);
     return result;
   }, [ownerAddress, projects, metadataQueries]);
 
   const isLoading =
     projectsLoading || metadataQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle');
 
+  const isFetching = projectsFetching || metadataQueries.some((q) => q.isFetching);
+
   return {
     stores,
     isLoading,
+    isFetching,
     error: projectsError,
     refetch,
   };

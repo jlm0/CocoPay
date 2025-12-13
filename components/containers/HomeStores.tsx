@@ -5,14 +5,28 @@ import { SectionHeader } from '@/components/presentational/section-header';
 import { StoreList } from '@/components/presentational/store-list';
 import { useCocoPayStores } from '@/hooks/useCocoPayStores';
 import { Text } from '@/components/ui/text';
-import { Spinner } from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import type { Store } from '@/types';
 
+function StoresSkeleton() {
+  return (
+    <View className="gap-3">
+      {[0, 1, 2].map((i) => (
+        <View key={i} className="flex-row items-center py-3">
+          <Skeleton className="h-5 w-16 rounded" />
+          <Skeleton className="mx-2 h-4 w-6 rounded" />
+          <Skeleton className="h-5 w-20 rounded" />
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export function HomeStores() {
   const router = useRouter();
-  const { stores, isLoading, error } = useCocoPayStores();
+  const { stores, isLoading, isFetching, error } = useCocoPayStores();
 
   const handleAddPress = () => {
     router.push('/(app)/create');
@@ -22,13 +36,13 @@ export function HomeStores() {
     router.push(`/(app)/store/${store.id}`);
   };
 
+  const showSkeleton = isLoading && !isFetching;
+
   return (
     <View className="flex-1">
       <SectionHeader title="Stores" showAddButton onAddPress={handleAddPress} className="mb-1" />
-      {isLoading ? (
-        <View className="items-center justify-center py-8">
-          <Spinner size="small" />
-        </View>
+      {showSkeleton ? (
+        <StoresSkeleton />
       ) : error ? (
         <View className="items-center justify-center px-4 py-8">
           <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
