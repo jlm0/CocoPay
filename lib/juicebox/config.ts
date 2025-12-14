@@ -11,7 +11,7 @@ export const DEFAULT_WEIGHT = parseUnits('1', 18);
 
 export const DEFAULT_RULESET_METADATA: JBRulesetMetadataConfig = {
   reservedPercent: 0,
-  cashOutTaxRate: 0,
+  cashOutTaxRate: 1000,
   baseCurrency: USDC_CURRENCY,
   pausePay: false,
   pauseCreditTransfers: false,
