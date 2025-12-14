@@ -57,7 +57,7 @@ export default function StoreDetailPage() {
   };
 
   const handleSpendPress = () => {
-    router.push('/(app)/pay');
+    router.push(`/(app)/pay?storeCode=${store?.storeCode}`);
   };
 
   const handleChargePress = () => {
