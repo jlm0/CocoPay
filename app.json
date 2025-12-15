@@ -4,10 +4,7 @@
     "slug": "cocopay",
     "version": "1.0.0",
     "scheme": "cocopay",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -42,16 +39,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cocopay.app",
-      "associatedDomains": [
-        "applinks:cocopay.app",
-        "applinks:cocopay.app"
-      ],
+      "associatedDomains": ["applinks:cocopay.app", "applinks:cocopay.app"],
       "infoPlist": {
         "NSCameraUsageDescription": "CocoPay uses the camera to scan QR codes for payments",
         "ITSAppUsesNonExemptEncryption": false
@@ -63,10 +55,7 @@
         "foregroundImage": "./assets/coconut.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ],
+      "permissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -81,10 +70,7 @@
               "scheme": "cocopay"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
