@@ -12,7 +12,11 @@
     "typecheck": "tsc --noEmit",
     "web": "expo start --web",
     "codegen": "graphql-codegen --config codegen.ts",
-    "codegen:watch": "graphql-codegen --config codegen.ts --watch"
+    "codegen:watch": "graphql-codegen --config codegen.ts --watch",
+    "build:ios": "eas build --platform ios --local",
+    "build:android": "eas build --platform android --local",
+    "submit:ios": "eas submit --platform ios",
+    "submit:android": "eas submit --platform android"
   },
   "dependencies": {
     "@account-kit/core": "^4.81.2",
@@ -69,6 +73,7 @@
     "react-native-keychain": "^10.0.0",
     "react-native-modpow": "^1.1.0",
     "react-native-passkey": "^3.3.2",
+    "react-native-qrcode-svg": "^6.3.21",
     "react-native-quick-base64": "^2.2.2",
     "react-native-quick-crypto": "0.7.14",
     "react-native-reanimated": "~4.1.1",

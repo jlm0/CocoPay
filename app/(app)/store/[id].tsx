@@ -61,7 +61,14 @@ export default function StoreDetailPage() {
   };
 
   const handleChargePress = () => {
-    router.push('/(app)/charge');
+    router.push({
+      pathname: '/(app)/charge',
+      params: {
+        store: store?.storeCode,
+        storeName: store?.name,
+        source: 'store',
+      },
+    });
   };
 
   if (isLoading) {

@@ -37,3 +37,8 @@ CLAUDE.md
 # Environment
 .env
 .env.local
+
+# EAS local build artifacts
+*.ipa
+*.aab
+*.apk
