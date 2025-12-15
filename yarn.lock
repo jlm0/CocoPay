@@ -8055,6 +8055,7 @@ __metadata:
     eslint-config-prettier: "npm:^10.1.2"
     expo: "npm:^54.0.0"
     expo-build-properties: "npm:^1.0.10"
+    expo-camera: "npm:~17.0.10"
     expo-clipboard: "npm:^8.0.8"
     expo-constants: "npm:~18.0.9"
     expo-font: "npm:^14.0.10"
@@ -9573,6 +9574,23 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/6f3df301031a93cb808d4791add574608a5f0cef42555068ad4026bef7094401d7947758a06ccccc9f2c546627932bfde9cf8dbee07167af35df40af89e0a6fe
+  languageName: node
+  linkType: hard
+
+"expo-camera@npm:~17.0.10":
+  version: 17.0.10
+  resolution: "expo-camera@npm:17.0.10"
+  dependencies:
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/7b43443f5a158845e7a5333f0bd5ddbf05315df9e5fc1ded1bed620d0b82a373147cf0f1b9a73d53a517b9ecf7e5588c15032c503c0eb57484aab8aa70e96127
   languageName: node
   linkType: hard
 

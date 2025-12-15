@@ -15,6 +15,7 @@ type PayStoreInfoProps = {
   isEditing: boolean;
   isLoading?: boolean;
   error?: string;
+  showEditButton?: boolean;
   className?: string;
 };
 
@@ -26,6 +27,7 @@ export function PayStoreInfo({
   isEditing,
   isLoading,
   error,
+  showEditButton = true,
   className = '',
 }: PayStoreInfoProps) {
   const showInput = !storeName || isEditing;
@@ -63,9 +65,11 @@ export function PayStoreInfo({
     <View className={cn('items-center gap-1', className)}>
       <View className="flex-row items-center gap-2">
         <Text variant="title">{storeName}</Text>
-        <Button variant="ghost" size="icon" onPress={onEditPress} className="h-8 w-8">
-          <Icon as={Pencil} size={16} className="text-muted-foreground" />
-        </Button>
+        {showEditButton && (
+          <Button variant="ghost" size="icon" onPress={onEditPress} className="h-8 w-8">
+            <Icon as={Pencil} size={16} className="text-muted-foreground" />
+          </Button>
+        )}
       </View>
       <Text variant="caption">{storeCode}</Text>
     </View>

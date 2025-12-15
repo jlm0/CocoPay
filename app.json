@@ -20,6 +20,12 @@
             "deploymentTarget": "17.0"
           }
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "CocoPay uses the camera to scan QR codes for payments"
+        }
       ]
     ],
     "experiments": {
@@ -41,14 +47,36 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cocopay.app"
+      "bundleIdentifier": "com.cocopay.app",
+      "associatedDomains": ["applinks:cocopay.app"],
+      "infoPlist": {
+        "NSCameraUsageDescription": "CocoPay uses the camera to scan QR codes for payments"
+      }
     },
     "android": {
       "package": "com.cocopay.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/coconut.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": ["android.permission.CAMERA"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "cocopay.app",
+              "pathPrefix": "/pay"
+            },
+            {
+              "scheme": "cocopay"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     }
   }
 }
