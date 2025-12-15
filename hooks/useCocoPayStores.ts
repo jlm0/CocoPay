@@ -1,7 +1,8 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { useOwnedStores } from '@/hooks/useOwnedStores';
 import { useParticipatedStores } from '@/hooks/useParticipatedStores';
+import { getStoredStoresSync, setStoredStores } from '@/lib/storage';
 import type { Store } from '@/types';
 
 interface UseCocoPayStoresResult {
@@ -14,6 +15,11 @@ interface UseCocoPayStoresResult {
 
 export function useCocoPayStores(): UseCocoPayStoresResult {
   const { address } = useParaAccount();
+
+  const cachedStores = useMemo(() => {
+    if (!address) return [];
+    return getStoredStoresSync(address);
+  }, [address]);
 
   const {
     stores: ownedStores,
@@ -31,7 +37,7 @@ export function useCocoPayStores(): UseCocoPayStoresResult {
     refetch: refetchParticipated,
   } = useParticipatedStores(address);
 
-  const stores = useMemo(() => {
+  const freshStores = useMemo(() => {
     const ownedIds = new Set(ownedStores.map((s) => s.id));
 
     const filteredParticipated = participatedStores
@@ -47,14 +53,37 @@ export function useCocoPayStores(): UseCocoPayStoresResult {
     });
   }, [ownedStores, participatedStores]);
 
+  const hasLoadedFreshData = !ownedLoading && !participatedLoading;
+
+  const stores = useMemo(() => {
+    if (hasLoadedFreshData && freshStores.length > 0) {
+      return freshStores;
+    }
+    if (cachedStores.length > 0) {
+      return cachedStores;
+    }
+    if (hasLoadedFreshData) {
+      return freshStores;
+    }
+    return cachedStores;
+  }, [hasLoadedFreshData, freshStores, cachedStores]);
+
+  useEffect(() => {
+    if (address && hasLoadedFreshData && freshStores.length > 0) {
+      setStoredStores(freshStores, address);
+    }
+  }, [address, hasLoadedFreshData, freshStores]);
+
   const refetch = useCallback(() => {
     refetchOwned();
     refetchParticipated();
   }, [refetchOwned, refetchParticipated]);
 
+  const isLoading = cachedStores.length === 0 && (ownedLoading || participatedLoading);
+
   return {
     stores,
-    isLoading: ownedLoading || participatedLoading,
+    isLoading,
     isFetching: ownedFetching || participatedFetching,
     error: ownedError || participatedError,
     refetch,

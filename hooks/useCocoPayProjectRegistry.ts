@@ -39,18 +39,18 @@ export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
         return [];
       }
 
-      const validatedProjects: StoredProject[] = [];
-
-      for (const project of local) {
-        try {
-          const bendystrawProject = await fetchProject(project.projectId, project.chainId);
-          if (bendystrawProject) {
-            validatedProjects.push(project);
+      const results = await Promise.all(
+        local.map(async (project) => {
+          try {
+            const bendystrawProject = await fetchProject(project.projectId, project.chainId);
+            return { project, valid: !!bendystrawProject };
+          } catch {
+            return { project, valid: true };
           }
-        } catch {
-          validatedProjects.push(project);
-        }
-      }
+        })
+      );
+
+      const validatedProjects = results.filter((r) => r.valid).map((r) => r.project);
 
       if (validatedProjects.length !== local.length) {
         await setStoredProjects(validatedProjects);

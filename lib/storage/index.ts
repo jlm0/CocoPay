@@ -29,3 +29,12 @@ export {
   initializeProjectStorage,
   type StoredProject,
 } from './cocopay-projects';
+
+export {
+  getStoredStores,
+  getStoredStoresSync,
+  setStoredStores,
+  clearStoredStores,
+  initializeStoresStorage,
+  type StoredStores,
+} from './stores-storage';

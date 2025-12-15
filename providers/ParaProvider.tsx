@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
 import { para } from '@/lib/para';
 import { useParaWallets } from '@/hooks/useParaWallets';
+import { clearStoredStores } from '@/lib/storage';
 import { AppSkeleton } from '@/components/presentational/app-skeleton';
 import type { User, Wallet } from '@/types';
 
@@ -59,6 +60,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
       setIsAuthenticated(false);
       setUser(null);
       clearWallets();
+      await clearStoredStores();
     } catch {
       // Logout failed silently
     }
