@@ -11,7 +11,7 @@ import { useStoreDetails } from '@/hooks/useStoreDetails';
 import { parseStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 import { Text } from '@/components/ui/text';
-import { Spinner } from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function StoreDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -73,10 +73,38 @@ export default function StoreDetailPage() {
 
   if (isLoading) {
     return (
-      <ScreenContainer>
-        <View className="flex-1 items-center justify-center">
-          <Spinner size="large" />
-        </View>
+      <ScreenContainer
+        bottomActionBar={
+          <BottomActionBar>
+            <StoreActions isOwned={false} disabled />
+          </BottomActionBar>
+        }>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-64">
+          <View className="mb-6">
+            <Skeleton className="mb-2 h-8 w-40 rounded-lg" />
+            <Skeleton className="h-4 w-28 rounded" />
+          </View>
+
+          <View className="mb-6">
+            <Skeleton className="mb-1 h-4 w-24 rounded" />
+            <Skeleton className="h-12 w-48 rounded-lg" />
+          </View>
+
+          <View className="flex-row justify-between">
+            <View className="flex-1">
+              <Skeleton className="mb-1 h-3 w-20 rounded" />
+              <Skeleton className="h-5 w-16 rounded" />
+            </View>
+            <View className="flex-1">
+              <Skeleton className="mb-1 h-3 w-20 rounded" />
+              <Skeleton className="h-5 w-16 rounded" />
+            </View>
+            <View className="flex-1">
+              <Skeleton className="mb-1 h-3 w-20 rounded" />
+              <Skeleton className="h-5 w-16 rounded" />
+            </View>
+          </View>
+        </ScrollView>
       </ScreenContainer>
     );
   }

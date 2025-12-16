@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 
 type StoreActionsProps = {
   isOwned: boolean;
+  disabled?: boolean;
   onBorrowPress?: () => void;
   onCashOutPress?: () => void;
   onSpendPress?: () => void;
@@ -13,6 +14,7 @@ type StoreActionsProps = {
 
 export function StoreActions({
   isOwned,
+  disabled,
   onBorrowPress,
   onCashOutPress,
   onSpendPress,
@@ -21,16 +23,27 @@ export function StoreActions({
 }: StoreActionsProps) {
   return (
     <View className={`gap-3 ${className}`}>
-      <Button variant="secondary" onPress={onBorrowPress} size="lg" className="h-14 rounded-xl">
+      <Button
+        variant="secondary"
+        onPress={onBorrowPress}
+        disabled={disabled}
+        size="lg"
+        className="h-14 rounded-xl">
         <Text>Borrow</Text>
       </Button>
 
-      <Button variant="secondary" onPress={onCashOutPress} size="lg" className="h-14 rounded-xl">
+      <Button
+        variant="secondary"
+        onPress={onCashOutPress}
+        disabled={disabled}
+        size="lg"
+        className="h-14 rounded-xl">
         <Text>Cash out</Text>
       </Button>
 
       <Button
         onPress={isOwned ? onChargePress : onSpendPress}
+        disabled={disabled}
         size="lg"
         className="h-14 rounded-xl">
         <Text>{isOwned ? 'Charge' : 'Spend at store'}</Text>
