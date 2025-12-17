@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { encodeFunctionData, type Hash, type Address } from 'viem';
+import { encodeFunctionData, decodeEventLog, type Hash, type Address } from 'viem';
 import { jbMultiTerminalAbi } from 'juice-sdk-core';
 import type { PayParams, PayResult } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
@@ -63,12 +63,18 @@ export function useJBPay(projectId: bigint): UseJBPayResult {
 
         let tokensReceived = 0n;
         for (const log of result.receipt.logs) {
-          if (
-            log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-          ) {
-            if (log.data && log.data.length >= 66) {
-              tokensReceived = BigInt(log.data);
+          try {
+            const decoded = decodeEventLog({
+              abi: jbMultiTerminalAbi,
+              data: log.data,
+              topics: log.topics as [Hash, ...Hash[]],
+            });
+            if (decoded.eventName === 'Pay' && 'newlyIssuedTokenCount' in decoded.args) {
+              tokensReceived = decoded.args.newlyIssuedTokenCount as bigint;
+              break;
             }
+          } catch {
+            continue;
           }
         }
 

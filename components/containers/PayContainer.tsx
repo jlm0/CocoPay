@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import { useRouter } from 'expo-router';
@@ -43,6 +43,7 @@ export function PayContainer({
 
   const isFromExternal = source === 'qr' || source === 'deeplink';
   const displayAmount = amountRaw ? `$${amountRaw}` : '';
+  const prevStoreIdRef = useRef<string | null>(null);
 
   const [debouncedStoreCode] = useDebounce(storeCode, 800);
   const parsedCode = useMemo(() => parseStoreCode(debouncedStoreCode), [debouncedStoreCode]);
@@ -76,7 +77,11 @@ export function PayContainer({
   }[paymentStep];
 
   useEffect(() => {
-    if (store && isStoreEditing && !isFromExternal) {
+    const currentStoreId = store?.id ?? null;
+    const isNewStore = currentStoreId !== prevStoreIdRef.current;
+    prevStoreIdRef.current = currentStoreId;
+
+    if (store && isNewStore && isStoreEditing && !isFromExternal) {
       setIsStoreEditing(false);
     }
   }, [store, isStoreEditing, isFromExternal]);
