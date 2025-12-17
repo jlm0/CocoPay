@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { encodeFunctionData, decodeEventLog, type Hash, type Address } from 'viem';
-import { jbMultiTerminalAbi } from 'juice-sdk-core';
+import { jbMultiTerminalAbi, jbControllerAbi } from 'juice-sdk-core';
 import type { PayParams, PayResult } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
 import { useParaAccount } from '@/hooks/useParaAccount';
@@ -11,12 +11,12 @@ import {
   DEFAULT_MEMO,
   DEFAULT_METADATA,
 } from '@/lib/juicebox/constants';
-import { JB_MULTI_TERMINAL_ADDRESS } from '@/lib/juicebox/contracts';
+import { JB_MULTI_TERMINAL_ADDRESS, JB_CONTROLLER_ADDRESS } from '@/lib/juicebox/contracts';
 import { ERC20_ABI, USDC_APPROVAL_AMOUNT } from '@/lib/constants';
 
 export type PaymentStep = 'idle' | 'approving' | 'sending' | 'confirming';
 
-interface UsePayWithApprovalResult {
+interface UseStorePayResult {
   pay: (params: PayParams) => Promise<PayResult>;
   isLoading: boolean;
   paymentStep: PaymentStep;
@@ -25,10 +25,9 @@ interface UsePayWithApprovalResult {
   reset: () => void;
 }
 
-export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult {
+export function useStorePay(projectId: bigint): UseStorePayResult {
   const { address } = useParaAccount();
-  const { sendTransaction, sendBatchedTransaction, isLoading, isReady } =
-    useAlchemySendTransaction(COCOPAY_CHAIN);
+  const { sendBatchedTransaction, isLoading, isReady } = useAlchemySendTransaction(COCOPAY_CHAIN);
   const { data: allowance, refetch: refetchAllowance } =
     useUsdcAllowance(JB_MULTI_TERMINAL_ADDRESS);
   const [error, setError] = useState<Error | null>(null);
@@ -71,6 +70,12 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
           ],
         });
 
+        const claimReservedData = encodeFunctionData({
+          abi: jbControllerAbi,
+          functionName: 'sendReservedTokensToSplitsOf',
+          args: [projectId],
+        });
+
         const requiresApproval = !allowance || allowance < params.amount;
 
         let result;
@@ -87,12 +92,16 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
           result = await sendBatchedTransaction([
             { target: USDC_ADDRESS as Address, data: approveData },
             { target: JB_MULTI_TERMINAL_ADDRESS, data: payData },
+            { target: JB_CONTROLLER_ADDRESS, data: claimReservedData },
           ]);
 
           refetchAllowance();
         } else {
           setPaymentStep('sending');
-          result = await sendTransaction(JB_MULTI_TERMINAL_ADDRESS, 0n, payData);
+          result = await sendBatchedTransaction([
+            { target: JB_MULTI_TERMINAL_ADDRESS, data: payData },
+            { target: JB_CONTROLLER_ADDRESS, data: claimReservedData },
+          ]);
         }
 
         setPaymentStep('confirming');
@@ -127,15 +136,7 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
         throw error;
       }
     },
-    [
-      address,
-      isReady,
-      projectId,
-      allowance,
-      sendTransaction,
-      sendBatchedTransaction,
-      refetchAllowance,
-    ]
+    [address, isReady, projectId, allowance, sendBatchedTransaction, refetchAllowance]
   );
 
   return {

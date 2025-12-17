@@ -14,7 +14,7 @@ import { Text } from '@/components/ui/text';
 import { Spinner } from '@/components/ui/spinner';
 import { useStoreDetails } from '@/hooks/useStoreDetails';
 import { useViemUsdcBalance } from '@/hooks/useViemUsdcBalance';
-import { usePayWithApproval } from '@/hooks/usePayWithApproval';
+import { useStorePay } from '@/hooks/useStorePay';
 import { parseStoreCode } from '@/lib/juicebox/transforms';
 import { TOKEN_DECIMALS } from '@/lib/constants';
 import { JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
@@ -67,7 +67,7 @@ export function PayContainer({
     paymentStep,
     error: payError,
     reset: resetPayError,
-  } = usePayWithApproval(projectId);
+  } = useStorePay(projectId);
 
   const payButtonText = {
     idle: 'Pay',
@@ -208,6 +208,7 @@ export function PayContainer({
           isLoading={storeLoading && !!parsedCode}
           error={storeCodeError}
           showEditButton={showStoreEditButton}
+          disabled={isPayLoading}
           className="mb-4"
         />
 
@@ -217,6 +218,7 @@ export function PayContainer({
             onChangeText={handleAmountChange}
             isEditable={!isAmountReadonly}
             onEditPress={handleAmountEditPress}
+            disabled={isPayLoading}
           />
 
           <PayBalanceDisplay balance={usdcBalanceNum} isLoading={balanceLoading} />
