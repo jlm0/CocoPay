@@ -4,7 +4,7 @@ import { useRouter, useSegments } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { para } from '@/lib/para';
 import { useParaWallets } from '@/hooks/useParaWallets';
-import { clearStoredStores } from '@/lib/storage';
+import { clearStoredStores, clearBalances } from '@/lib/storage';
 import { AppSkeleton } from '@/components/presentational/app-skeleton';
 import type { User, Wallet } from '@/types';
 
@@ -63,7 +63,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
       setUser(null);
       clearWallets();
       queryClient.clear();
-      await clearStoredStores();
+      await Promise.all([clearStoredStores(), clearBalances()]);
     } catch {
       // Logout failed silently
     }
