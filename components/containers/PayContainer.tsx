@@ -92,12 +92,15 @@ export function PayContainer({
 
   const usdcBalanceNum = usdcBalance?.formatted ? parseFloat(usdcBalance.formatted) : 0;
 
+  const isDebouncing = storeCode !== debouncedStoreCode;
+
   const storeCodeError = useMemo(() => {
     if (!storeCode) return undefined;
+    if (isDebouncing) return undefined;
     if (!parsedCode) return 'Invalid store code format';
     if (storeError) return 'Store not found';
     return undefined;
-  }, [storeCode, parsedCode, storeError]);
+  }, [storeCode, isDebouncing, parsedCode, storeError]);
 
   const amountExceedsBalance = numericAmount > usdcBalanceNum;
   const isValidAmount = numericAmount > 0 && !amountExceedsBalance;
