@@ -11,6 +11,7 @@ type HeroAmountInputProps = {
   onChangeText: (text: string) => void;
   isEditable?: boolean;
   onEditPress?: () => void;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -19,6 +20,7 @@ export function HeroAmountInput({
   onChangeText,
   isEditable = true,
   onEditPress,
+  disabled = false,
   className = '',
 }: HeroAmountInputProps) {
   const hasValue = value.length > 0 && value !== '$0' && value !== '$';
@@ -29,7 +31,12 @@ export function HeroAmountInput({
         <View className="flex-row items-center gap-2">
           <Text className="font-sans-bold text-5xl">{value || '$0'}</Text>
           {onEditPress && (
-            <Button variant="ghost" size="icon" onPress={onEditPress} className="h-10 w-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onPress={onEditPress}
+              disabled={disabled}
+              className="h-10 w-10">
               <Icon as={Pencil} size={20} className="text-muted-foreground" />
             </Button>
           )}
@@ -46,6 +53,7 @@ export function HeroAmountInput({
         keyboardType="numeric"
         placeholder="$0"
         textAlignVertical="center"
+        editable={!disabled}
         className={cn(
           'h-16 w-full border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl leading-tight shadow-none',
           !hasValue && 'text-muted-foreground/30'

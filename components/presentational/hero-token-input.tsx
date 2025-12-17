@@ -14,6 +14,7 @@ type HeroTokenInputProps = {
   error?: string;
   estimate?: string;
   estimateLoading?: boolean;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -27,6 +28,7 @@ export function HeroTokenInput({
   error,
   estimate,
   estimateLoading,
+  disabled = false,
   className = '',
 }: HeroTokenInputProps) {
   const hasValue = value.length > 0 && value !== '0';
@@ -54,6 +56,7 @@ export function HeroTokenInput({
           keyboardType="decimal-pad"
           placeholder="0"
           textAlignVertical="center"
+          editable={!disabled}
           className={cn(
             'h-16 min-w-16 border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl leading-tight shadow-none',
             !hasValue && 'text-muted-foreground/30'
@@ -75,7 +78,11 @@ export function HeroTokenInput({
         {onMaxPress && (
           <Pressable
             onPress={onMaxPress}
-            className="rounded-lg bg-secondary px-3 py-1.5 active:bg-secondary/60">
+            disabled={disabled}
+            className={cn(
+              'rounded-lg bg-secondary px-3 py-1.5 active:bg-secondary/60',
+              disabled && 'opacity-50'
+            )}>
             <Text variant="caption" className="font-sans-semibold text-secondary-foreground">
               Max
             </Text>

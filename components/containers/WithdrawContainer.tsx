@@ -153,6 +153,7 @@ export function WithdrawContainer({ token }: WithdrawContainerProps) {
           onMaxPress={handleMaxPress}
           isLoading={balance.isLoading}
           error={amountError}
+          disabled={withdrawHook.isLoading}
         />
 
         <RecipientInput
@@ -161,6 +162,7 @@ export function WithdrawContainer({ token }: WithdrawContainerProps) {
           resolvedAddress={resolvedAddress ?? undefined}
           isResolving={isResolving}
           error={recipientError ?? undefined}
+          disabled={withdrawHook.isLoading}
         />
 
         {withdrawHook.error && (

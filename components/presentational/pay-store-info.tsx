@@ -16,6 +16,7 @@ type PayStoreInfoProps = {
   isLoading?: boolean;
   error?: string;
   showEditButton?: boolean;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -28,6 +29,7 @@ export function PayStoreInfo({
   isLoading,
   error,
   showEditButton = true,
+  disabled = false,
   className = '',
 }: PayStoreInfoProps) {
   const showInput = !storeName || isEditing;
@@ -51,6 +53,7 @@ export function PayStoreInfo({
           keyboardType="number-pad"
           autoCapitalize="none"
           autoCorrect={false}
+          editable={!disabled}
           className="w-48 text-center"
         />
         {error && (
@@ -67,7 +70,12 @@ export function PayStoreInfo({
       <View className="flex-row items-center gap-2">
         <Text variant="title">{storeName}</Text>
         {showEditButton && (
-          <Button variant="ghost" size="icon" onPress={onEditPress} className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onPress={onEditPress}
+            disabled={disabled}
+            className="h-8 w-8">
             <Icon as={Pencil} size={16} className="text-muted-foreground" />
           </Button>
         )}

@@ -11,6 +11,7 @@ type RecipientInputProps = {
   resolvedAddress?: string;
   isResolving?: boolean;
   error?: string;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -20,6 +21,7 @@ export function RecipientInput({
   resolvedAddress,
   isResolving = false,
   error,
+  disabled = false,
   className = '',
 }: RecipientInputProps) {
   const isEnsInput = value.trim().toLowerCase().endsWith('.eth');
@@ -35,6 +37,7 @@ export function RecipientInput({
           placeholder="Address or ENS"
           autoCapitalize="none"
           autoCorrect={false}
+          editable={!disabled}
           className={error ? 'border-destructive' : ''}
         />
         {isResolving && (

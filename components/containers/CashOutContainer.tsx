@@ -130,6 +130,7 @@ export function CashOutContainer({
           error={amountError}
           estimate={estimateText}
           estimateLoading={quoteLoading && tokenAmountWei > 0n}
+          disabled={isLoading}
         />
 
         {error && (
