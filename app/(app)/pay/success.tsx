@@ -11,7 +11,8 @@ export default function PaySuccessPage() {
     txHash: string;
     amount: string;
     storeName: string;
-    tokensReceived: string;
+    tokenSymbol: string;
+    cashBack: string;
   }>();
 
   const handleDone = () => {
@@ -30,7 +31,8 @@ export default function PaySuccessPage() {
       <PaymentSuccess
         amount={params.amount ?? '0'}
         storeName={params.storeName ?? 'Unknown'}
-        tokensReceived={params.tokensReceived ?? '0'}
+        tokenSymbol={params.tokenSymbol ?? ''}
+        cashBack={params.cashBack ?? '0'}
       />
     </ScreenContainer>
   );

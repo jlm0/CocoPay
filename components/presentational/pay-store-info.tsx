@@ -47,7 +47,8 @@ export function PayStoreInfo({
         <Input
           value={storeCode}
           onChangeText={onChangeStoreCode}
-          placeholder="sep:00"
+          placeholder="Store #"
+          keyboardType="number-pad"
           autoCapitalize="none"
           autoCorrect={false}
           className="w-48 text-center"

@@ -26,10 +26,10 @@ export function StoreActions({
       <Button
         variant="secondary"
         onPress={onBorrowPress}
-        disabled={disabled}
+        disabled
         size="lg"
         className="h-14 rounded-xl">
-        <Text>Borrow</Text>
+        <Text>Borrow (Coming soon)</Text>
       </Button>
 
       <Button

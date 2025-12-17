@@ -1,5 +1,10 @@
 import { Stack } from 'expo-router';
+import { AccountSheetProvider } from '@/providers/AccountSheetProvider';
 
 export default function AppLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <AccountSheetProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </AccountSheetProvider>
+  );
 }

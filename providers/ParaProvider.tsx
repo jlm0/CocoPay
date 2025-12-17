@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { View, Text } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { para } from '@/lib/para';
 import { useParaWallets } from '@/hooks/useParaWallets';
 import { clearStoredStores } from '@/lib/storage';
@@ -31,6 +32,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
+  const queryClient = useQueryClient();
   const { wallets, loadWallets, clearWallets } = useParaWallets();
 
   const checkAuth = useCallback(async () => {
@@ -60,11 +62,12 @@ export function ParaProvider({ children }: ParaProviderProps) {
       setIsAuthenticated(false);
       setUser(null);
       clearWallets();
+      queryClient.clear();
       await clearStoredStores();
     } catch {
       // Logout failed silently
     }
-  }, [clearWallets]);
+  }, [clearWallets, queryClient]);
 
   const refreshAuth = useCallback(async () => {
     await checkAuth();

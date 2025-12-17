@@ -112,6 +112,27 @@ export interface BendystrawPayEventsQueryParams {
   limit?: number;
 }
 
+export interface BendystrawParticipantParams {
+  projectId: number;
+  chainId: number;
+  address: string;
+}
+
+export interface BendystrawParticipantsByAddressParams {
+  address: string;
+  chainId: number;
+  orderBy?: 'volume' | 'balance' | 'lastPaidTimestamp';
+  orderDirection?: 'asc' | 'desc';
+  limit?: number;
+}
+
+export interface BendystrawParticipantsByAddressResponse {
+  participants: {
+    items: BendystrawParticipant[];
+    totalCount: number;
+  };
+}
+
 export interface BendystrawProjectsResponse {
   projects: {
     items: BendystrawProject[];

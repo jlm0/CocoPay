@@ -1,10 +1,11 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { useQueries } from '@tanstack/react-query';
 import { useBendystrawProjects } from '@/hooks/bendystraw';
+import { fetchParticipant } from '@/lib/bendystraw';
 import { fetchMetadataFromIPFS, extractCidFromUri } from '@/lib/juicebox/metadata';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
-import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { COCOPAY_CHAIN_ID, JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
 import type { Store } from '@/types';
 
 interface UseOwnedStoresResult {
@@ -16,10 +17,6 @@ interface UseOwnedStoresResult {
 }
 
 export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResult {
-  useEffect(() => {
-    console.log(`[useOwnedStores] MOUNT owner=${ownerAddress ?? 'none'}`);
-  }, [ownerAddress]);
-
   const {
     projects,
     isLoading: projectsLoading,
@@ -32,19 +29,6 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
       chainId: COCOPAY_CHAIN_ID,
     },
   });
-
-  useEffect(() => {
-    console.log(
-      `[useOwnedStores] projects state: loading=${projectsLoading} error=${projectsError?.message ?? 'none'} count=${projects.length}`
-    );
-    if (projects.length > 0) {
-      projects.forEach((p) => {
-        console.log(
-          `[useOwnedStores] project: id=${p.projectId} chainId=${p.chainId} uri=${p.metadataUri}`
-        );
-      });
-    }
-  }, [projects, projectsLoading, projectsError]);
 
   const metadataQueries = useQueries({
     queries: projects.map((project) => {
@@ -62,6 +46,20 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     }),
   });
 
+  const participantQueries = useQueries({
+    queries: projects.map((project) => ({
+      queryKey: ['bendystraw', 'participant', project.projectId, project.chainId, ownerAddress],
+      queryFn: () =>
+        fetchParticipant({
+          projectId: project.projectId,
+          chainId: project.chainId,
+          address: ownerAddress!,
+        }),
+      enabled: !!ownerAddress,
+      staleTime: 30_000,
+    })),
+  });
+
   const stores = useMemo(() => {
     if (!ownerAddress) {
       return [];
@@ -72,35 +70,39 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     for (let i = 0; i < projects.length; i++) {
       const project = projects[i];
       const metadataQuery = metadataQueries[i];
-
-      console.log(
-        `[useOwnedStores] processing project ${project.projectId}: metadataLoading=${metadataQuery?.isLoading} hasData=${!!metadataQuery?.data} hasCocopay=${!!metadataQuery?.data?.cocopay}`
-      );
+      const participantQuery = participantQueries[i];
 
       if (!metadataQuery?.data?.cocopay) {
         continue;
       }
 
       const metadata = metadataQuery.data;
+      const participant = participantQuery?.data;
+      const balanceRaw = participant?.balance ? BigInt(participant.balance) : 0n;
+      const balance = Number(balanceRaw) / 10 ** JB_TOKEN_DECIMALS;
 
       result.push({
         id: `${project.chainId}-${project.projectId}`,
         name: metadata.name,
         tokenSymbol: `$${metadata.cocopay!.ticker}`,
         storeCode: buildStoreCode(BigInt(project.projectId), project.chainId),
-        balance: 0,
+        balance,
         isOwned: true,
       });
     }
 
-    console.log(`[useOwnedStores] built ${result.length} stores from ${projects.length} projects`);
     return result;
-  }, [ownerAddress, projects, metadataQueries]);
+  }, [ownerAddress, projects, metadataQueries, participantQueries]);
 
   const isLoading =
-    projectsLoading || metadataQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle');
+    projectsLoading ||
+    metadataQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle') ||
+    participantQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle');
 
-  const isFetching = projectsFetching || metadataQueries.some((q) => q.isFetching);
+  const isFetching =
+    projectsFetching ||
+    metadataQueries.some((q) => q.isFetching) ||
+    participantQueries.some((q) => q.isFetching);
 
   return {
     stores,

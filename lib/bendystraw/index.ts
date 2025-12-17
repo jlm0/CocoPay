@@ -5,6 +5,8 @@ export {
   fetchProject,
   fetchProjects,
   fetchParticipants,
+  fetchParticipant,
+  fetchParticipantsByAddress,
   fetchPayEvents,
   fetchActivityEvents,
 } from './queries';
@@ -18,6 +20,8 @@ export type {
   BendystrawActivityEventType,
   BendystrawProjectsQueryParams,
   BendystrawParticipantsQueryParams,
+  BendystrawParticipantParams,
+  BendystrawParticipantsByAddressParams,
   BendystrawActivityQueryParams,
   BendystrawPayEventsQueryParams,
   projectFilter,

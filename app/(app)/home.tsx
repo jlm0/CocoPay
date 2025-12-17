@@ -7,11 +7,13 @@ import { HomeStores } from '@/components/containers/HomeStores';
 import { PayButton } from '@/components/presentational/pay-button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
+import { useAccountSheet } from '@/providers/AccountSheetProvider';
 import { HEX_COLORS } from '@/lib/theme';
 
 export default function HomePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { openAccountSheet } = useAccountSheet();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -20,6 +22,7 @@ export default function HomePage() {
       queryClient.invalidateQueries({ queryKey: ['token-balances'] }),
       queryClient.invalidateQueries({ queryKey: ['bendystraw'] }),
       queryClient.invalidateQueries({ queryKey: ['project-metadata'] }),
+      queryClient.invalidateQueries({ queryKey: ['cocopay-registry'] }),
     ]);
     setIsRefreshing(false);
   }, [queryClient]);
@@ -45,7 +48,7 @@ export default function HomePage() {
             colors={[HEX_COLORS.primary]}
           />
         }>
-        <HomeBalances />
+        <HomeBalances onCoconutPress={openAccountSheet} />
         <HomeStores />
       </ScrollView>
     </ScreenContainer>

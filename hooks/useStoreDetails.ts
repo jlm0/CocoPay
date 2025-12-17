@@ -1,5 +1,7 @@
-import { useMemo, useEffect } from 'react';
-import { useBendystrawProject, useBendystrawParticipants } from '@/hooks/bendystraw';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useBendystrawProject } from '@/hooks/bendystraw';
+import { fetchParticipant } from '@/lib/bendystraw';
 import { useProjectMetadata } from '@/hooks/useProjectMetadata';
 import { useJBCashOutQuote } from '@/hooks/juicebox/useJBCashOutQuote';
 import { useJBLoanQuote } from '@/hooks/juicebox/useJBLoanQuote';
@@ -18,10 +20,6 @@ interface UseStoreDetailsResult {
 export function useStoreDetails(projectId: number, chainId: number): UseStoreDetailsResult {
   const { address } = useParaAccount();
 
-  useEffect(() => {
-    console.log(`[useStoreDetails] MOUNT projectId=${projectId} chainId=${chainId}`);
-  }, [projectId, chainId]);
-
   const {
     project,
     isLoading: projectLoading,
@@ -29,39 +27,26 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
     refetch,
   } = useBendystrawProject(projectId, chainId);
 
-  useEffect(() => {
-    console.log(
-      `[useStoreDetails] project state: loading=${projectLoading} error=${projectError?.message ?? 'none'} hasProject=${!!project} metadataUri=${project?.metadataUri ?? 'none'}`
-    );
-  }, [project, projectLoading, projectError]);
-
   const { metadata, isLoading: metadataLoading } = useProjectMetadata(project?.metadataUri);
 
-  useEffect(() => {
-    console.log(
-      `[useStoreDetails] metadata state: loading=${metadataLoading} hasMetadata=${!!metadata} hasCocopay=${!!metadata?.cocopay}`
-    );
-  }, [metadata, metadataLoading]);
-
-  const { participants, isLoading: participantsLoading } = useBendystrawParticipants(
-    project
-      ? {
-          projectId: project.projectId,
-          chainId: project.chainId,
-          orderBy: 'balance',
-          limit: 100,
-        }
-      : null
-  );
+  const { data: userParticipant, isLoading: participantLoading } = useQuery({
+    queryKey: ['bendystraw', 'participant', projectId, chainId, address],
+    queryFn: () =>
+      fetchParticipant({
+        projectId,
+        chainId,
+        address: address!,
+      }),
+    enabled: !!project && !!address,
+    staleTime: 30_000,
+  });
 
   const userBalance = useMemo(() => {
-    if (!address || !participants.length) {
+    if (!userParticipant) {
       return 0n;
     }
-    const lowerAddress = address.toLowerCase();
-    const participant = participants.find((p) => p.address.toLowerCase() === lowerAddress);
-    return participant ? BigInt(participant.balance) : 0n;
-  }, [address, participants]);
+    return BigInt(userParticipant.balance);
+  }, [userParticipant]);
 
   const { quote: cashOutQuote, isLoading: cashOutLoading } = useJBCashOutQuote(
     userBalance > 0n
@@ -115,7 +100,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
   const isLoading =
     projectLoading ||
     metadataLoading ||
-    participantsLoading ||
+    participantLoading ||
     (userBalance > 0n && (cashOutLoading || loanLoading));
 
   return {

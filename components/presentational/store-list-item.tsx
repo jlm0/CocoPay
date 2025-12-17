@@ -16,7 +16,10 @@ export function StoreListItem({ store, onPress }: StoreListItemProps) {
   };
 
   return (
-    <Pressable onPress={onPress} disabled={!onPress} className="py-3 active:opacity-70">
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      className="rounded-xl px-3 py-3 active:bg-muted">
       <View className="flex-row items-baseline">
         <Text variant="body-emphasis">{formatBalance(store.balance)}</Text>
         <Text variant="caption" className="mx-1">

@@ -15,6 +15,7 @@ export const COINGECKO_IDS = {
 export const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3';
 
 export const ETH_GAS_BUFFER = 0.001;
+export const ETH_GAS_BUFFER_WEI = 1_000_000_000_000_000n; // 0.001 ETH in wei
 
 export const ERC20_ABI = [
   {
@@ -40,6 +41,16 @@ export const ERC20_ABI = [
       { name: 'amount', type: 'uint256' },
     ],
     name: 'approve',
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    name: 'transfer',
     outputs: [{ name: '', type: 'bool' }],
     stateMutability: 'nonpayable',
     type: 'function',

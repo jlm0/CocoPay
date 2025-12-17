@@ -63,7 +63,7 @@ export function TokenBalanceContainer({ tokenSymbol }: TokenBalanceContainerProp
   };
 
   const handleWithdraw = () => {
-    router.push('/(app)/withdraw');
+    router.push(`/(app)/withdraw?token=${tokenSymbol}`);
   };
 
   if (isLoading) {

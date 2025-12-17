@@ -45,8 +45,9 @@ export function HeroAmountInput({
         onChangeText={onChangeText}
         keyboardType="numeric"
         placeholder="$0"
+        textAlignVertical="center"
         className={cn(
-          'h-auto w-full border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl shadow-none',
+          'h-16 w-full border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl leading-tight shadow-none',
           !hasValue && 'text-muted-foreground/30'
         )}
       />

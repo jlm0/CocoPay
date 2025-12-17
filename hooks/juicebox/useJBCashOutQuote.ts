@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTokenCashOutQuoteEth, applyJbDaoCashOutFee } from 'juice-sdk-core';
+import { jbTerminalStoreAbi, JBDAO_CASHOUT_FEE_PERCENT } from 'juice-sdk-core';
 import type { CashOutQuoteParams, CashOutQuoteResult } from '@/types/juicebox';
-import { useJBProjectRead } from './useJBProjectRead';
+import { JB_TERMINAL_STORE_ADDRESS } from '@/lib/juicebox/contracts';
+import { USDC_DECIMALS, USDC_CURRENCY } from '@/lib/juicebox/constants';
+import { useJBPublicClient } from './useJBPublicClient';
 
 interface UseJBCashOutQuoteResult {
   quote: CashOutQuoteResult | null;
@@ -9,56 +11,64 @@ interface UseJBCashOutQuoteResult {
   error: Error | null;
 }
 
+function applyJbDaoFee(amount: bigint): bigint {
+  return (amount * BigInt(Math.floor((1 - JBDAO_CASHOUT_FEE_PERCENT) * 10000))) / 10000n;
+}
+
 export function useJBCashOutQuote(params: CashOutQuoteParams | null): UseJBCashOutQuoteResult {
-  const { project, isLoading: isProjectLoading } = useJBProjectRead(params?.projectId ?? null);
+  const publicClient = useJBPublicClient();
 
   const query = useQuery({
     queryKey: ['jb-cashout-quote', params?.projectId?.toString(), params?.tokenAmount?.toString()],
-    queryFn: (): CashOutQuoteResult => {
-      if (!params || !project) {
-        throw new Error('Missing params or project data');
+    queryFn: async (): Promise<CashOutQuoteResult> => {
+      if (!params) {
+        throw new Error('Missing params');
       }
 
-      const grossAmount = getTokenCashOutQuoteEth(params.tokenAmount, {
-        overflowWei: project.surplus,
-        totalSupply: project.totalSupply,
-        cashOutTaxRate: project.rulesetMetadata.cashOutTaxRate,
-        tokensReserved: 0n,
+      const grossAmount = await publicClient.readContract({
+        address: JB_TERMINAL_STORE_ADDRESS,
+        abi: jbTerminalStoreAbi,
+        functionName: 'currentReclaimableSurplusOf',
+        args: [
+          params.projectId,
+          params.tokenAmount,
+          [],
+          [],
+          BigInt(USDC_DECIMALS),
+          BigInt(USDC_CURRENCY),
+        ],
       });
 
-      if (grossAmount === 0) {
+      if (grossAmount === 0n) {
         return {
           tokenAmount: params.tokenAmount,
           grossAmount: 0n,
           cashOutTax: 0n,
           daoFee: 0n,
           netAmount: 0n,
-          taxRate: project.rulesetMetadata.cashOutTaxRate / 100,
+          taxRate: 0,
         };
       }
 
-      const grossAmountBigInt = BigInt(grossAmount);
-      const daoFee = applyJbDaoCashOutFee(grossAmountBigInt);
-      const cashOutTaxAmount =
-        (grossAmountBigInt * BigInt(project.rulesetMetadata.cashOutTaxRate)) / 10000n;
-      const netAmount = grossAmountBigInt - daoFee - cashOutTaxAmount;
+      const netAmount = applyJbDaoFee(grossAmount);
+      const daoFee = grossAmount - netAmount;
 
       return {
         tokenAmount: params.tokenAmount,
-        grossAmount: grossAmountBigInt,
-        cashOutTax: cashOutTaxAmount,
+        grossAmount,
+        cashOutTax: 0n,
         daoFee,
-        netAmount: netAmount > 0n ? netAmount : 0n,
-        taxRate: project.rulesetMetadata.cashOutTaxRate / 100,
+        netAmount,
+        taxRate: 0,
       };
     },
-    enabled: !!params && !!project && !isProjectLoading,
+    enabled: !!params && params.tokenAmount > 0n,
     staleTime: 10_000,
   });
 
   return {
     quote: query.data ?? null,
-    isLoading: query.isLoading || isProjectLoading,
+    isLoading: query.isLoading,
     error: query.error as Error | null,
   };
 }

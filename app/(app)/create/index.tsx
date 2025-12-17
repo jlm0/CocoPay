@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { ScrollView, Alert, ActivityIndicator } from 'react-native';
-import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { HEX_COLORS } from '@/lib/theme';
@@ -73,9 +72,13 @@ export default function CreateStorePage() {
 
       const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
 
-      const successUrl =
-        `/store/success?name=${encodeURIComponent(name.trim())}&storeId=${encodeURIComponent(storeId)}` as Href;
-      router.replace(successUrl);
+      router.replace({
+        pathname: '/(app)/create/success',
+        params: {
+          name: name.trim(),
+          storeId,
+        },
+      });
     } catch (err) {
       Alert.alert(
         'Creation Failed',

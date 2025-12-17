@@ -19,7 +19,10 @@ export function TokenBalanceCard({
   className = '',
 }: TokenBalanceCardProps) {
   return (
-    <Pressable onPress={onPress} disabled={!onPress} className={className}>
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      className={`rounded-xl p-3 active:bg-muted ${className}`}>
       <CurrencyDisplay label={token} value={usdValue} maxCharacters={maxCharacters} />
     </Pressable>
   );

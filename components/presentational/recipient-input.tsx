@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Text } from '@/components/ui/text';
+import { truncateAddress } from '@/lib/format';
 
 type RecipientInputProps = {
   value: string;
@@ -12,11 +13,6 @@ type RecipientInputProps = {
   error?: string;
   className?: string;
 };
-
-function truncateAddress(address: string): string {
-  if (address.length <= 12) return address;
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
 
 export function RecipientInput({
   value,

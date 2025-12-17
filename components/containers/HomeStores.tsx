@@ -26,7 +26,7 @@ function StoresSkeleton() {
 
 export function HomeStores() {
   const router = useRouter();
-  const { stores, isLoading, isFetching, error } = useCocoPayStores();
+  const { stores, isLoading, error } = useCocoPayStores();
 
   const handleAddPress = () => {
     router.push('/(app)/create');
@@ -36,7 +36,7 @@ export function HomeStores() {
     router.push(`/(app)/store/${store.id}`);
   };
 
-  const showSkeleton = isLoading && !isFetching;
+  const showSkeleton = isLoading;
 
   return (
     <View className="flex-1">
@@ -56,7 +56,7 @@ export function HomeStores() {
           <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
           <Text className="text-center font-sans-medium text-foreground">No stores yet</Text>
           <Text className="mb-4 mt-1 text-center text-sm text-muted-foreground">
-            Create your first store to start accepting payments
+            Create a store or pay at one to start earning rewards
           </Text>
           <Button variant="outline" size="sm" onPress={handleAddPress}>
             <Text>Create Store</Text>

@@ -4,11 +4,15 @@ import type {
   BendystrawParticipantsQueryParams,
   BendystrawActivityQueryParams,
   BendystrawPayEventsQueryParams,
+  BendystrawParticipantParams,
+  BendystrawParticipantsByAddressParams,
+  BendystrawParticipant,
   BendystrawProjectsResponse,
   BendystrawProjectResponse,
   BendystrawParticipantsResponse,
   BendystrawPayEventsResponse,
   BendystrawActivityEventsResponse,
+  BendystrawParticipantsByAddressResponse,
 } from './types';
 import { getBendystrawClient, getNetworkFromChainId } from './client';
 
@@ -73,9 +77,6 @@ export async function fetchProject(
   chainId: number,
   version: number = 5
 ): Promise<BendystrawProjectResponse['project']> {
-  const start = Date.now();
-  console.log(`[fetchProject] START projectId=${projectId} chainId=${chainId} version=${version}`);
-
   const client = getBendystrawClient(getNetworkFromChainId(chainId));
 
   const query = gql`
@@ -92,21 +93,13 @@ export async function fetchProject(
     version,
   });
 
-  console.log(
-    `[fetchProject] END ${Date.now() - start}ms projectId=${projectId} result=${data.project ? 'found' : 'null'}`
-  );
-
   return data.project;
 }
 
 export async function fetchProjects(
   params: BendystrawProjectsQueryParams = {}
 ): Promise<BendystrawProjectsResponse['projects']> {
-  const start = Date.now();
   const chainId = params.where?.chainId ?? 11155111;
-  const owner = params.where?.owner ?? 'none';
-  console.log(`[fetchProjects] START chainId=${chainId} owner=${owner}`);
-
   const client = getBendystrawClient(getNetworkFromChainId(chainId));
 
   const query = gql`
@@ -136,10 +129,6 @@ export async function fetchProjects(
     orderDirection: params.orderDirection,
     limit: params.limit ?? 50,
   });
-
-  console.log(
-    `[fetchProjects] END ${Date.now() - start}ms count=${data.projects.items.length} total=${data.projects.totalCount}`
-  );
 
   return data.projects;
 }
@@ -241,4 +230,70 @@ export async function fetchActivityEvents(
   });
 
   return data.activityEvents;
+}
+
+export async function fetchParticipantsByAddress(
+  params: BendystrawParticipantsByAddressParams
+): Promise<BendystrawParticipantsByAddressResponse['participants']> {
+  const client = getBendystrawClient(getNetworkFromChainId(params.chainId));
+
+  const query = gql`
+    query GetParticipantsByAddress(
+      $where: participantFilter
+      $orderBy: String
+      $orderDirection: String
+      $limit: Int
+    ) {
+      participants(
+        where: $where
+        orderBy: $orderBy
+        orderDirection: $orderDirection
+        limit: $limit
+      ) {
+        items {
+          ${PARTICIPANT_FIELDS}
+        }
+        totalCount
+      }
+    }
+  `;
+
+  const data = await client.request<BendystrawParticipantsByAddressResponse>(query, {
+    where: {
+      address: params.address.toLowerCase(),
+      chainId: params.chainId,
+      balance_gt: '0',
+    },
+    orderBy: params.orderBy ?? 'balance',
+    orderDirection: params.orderDirection ?? 'desc',
+    limit: params.limit ?? 100,
+  });
+
+  return data.participants;
+}
+
+export async function fetchParticipant(
+  params: BendystrawParticipantParams
+): Promise<BendystrawParticipant | null> {
+  const client = getBendystrawClient(getNetworkFromChainId(params.chainId));
+
+  const query = gql`
+    query GetParticipant($where: participantFilter) {
+      participants(where: $where, limit: 1) {
+        items {
+          ${PARTICIPANT_FIELDS}
+        }
+      }
+    }
+  `;
+
+  const data = await client.request<{ participants: { items: BendystrawParticipant[] } }>(query, {
+    where: {
+      projectId: params.projectId,
+      chainId: params.chainId,
+      address: params.address.toLowerCase(),
+    },
+  });
+
+  return data.participants.items[0] ?? null;
 }

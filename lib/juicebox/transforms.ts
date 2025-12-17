@@ -69,21 +69,28 @@ export function buildStoreCode(projectId: bigint, chainId: number = COCOPAY_CHAI
 }
 
 export function parseStoreCode(storeCode: string): { chainId: number; projectId: bigint } | null {
-  const parts = storeCode.split(':');
-  if (parts.length !== 2) {
-    return null;
-  }
+  const trimmed = storeCode.trim();
+  if (!trimmed) return null;
 
-  const [prefix, idStr] = parts;
-  const chainId = PREFIX_TO_CHAIN[prefix];
+  if (trimmed.includes(':')) {
+    const parts = trimmed.split(':');
+    if (parts.length !== 2) return null;
 
-  if (!chainId) {
-    return null;
+    const [prefix, idStr] = parts;
+    const chainId = PREFIX_TO_CHAIN[prefix];
+    if (!chainId) return null;
+
+    try {
+      const projectId = BigInt(idStr);
+      return { chainId, projectId };
+    } catch {
+      return null;
+    }
   }
 
   try {
-    const projectId = BigInt(idStr);
-    return { chainId, projectId };
+    const projectId = BigInt(trimmed);
+    return { chainId: COCOPAY_CHAIN_ID, projectId };
   } catch {
     return null;
   }

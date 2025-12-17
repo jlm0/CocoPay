@@ -4,48 +4,42 @@ import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
 
-type PaymentSuccessProps = {
-  amount: string;
-  storeName: string;
+type CashOutSuccessProps = {
+  tokenAmount: string;
   tokenSymbol: string;
-  cashBack: string;
+  usdcAmount: string;
+  storeName: string;
   className?: string;
 };
 
-function formatCashBack(value: string): string {
-  const num = parseFloat(value);
-  if (isNaN(num)) return '0.00';
-  return num.toFixed(2);
-}
-
-export function PaymentSuccess({
-  amount,
-  storeName,
+export function CashOutSuccess({
+  tokenAmount,
   tokenSymbol,
-  cashBack,
+  usdcAmount,
+  storeName,
   className = '',
-}: PaymentSuccessProps) {
+}: CashOutSuccessProps) {
   return (
     <View className={cn('flex-1 items-center justify-center px-6', className)}>
       <Icon as={CircleCheck} size={80} className="mb-6 text-primary" />
 
       <Text variant="title" className="mb-2 text-center">
-        Payment Successful
+        Cash Out Successful
       </Text>
 
-      <Text className="mb-8 text-center font-sans-bold text-5xl">${amount}</Text>
+      <Text className="mb-8 text-center font-sans-bold text-5xl">${usdcAmount}</Text>
 
       <Text variant="caption" className="text-center">
-        Paid to {storeName}
+        USDC received
       </Text>
 
       <View className="mt-8 w-full rounded-xl bg-muted/50 p-4">
         <Text className="text-center text-sm text-muted-foreground">
-          You received{' '}
+          You cashed out{' '}
           <Text className="font-sans-semibold text-foreground">
-            {formatCashBack(cashBack)} {tokenSymbol}
+            {tokenAmount} {tokenSymbol}
           </Text>{' '}
-          cash back
+          from {storeName}
         </Text>
       </View>
     </View>

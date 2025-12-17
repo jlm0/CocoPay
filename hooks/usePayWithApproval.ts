@@ -14,9 +14,12 @@ import {
 import { JB_MULTI_TERMINAL_ADDRESS } from '@/lib/juicebox/contracts';
 import { ERC20_ABI, USDC_APPROVAL_AMOUNT } from '@/lib/constants';
 
+export type PaymentStep = 'idle' | 'approving' | 'sending' | 'confirming';
+
 interface UsePayWithApprovalResult {
   pay: (params: PayParams) => Promise<PayResult>;
   isLoading: boolean;
+  paymentStep: PaymentStep;
   error: Error | null;
   needsApproval: boolean;
   reset: () => void;
@@ -29,11 +32,13 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
   const { data: allowance, refetch: refetchAllowance } =
     useUsdcAllowance(JB_MULTI_TERMINAL_ADDRESS);
   const [error, setError] = useState<Error | null>(null);
+  const [paymentStep, setPaymentStep] = useState<PaymentStep>('idle');
 
   const needsApproval = !allowance || allowance < USDC_APPROVAL_AMOUNT / 10n;
 
   const reset = useCallback(() => {
     setError(null);
+    setPaymentStep('idle');
   }, []);
 
   const pay = useCallback(
@@ -71,12 +76,14 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
         let result;
 
         if (requiresApproval) {
+          setPaymentStep('approving');
           const approveData = encodeFunctionData({
             abi: ERC20_ABI,
             functionName: 'approve',
             args: [JB_MULTI_TERMINAL_ADDRESS, USDC_APPROVAL_AMOUNT],
           });
 
+          setPaymentStep('sending');
           result = await sendBatchedTransaction([
             { target: USDC_ADDRESS as Address, data: approveData },
             { target: JB_MULTI_TERMINAL_ADDRESS, data: payData },
@@ -84,9 +91,11 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
 
           refetchAllowance();
         } else {
+          setPaymentStep('sending');
           result = await sendTransaction(JB_MULTI_TERMINAL_ADDRESS, 0n, payData);
         }
 
+        setPaymentStep('confirming');
         const txHash = result.receipt.transactionHash as Hash;
 
         let tokensReceived = 0n;
@@ -100,11 +109,13 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
           }
         }
 
+        setPaymentStep('idle');
         return {
           tokensReceived,
           txHash,
         };
       } catch (err) {
+        setPaymentStep('idle');
         const error = err instanceof Error ? err : new Error('Payment failed');
         setError(error);
         throw error;
@@ -124,6 +135,7 @@ export function usePayWithApproval(projectId: bigint): UsePayWithApprovalResult 
   return {
     pay,
     isLoading,
+    paymentStep,
     error,
     needsApproval,
     reset,

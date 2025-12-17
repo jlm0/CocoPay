@@ -7,6 +7,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useTokenBalances } from '@/hooks/useTokenBalances';
 import type { TokenType } from '@/types';
 
+type HomeBalancesProps = {
+  onCoconutPress?: () => void;
+};
+
 function BalancesSkeleton() {
   return (
     <View className="flex-row justify-between gap-4">
@@ -22,9 +26,9 @@ function BalancesSkeleton() {
   );
 }
 
-export function HomeBalances() {
+export function HomeBalances({ onCoconutPress }: HomeBalancesProps) {
   const router = useRouter();
-  const { balances, isLoading, isFetching } = useTokenBalances();
+  const { balances, isLoading } = useTokenBalances();
 
   const handleBalancePress = (token: TokenType) => {
     router.push(`/(app)/balance/${token}`);
@@ -33,11 +37,11 @@ export function HomeBalances() {
   const usdcBalance = balances.find((b) => b.token === 'USDC');
   const ethBalance = balances.find((b) => b.token === 'ETH');
 
-  const showSkeleton = isLoading && !isFetching;
+  const showSkeleton = isLoading;
 
   return (
     <View className="mb-6">
-      <FeatureHeader title="Balances" className="mb-4" />
+      <FeatureHeader title="Balances" onCoconutPress={onCoconutPress} className="mb-4" />
       {showSkeleton ? (
         <BalancesSkeleton />
       ) : (

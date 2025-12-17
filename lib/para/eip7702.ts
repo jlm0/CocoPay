@@ -30,16 +30,7 @@ function createSignMessage(para: ParaMobile, walletId: string) {
       throw new Error('Signing was denied or failed');
     }
     const sigHex = `0x${result.signature}` as Hex;
-    const parsed = parseSignature(sigHex);
-    console.log('[signMessage] raw signature:', sigHex);
-    console.log('[signMessage] parsed:', {
-      r: parsed.r,
-      s: parsed.s,
-      v: parsed.v,
-      yParity: parsed.yParity,
-    });
     const normalized = normalizeSignature(sigHex);
-    console.log('[signMessage] normalized:', normalized);
     return normalized;
   };
 }
@@ -77,15 +68,6 @@ function createSignAuthorization(para: ParaMobile, walletId: string) {
     }
     const sigHex = `0x${result.signature}` as Hex;
     const parsed = parseSignature(sigHex);
-    console.log('[signAuthorization] raw signature:', sigHex);
-    console.log('[signAuthorization] parsed:', {
-      r: parsed.r,
-      s: parsed.s,
-      v: parsed.v,
-      yParity: parsed.yParity,
-    });
-    console.log('[signAuthorization] address:', address);
-
     const yParity = parsed.yParity as 0 | 1;
 
     return {
