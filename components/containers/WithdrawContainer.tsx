@@ -19,7 +19,7 @@ import { HEX_COLORS } from '@/lib/theme';
 import type { TokenType } from '@/types';
 
 type WithdrawContainerProps = {
-  token: TokenType;
+  token?: string;
 };
 
 const TOKEN_CONFIG = {
@@ -39,12 +39,13 @@ const TOKEN_CONFIG = {
   },
 } as const;
 
-export function WithdrawContainer({ token }: WithdrawContainerProps) {
+export function WithdrawContainer({ token: tokenParam }: WithdrawContainerProps) {
   const router = useRouter();
   const [amount, setAmount] = useState('');
   const [recipient, setRecipient] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const token: TokenType = tokenParam === 'USDC' ? 'USDC' : 'ETH';
   const config = TOKEN_CONFIG[token];
 
   const ethBalance = useViemEthBalance();

@@ -1,6 +1,5 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { View, ScrollView } from 'react-native';
-import { useDebounce } from 'use-debounce';
 import { useRouter } from 'expo-router';
 import { parseUnits, formatUnits } from 'viem';
 import { FeatureHeader } from '@/components/presentational/feature-header';
@@ -12,62 +11,126 @@ import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Spinner } from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useStoreDetails } from '@/hooks/useStoreDetails';
 import { useViemUsdcBalance } from '@/hooks/useViemUsdcBalance';
 import { useStorePay } from '@/hooks/useStorePay';
-import { parseStoreCode } from '@/lib/juicebox/transforms';
+import { useStoreInputLogic } from '@/hooks/useStoreInputLogic';
+import { useAmountInputLogic } from '@/hooks/useAmountInputLogic';
+import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
 import { TOKEN_DECIMALS } from '@/lib/constants';
 import { JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
-import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
+import type { DeepLinkResult } from '@/hooks/useDeepLinkSource';
 
 export type PaySource = 'manual' | 'navigation' | 'qr' | 'deeplink';
 
 type PayContainerProps = {
-  initialStoreCode?: string;
-  initialAmount?: string;
-  source?: PaySource;
-  deepLinkError?: string | null;
+  routeStore?: string;
+  routeStoreCode?: string;
+  routeAmount?: string;
+  routeSource?: PaySource;
+  deepLink: DeepLinkResult;
 };
 
 export function PayContainer({
+  routeStore,
+  routeStoreCode,
+  routeAmount,
+  routeSource,
+  deepLink,
+}: PayContainerProps) {
+  if (deepLink.status === 'pending') {
+    return (
+      <ScreenContainer
+        bottomActionBar={
+          <BottomActionBar>
+            <Button variant="secondary" disabled size="lg" className="h-14 rounded-xl">
+              <Text>Scan QR</Text>
+            </Button>
+            <Button disabled size="lg" className="h-14 rounded-xl">
+              <Text>Pay</Text>
+            </Button>
+          </BottomActionBar>
+        }>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-64">
+          <FeatureHeader title="Pay" className="mb-6" />
+          <Skeleton className="mb-4 h-20 w-full rounded-xl" />
+          <View className="items-center">
+            <Skeleton className="h-16 w-48 rounded-lg" />
+          </View>
+        </ScrollView>
+      </ScreenContainer>
+    );
+  }
+
+  const isDeepLink = deepLink.status === 'deeplink';
+  const initialStoreCode = isDeepLink ? deepLink.params?.store : (routeStore ?? routeStoreCode);
+  const initialAmount = isDeepLink ? deepLink.params?.amount : routeAmount;
+  const source: PaySource =
+    routeSource ?? (isDeepLink ? 'deeplink' : initialStoreCode ? 'navigation' : 'manual');
+  const isFromExternal = source === 'qr' || source === 'deeplink';
+  const deepLinkError = deepLink.error;
+
+  return (
+    <PayContainerContent
+      initialStoreCode={initialStoreCode}
+      initialAmount={initialAmount}
+      isFromExternal={isFromExternal}
+      deepLinkError={deepLinkError}
+    />
+  );
+}
+
+type PayContainerContentProps = {
+  initialStoreCode?: string;
+  initialAmount?: string;
+  isFromExternal: boolean;
+  deepLinkError: string | null;
+};
+
+function PayContainerContent({
   initialStoreCode,
   initialAmount,
-  source = 'manual',
+  isFromExternal,
   deepLinkError,
-}: PayContainerProps) {
+}: PayContainerContentProps) {
   const router = useRouter();
-  const [storeCode, setStoreCode] = useState(initialStoreCode ?? '');
-  const [amountRaw, setAmountRaw] = useState(initialAmount ?? '');
-  const [isStoreEditing, setIsStoreEditing] = useState(!initialStoreCode);
-  const [isAmountEditing, setIsAmountEditing] = useState(!initialAmount);
-
-  const isFromExternal = source === 'qr' || source === 'deeplink';
-  const displayAmount = amountRaw ? `$${amountRaw}` : '';
   const prevStoreIdRef = useRef<string | null>(null);
 
-  const [debouncedStoreCode] = useDebounce(storeCode, 800);
-  const parsedCode = useMemo(() => parseStoreCode(debouncedStoreCode), [debouncedStoreCode]);
+  const { data: usdcBalance, isLoading: balanceLoading } = useViemUsdcBalance();
+  const usdcBalanceNum = usdcBalance?.formatted ? parseFloat(usdcBalance.formatted) : 0;
+
+  const storeInput = useStoreInputLogic({
+    initialStoreCode,
+    isFromExternal,
+  });
+
+  const projectId = storeInput.parsedCode?.projectId ?? 0n;
+  const {
+    pay: payStore,
+    isLoading: isPayLoading,
+    paymentStep,
+    error: payError,
+    reset: resetPayError,
+  } = useStorePay(projectId);
+
+  const amountInput = useAmountInputLogic({
+    initialAmount,
+    balance: usdcBalanceNum,
+    isFromExternal,
+    onReset: resetPayError,
+  });
 
   const {
     store,
     isLoading: storeLoading,
     error: storeError,
   } = useStoreDetails(
-    parsedCode?.projectId ? Number(parsedCode.projectId) : 0,
-    parsedCode?.chainId ?? 0
+    storeInput.parsedCode?.projectId ? Number(storeInput.parsedCode.projectId) : 0,
+    storeInput.parsedCode?.chainId ?? 0
   );
 
-  const { data: usdcBalance, isLoading: balanceLoading } = useViemUsdcBalance();
   const { addProject } = useCocoPayProjectRegistry();
-
-  const projectId = parsedCode?.projectId ?? 0n;
-  const {
-    pay,
-    isLoading: isPayLoading,
-    paymentStep,
-    error: payError,
-    reset: resetPayError,
-  } = useStorePay(projectId);
 
   const payButtonText = {
     idle: 'Pay',
@@ -81,55 +144,31 @@ export function PayContainer({
     const isNewStore = currentStoreId !== prevStoreIdRef.current;
     prevStoreIdRef.current = currentStoreId;
 
-    if (store && isNewStore && isStoreEditing && !isFromExternal) {
-      setIsStoreEditing(false);
+    if (store && isNewStore && storeInput.isEditing && !isFromExternal) {
+      storeInput.setIsEditing(false);
     }
-  }, [store, isStoreEditing, isFromExternal]);
+  }, [store, storeInput.isEditing, isFromExternal, storeInput]);
 
-  const numericAmount = useMemo(() => {
-    return parseFloat(amountRaw) || 0;
-  }, [amountRaw]);
-
-  const usdcBalanceNum = usdcBalance?.formatted ? parseFloat(usdcBalance.formatted) : 0;
-
-  const isDebouncing = storeCode !== debouncedStoreCode;
-
-  const storeCodeError = useMemo(() => {
-    if (!storeCode) return undefined;
-    if (isDebouncing) return undefined;
-    if (!parsedCode) return 'Invalid store code format';
+  const storeCodeError = (() => {
+    if (storeInput.storeCodeError) return storeInput.storeCodeError;
     if (storeError) return 'Store not found';
     return undefined;
-  }, [storeCode, isDebouncing, parsedCode, storeError]);
+  })();
 
-  const amountExceedsBalance = numericAmount > usdcBalanceNum;
-  const isValidAmount = numericAmount > 0 && !amountExceedsBalance;
   const isValidStore = !!store && !storeError;
-  const canPay = isValidAmount && isValidStore && !isPayLoading;
+  const canPay = amountInput.isValidAmount && isValidStore && !isPayLoading;
+
+  const handleStoreCodeChange = (code: string) => {
+    storeInput.handleStoreCodeChange(code);
+    resetPayError();
+  };
 
   const handleStoreEditPress = () => {
-    setIsStoreEditing(true);
+    storeInput.setIsEditing(true);
   };
 
   const handleAmountEditPress = () => {
-    setIsAmountEditing(true);
-  };
-
-  const handleStoreCodeChange = (code: string) => {
-    const cleaned = code.replace(/[^0-9]/g, '');
-    setStoreCode(cleaned);
-    resetPayError();
-    if (store) {
-      setIsStoreEditing(true);
-    }
-  };
-
-  const handleAmountChange = (newAmount: string) => {
-    const cleaned = newAmount.replace(/[^0-9.]/g, '');
-    const parts = cleaned.split('.');
-    const sanitized = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleaned;
-    setAmountRaw(sanitized);
-    resetPayError();
+    amountInput.setIsEditing(true);
   };
 
   const handleScanQR = () => {
@@ -137,15 +176,18 @@ export function PayContainer({
   };
 
   const handlePay = async () => {
-    if (!canPay || !store || !parsedCode) return;
+    if (!canPay || !store || !storeInput.parsedCode) return;
 
     try {
-      const amountInSmallestUnit = parseUnits(numericAmount.toString(), TOKEN_DECIMALS.USDC);
-      const result = await pay({ amount: amountInSmallestUnit });
+      const amountInSmallestUnit = parseUnits(
+        amountInput.numericAmount.toString(),
+        TOKEN_DECIMALS.USDC
+      );
+      const result = await payStore({ amount: amountInSmallestUnit });
 
       await addProject({
-        projectId: Number(parsedCode.projectId),
-        chainId: parsedCode.chainId,
+        projectId: Number(storeInput.parsedCode.projectId),
+        chainId: storeInput.parsedCode.chainId,
       });
 
       const cashBack = formatUnits(result.tokensReceived, JB_TOKEN_DECIMALS);
@@ -154,7 +196,7 @@ export function PayContainer({
         pathname: '/(app)/pay/success',
         params: {
           txHash: result.txHash,
-          amount: numericAmount.toString(),
+          amount: amountInput.numericAmount.toString(),
           storeName: store.name,
           tokenSymbol: store.tokenSymbol,
           cashBack,
@@ -165,9 +207,9 @@ export function PayContainer({
     }
   };
 
-  const showStoreAsDisplay = !!store && !isStoreEditing;
+  const showStoreAsDisplay = !!store && !storeInput.isEditing;
   const showStoreEditButton = !isFromExternal;
-  const isAmountReadonly = isFromExternal && !!initialAmount && !isAmountEditing;
+  const isAmountReadonly = isFromExternal && !!initialAmount && !amountInput.isEditing;
 
   return (
     <ScreenContainer
@@ -201,11 +243,11 @@ export function PayContainer({
 
         <PayStoreInfo
           storeName={store?.name ?? null}
-          storeCode={storeCode}
+          storeCode={storeInput.storeCode}
           onChangeStoreCode={handleStoreCodeChange}
           onEditPress={handleStoreEditPress}
           isEditing={!showStoreAsDisplay}
-          isLoading={storeLoading && !!parsedCode}
+          isLoading={storeLoading && !!storeInput.parsedCode}
           error={storeCodeError}
           showEditButton={showStoreEditButton}
           disabled={isPayLoading}
@@ -214,8 +256,8 @@ export function PayContainer({
 
         <View className="flex-1">
           <HeroAmountInput
-            value={displayAmount}
-            onChangeText={handleAmountChange}
+            value={amountInput.displayAmount}
+            onChangeText={amountInput.handleAmountChange}
             isEditable={!isAmountReadonly}
             onEditPress={handleAmountEditPress}
             disabled={isPayLoading}
@@ -223,7 +265,7 @@ export function PayContainer({
 
           <PayBalanceDisplay balance={usdcBalanceNum} isLoading={balanceLoading} />
 
-          {amountExceedsBalance && numericAmount > 0 && (
+          {amountInput.amountExceedsBalance && amountInput.numericAmount > 0 && (
             <Text variant="small" className="mt-2 text-center text-destructive">
               Insufficient balance
             </Text>

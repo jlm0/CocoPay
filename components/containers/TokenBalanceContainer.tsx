@@ -18,13 +18,14 @@ import { HEX_COLORS } from '@/lib/theme';
 import type { TokenType } from '@/types';
 
 type TokenBalanceContainerProps = {
-  tokenSymbol: TokenType;
+  tokenSymbol?: string;
 };
 
-export function TokenBalanceContainer({ tokenSymbol }: TokenBalanceContainerProps) {
+export function TokenBalanceContainer({ tokenSymbol: tokenParam }: TokenBalanceContainerProps) {
   const router = useRouter();
   const { address } = useParaAccount();
 
+  const tokenSymbol: TokenType = (tokenParam ?? 'ETH') === 'USDC' ? 'USDC' : 'ETH';
   const isEth = tokenSymbol === 'ETH';
 
   const ethBalance = useViemEthBalance();
