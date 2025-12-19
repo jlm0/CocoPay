@@ -1,15 +1,8 @@
 export const queryKeys = {
   balance: {
     all: ['balance'] as const,
-    eth: (address: string | null | undefined, chainId: number) =>
-      ['balance', 'eth', address, chainId] as const,
     usdc: (address: string | null | undefined, chainId: number) =>
       ['balance', 'usdc', address, chainId] as const,
-  },
-
-  coingecko: {
-    all: ['coingecko'] as const,
-    prices: () => ['coingecko', 'prices'] as const,
   },
 
   bendystraw: {

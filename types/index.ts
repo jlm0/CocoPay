@@ -31,7 +31,7 @@ export interface StoreDetails extends Store {
   borrowValue: number;
 }
 
-export type TokenType = 'USDC' | 'ETH';
+export type TokenType = 'USDC';
 
 export interface Balance {
   token: TokenType;

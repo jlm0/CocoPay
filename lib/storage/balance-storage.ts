@@ -9,7 +9,6 @@ export type StoredBalance = {
 };
 
 export type StoredBalances = {
-  eth: StoredBalance | null;
   usdc: StoredBalance | null;
 };
 
@@ -38,23 +37,13 @@ export function getStoredBalancesSync(): StoredBalances | null {
 
 export async function storeBalances(balances: Partial<StoredBalances>): Promise<void> {
   try {
-    const current = cachedBalances ?? { eth: null, usdc: null };
+    const current = cachedBalances ?? { usdc: null };
     const updated = { ...current, ...balances };
     cachedBalances = updated;
     await AsyncStorage.setItem(BALANCE_STORAGE_KEY, JSON.stringify(updated));
   } catch {
     // ignore
   }
-}
-
-export async function storeEthBalance(raw: bigint, formatted: string): Promise<void> {
-  await storeBalances({
-    eth: {
-      raw: raw.toString(),
-      formatted,
-      lastUpdated: Date.now(),
-    },
-  });
 }
 
 export async function storeUsdcBalance(raw: bigint, formatted: string): Promise<void> {

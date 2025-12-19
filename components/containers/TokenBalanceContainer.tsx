@@ -10,35 +10,21 @@ import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
-import { useViemEthBalance } from '@/hooks/useViemEthBalance';
 import { useViemUsdcBalance } from '@/hooks/useViemUsdcBalance';
-import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { HEX_COLORS } from '@/lib/theme';
-import type { TokenType } from '@/types';
 
-type TokenBalanceContainerProps = {
-  tokenSymbol?: string;
-};
-
-export function TokenBalanceContainer({ tokenSymbol: tokenParam }: TokenBalanceContainerProps) {
+export function TokenBalanceContainer() {
   const router = useRouter();
   const { address } = useParaAccount();
 
-  const tokenSymbol: TokenType = (tokenParam ?? 'ETH') === 'USDC' ? 'USDC' : 'ETH';
-  const isEth = tokenSymbol === 'ETH';
-
-  const ethBalance = useViemEthBalance();
   const usdcBalance = useViemUsdcBalance();
-  const prices = useCoinGeckoPrice();
 
-  const balance = isEth ? ethBalance : usdcBalance;
-  const amount = balance.data?.formatted ? parseFloat(balance.data.formatted) : 0;
-  const price = isEth ? (prices.data?.eth ?? 0) : (prices.data?.usdc ?? 1);
-  const usdValue = amount * price;
+  const amount = usdcBalance.data?.formatted ? parseFloat(usdcBalance.data.formatted) : 0;
+  const usdValue = amount;
 
-  const isLoading = balance.isLoading && !balance.data;
-  const hasError = !!balance.error;
+  const isLoading = usdcBalance.isLoading && !usdcBalance.data;
+  const hasError = !!usdcBalance.error;
 
   const [copied, setCopied] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -52,9 +38,9 @@ export function TokenBalanceContainer({ tokenSymbol: tokenParam }: TokenBalanceC
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await Promise.all([balance.refetch(), prices.refetch()]);
+    await usdcBalance.refetch();
     setIsRefreshing(false);
-  }, [balance, prices]);
+  }, [usdcBalance]);
 
   const handleCopyAddress = async () => {
     if (address) {
@@ -64,7 +50,7 @@ export function TokenBalanceContainer({ tokenSymbol: tokenParam }: TokenBalanceC
   };
 
   const handleWithdraw = () => {
-    router.push(`/(app)/withdraw?token=${tokenSymbol}`);
+    router.push('/(app)/withdraw');
   };
 
   if (isLoading) {
@@ -124,16 +110,11 @@ export function TokenBalanceContainer({ tokenSymbol: tokenParam }: TokenBalanceC
             colors={[HEX_COLORS.primary]}
           />
         }>
-        <FeatureHeader title={tokenSymbol} className="mb-8" />
+        <FeatureHeader title="USDC" className="mb-8" />
 
-        <BalanceDisplay
-          amount={amount}
-          tokenSymbol={tokenSymbol}
-          usdValue={usdValue}
-          className="mb-8"
-        />
+        <BalanceDisplay amount={amount} tokenSymbol="USDC" usdValue={usdValue} className="mb-8" />
 
-        <DepositAddress tokenName={tokenSymbol} address={address ?? ''} />
+        <DepositAddress tokenName="USDC" address={address ?? ''} />
       </ScrollView>
     </ScreenContainer>
   );
