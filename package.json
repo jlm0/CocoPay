@@ -13,8 +13,8 @@
     "web": "expo start --web",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "graphql-codegen --config codegen.ts --watch",
-    "build:ios": "eas build --platform ios --local",
-    "build:android": "eas build --platform android --local",
+    "build:ios": "mkdir -p build && eas build --platform ios --local --output \"build/cocopay-ios-$(node -p \"require('./app.json').expo.version\")-$(date +%Y%m%d-%H%M%S).ipa\"",
+    "build:android": "mkdir -p build && eas build --platform android --local --output \"build/cocopay-android-$(node -p \"require('./app.json').expo.version\")-$(date +%Y%m%d-%H%M%S).apk\"",
     "submit:ios": "eas submit --platform ios",
     "submit:android": "eas submit --platform android"
   },
