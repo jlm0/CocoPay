@@ -43,7 +43,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cocopay.app",
-      "associatedDomains": ["applinks:cocopay.app", "applinks:cocopay.app"],
+      "associatedDomains": ["applinks:cocopay.app"],
       "infoPlist": {
         "NSCameraUsageDescription": "CocoPay uses the camera to scan QR codes for payments",
         "ITSAppUsesNonExemptEncryption": false
