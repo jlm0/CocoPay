@@ -3,6 +3,9 @@ import type { Hex, Chain, TransactionReceipt } from 'viem';
 import { useAlchemySmartAccountClient } from './useAlchemySmartAccountClient';
 import { invalidateBalances } from '@/lib/query';
 
+const TX_CONFIRMATION_TIMEOUT_SECONDS = 60;
+const POLL_INTERVAL_MS = 1000;
+
 export interface SendTransactionResult {
   receipt: TransactionReceipt;
   userOpHash: Hex;
@@ -32,9 +35,18 @@ export function useAlchemySendTransaction(chain?: Chain) {
         });
 
         let userOpReceipt = await client.getUserOperationReceipt(userOpHash);
-        while (!userOpReceipt) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+        let retries = 0;
+
+        while (!userOpReceipt && retries < TX_CONFIRMATION_TIMEOUT_SECONDS) {
+          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
           userOpReceipt = await client.getUserOperationReceipt(userOpHash);
+          retries++;
+        }
+
+        if (!userOpReceipt) {
+          throw new Error(
+            `Transaction confirmation timed out after ${TX_CONFIRMATION_TIMEOUT_SECONDS} seconds`
+          );
         }
 
         invalidateBalances();
@@ -71,9 +83,18 @@ export function useAlchemySendTransaction(chain?: Chain) {
         const { hash: userOpHash } = await client.sendUserOperation({ uo });
 
         let userOpReceipt = await client.getUserOperationReceipt(userOpHash);
-        while (!userOpReceipt) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+        let retries = 0;
+
+        while (!userOpReceipt && retries < TX_CONFIRMATION_TIMEOUT_SECONDS) {
+          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
           userOpReceipt = await client.getUserOperationReceipt(userOpHash);
+          retries++;
+        }
+
+        if (!userOpReceipt) {
+          throw new Error(
+            `Transaction confirmation timed out after ${TX_CONFIRMATION_TIMEOUT_SECONDS} seconds`
+          );
         }
 
         invalidateBalances();

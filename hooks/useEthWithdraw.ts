@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { Hex } from 'viem';
+import type { Hex, Chain } from 'viem';
 import { useAlchemySendTransaction } from './useAlchemySendTransaction';
 import { DEFAULT_CHAIN } from '@/lib/chains';
 
@@ -15,8 +15,8 @@ type UseEthWithdrawResult = {
   reset: () => void;
 };
 
-export function useEthWithdraw(): UseEthWithdrawResult {
-  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(DEFAULT_CHAIN);
+export function useEthWithdraw(chain: Chain = DEFAULT_CHAIN): UseEthWithdrawResult {
+  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
   const [error, setError] = useState<Error | null>(null);
 
   const reset = useCallback(() => {

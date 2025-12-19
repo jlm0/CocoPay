@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { encodeFunctionData, type Hex } from 'viem';
+import { encodeFunctionData, type Hex, type Chain } from 'viem';
 import { useAlchemySendTransaction } from './useAlchemySendTransaction';
 import { DEFAULT_CHAIN } from '@/lib/chains';
 import { ERC20_ABI } from '@/lib/constants';
@@ -16,8 +16,11 @@ type UseErc20WithdrawResult = {
   reset: () => void;
 };
 
-export function useErc20Withdraw(tokenAddress: Hex): UseErc20WithdrawResult {
-  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(DEFAULT_CHAIN);
+export function useErc20Withdraw(
+  tokenAddress: Hex,
+  chain: Chain = DEFAULT_CHAIN
+): UseErc20WithdrawResult {
+  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
   const [error, setError] = useState<Error | null>(null);
 
   const reset = useCallback(() => {
