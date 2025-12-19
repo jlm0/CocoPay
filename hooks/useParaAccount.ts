@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { LocalAccount, Hex } from 'viem';
-import { createEip7702ParaAccount } from '@/lib/para/eip7702';
+import { createParaAccount } from '@getpara/viem-v2-integration';
 import { para } from '@/lib/para';
 import { usePara } from '@/providers/ParaProvider';
 
@@ -20,7 +20,7 @@ export function useParaAccount(): UseParaAccountResult {
 
     const wallet = wallets[0];
     const walletAddress = wallet.address as Hex;
-    const paraAccount = createEip7702ParaAccount(para, walletAddress, wallet.id);
+    const paraAccount = createParaAccount(para, walletAddress);
 
     return { account: paraAccount, address: walletAddress };
   }, [isAuthenticated, wallets]);
