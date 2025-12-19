@@ -25,6 +25,12 @@
         {
           "cameraPermission": "CocoPay uses the camera to scan QR codes for payments"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CocoPay needs access to your photos to set a store logo."
+        }
       ]
     ],
     "experiments": {

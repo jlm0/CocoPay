@@ -1,4 +1,4 @@
-import type { StoreCreationParams } from '@/types/juicebox';
+import type { StoreCreationParams, StoreAddress } from '@/types/juicebox';
 import {
   uploadJson,
   fetchByCid,
@@ -12,6 +12,7 @@ export interface CocoPayMetadata {
   ticker: string;
   cashBackPercent: number;
   loyaltyBonusPercent: number;
+  address?: StoreAddress;
   createdAt: string;
 }
 
@@ -20,6 +21,7 @@ export interface ProjectMetadata {
   description?: string;
   logoUri?: string;
   projectTagline?: string;
+  infoUri?: string;
   tags?: string[];
   cocopay?: CocoPayMetadata;
 }
@@ -31,13 +33,15 @@ export function buildProjectMetadata(params: StoreCreationParams): ProjectMetada
     name: params.name,
     description: params.description,
     logoUri: params.logoUri,
-    projectTagline: `${params.ticker} rewards program`,
+    projectTagline: params.tagline || `${params.ticker} rewards program`,
+    infoUri: params.website,
     tags: ['business'],
     cocopay: {
       version: COCOPAY_METADATA_VERSION,
       ticker: params.ticker,
       cashBackPercent: params.cashBackPercent,
       loyaltyBonusPercent: params.loyaltyBonusPercent,
+      address: params.address,
       createdAt: new Date().toISOString(),
     },
   };

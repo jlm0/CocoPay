@@ -1,10 +1,22 @@
 import type { Address, Hash } from 'viem';
 
+export interface StoreAddress {
+  formatted: string;
+  placeId?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
+
 export interface StoreCreationParams {
   name: string;
   ticker: string;
   description?: string;
+  tagline?: string;
   logoUri?: string;
+  address?: StoreAddress;
+  website?: string;
   cashBackPercent: number;
   loyaltyBonusPercent: number;
 }

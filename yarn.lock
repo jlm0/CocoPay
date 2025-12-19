@@ -8241,6 +8241,7 @@ __metadata:
     expo-clipboard: "npm:^8.0.8"
     expo-constants: "npm:~18.0.12"
     expo-font: "npm:^14.0.10"
+    expo-image-picker: "npm:~17.0.10"
     expo-linear-gradient: "npm:~15.0.8"
     expo-linking: "npm:~8.0.11"
     expo-router: "npm:~6.0.21"
@@ -8260,6 +8261,7 @@ __metadata:
     react-native: "npm:0.81.5"
     react-native-animated-rolling-numbers: "npm:^2.0.0"
     react-native-gesture-handler: "npm:~2.28.0"
+    react-native-google-places-autocomplete: "npm:^2.6.1"
     react-native-keychain: "npm:^10.0.0"
     react-native-modpow: "npm:^1.1.0"
     react-native-passkey: "npm:^3.3.2"
@@ -9836,6 +9838,26 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/67b5ea924319235426c27a4b69a8409438314bed635ad9c57bfbb4b5dcc873a575d2f44129683ec145785d3cdf591349078cc2e96d750ba2dea3aebf89e19e9f
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~6.0.0":
+  version: 6.0.0
+  resolution: "expo-image-loader@npm:6.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/36f1e80d2b3d2a1cce440c7d938cd3cf3138f2b1fa706a1954e415bfae87b5b8eeaec65be0ab17880eb7585dd28c9225d056ebdb98ac81e0ffbfe880d952b0eb
+  languageName: node
+  linkType: hard
+
+"expo-image-picker@npm:~17.0.10":
+  version: 17.0.10
+  resolution: "expo-image-picker@npm:17.0.10"
+  dependencies:
+    expo-image-loader: "npm:~6.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/d05ed6ce53463acc86af062df33a648aaafb27549f875ebf907f0f438c09727ae9b75fb8c333fdcaceb0249d9de16929d2cd65ba81f256403745a30af9a7f8c3
   languageName: node
   linkType: hard
 
@@ -14021,6 +14043,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qs@npm:~6.9.1":
+  version: 6.9.7
+  resolution: "qs@npm:6.9.7"
+  checksum: 10c0/d0274b3c2daa9e7b350fb695fc4b5f7a1e65e266d5798a07936975f0848bdca6d7ad41cded19ad4af6a6253b97e43b497e988e728eab7a286f277b6dddfbade4
+  languageName: node
+  linkType: hard
+
 "query-string@npm:^7.1.3":
   version: 7.1.3
   resolution: "query-string@npm:7.1.3"
@@ -14186,6 +14215,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-google-places-autocomplete@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "react-native-google-places-autocomplete@npm:2.6.1"
+  dependencies:
+    lodash.debounce: "npm:^4.0.8"
+    qs: "npm:~6.9.1"
+    react-native-uuid: "npm:^2.0.3"
+  peerDependencies:
+    react-native: ">= 0.59"
+  checksum: 10c0/4b2bc38b0dde8447bb1d130733fed142844ef7d89e0f947405938d0de1e85219db5c2df0c0881246f981b54670deee6951d54681ea95ea5160551e36ca64e697
+  languageName: node
+  linkType: hard
+
 "react-native-is-edge-to-edge@npm:^1.1.6, react-native-is-edge-to-edge@npm:^1.2.1":
   version: 1.2.1
   resolution: "react-native-is-edge-to-edge@npm:1.2.1"
@@ -14322,6 +14364,13 @@ __metadata:
   peerDependencies:
     react-native: "*"
   checksum: 10c0/a48e6978f5a2c9e225bb93cc5f9985a8ac0fe7d8122105bcd88ef8d8420a3b33a67ce5d2bda2b606bf5fa94af9f6d04efce354580b60900e7c967fd2ebdc42cf
+  languageName: node
+  linkType: hard
+
+"react-native-uuid@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "react-native-uuid@npm:2.0.3"
+  checksum: 10c0/d94bccc28936c2dea081ab404f90b0c968092013af4d428b8e74bf407d6098ad5410914f77a903ad1296cce364fc85d27d8dfd70d22ec48d8cf1b7edc8803a8d
   languageName: node
   linkType: hard
 
