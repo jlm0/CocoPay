@@ -4,6 +4,7 @@ import {
   extractCidFromUri,
   type ProjectMetadata,
 } from '@/lib/juicebox/metadata';
+import { queryKeys } from '@/lib/query';
 
 interface UseProjectMetadataResult {
   metadata: ProjectMetadata | null;
@@ -17,7 +18,7 @@ export function useProjectMetadata(
   const cid = metadataUri ? extractCidFromUri(metadataUri) : null;
 
   const query = useQuery({
-    queryKey: ['project-metadata', cid],
+    queryKey: queryKeys.projectMetadata.byCid(cid),
     queryFn: async () => {
       if (!cid) {
         throw new Error('No CID available');

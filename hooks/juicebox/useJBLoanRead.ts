@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { revLoans1_1Abi, getRevnetLoanContract } from 'juice-sdk-core';
 import type { Loan } from '@/types/juicebox';
 import { JB_VERSION, COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { queryKeys } from '@/lib/query';
 import { useJBPublicClient } from './useJBPublicClient';
 
 interface UseJBLoanReadResult {
@@ -15,7 +16,7 @@ export function useJBLoanRead(loanId: bigint | null): UseJBLoanReadResult {
   const publicClient = useJBPublicClient();
 
   const query = useQuery({
-    queryKey: ['jb-loan', loanId?.toString()],
+    queryKey: queryKeys.jb.loan(loanId?.toString()),
     queryFn: async (): Promise<Loan> => {
       if (!loanId) {
         throw new Error('Loan ID is required');

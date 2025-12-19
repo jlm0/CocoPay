@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createPublicClient, http, isAddress, type Hex } from 'viem';
 import { mainnet } from 'viem/chains';
 import { normalize } from 'viem/ens';
+import { queryKeys } from '@/lib/query';
 
 const mainnetClient = createPublicClient({
   chain: mainnet,
@@ -21,7 +22,7 @@ export function useResolveAddress(input: string): UseResolveAddressResult {
   const isValidAddress = isAddress(trimmedInput);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['resolveAddress', trimmedInput],
+    queryKey: queryKeys.resolveAddress(trimmedInput),
     queryFn: async () => {
       if (!trimmedInput) return null;
 

@@ -1,10 +1,12 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { formatUnits, type Hex, type Chain } from 'viem';
 import { useViemPublicClient } from './useViemPublicClient';
 import { useParaAccount } from './useParaAccount';
 import { USDC_SEPOLIA_ADDRESS, TOKEN_DECIMALS, ERC20_ABI } from '@/lib/constants';
 import { DEFAULT_CHAIN } from '@/lib/chains';
-import { storeUsdcBalance, getStoredBalancesSync } from '@/lib/storage';
+import { storeUsdcBalance } from '@/lib/storage';
+import { queryKeys } from '@/lib/query';
 
 const BALANCE_STALE_TIME = 3_000;
 const BALANCE_REFETCH_INTERVAL = 5_000;
@@ -15,8 +17,8 @@ export function useViemUsdcBalance(address?: Hex, chain: Chain = DEFAULT_CHAIN) 
 
   const targetAddress = address ?? accountAddress;
 
-  return useQuery({
-    queryKey: ['balance', 'usdc', targetAddress, chain.id],
+  const query = useQuery({
+    queryKey: queryKeys.balance.usdc(targetAddress, chain.id),
     queryFn: async () => {
       if (!targetAddress) return null;
 
@@ -28,7 +30,6 @@ export function useViemUsdcBalance(address?: Hex, chain: Chain = DEFAULT_CHAIN) 
       });
 
       const formatted = formatUnits(balance, TOKEN_DECIMALS.USDC);
-      await storeUsdcBalance(balance, formatted);
 
       return {
         raw: balance,
@@ -39,15 +40,13 @@ export function useViemUsdcBalance(address?: Hex, chain: Chain = DEFAULT_CHAIN) 
     staleTime: BALANCE_STALE_TIME,
     refetchInterval: BALANCE_REFETCH_INTERVAL,
     refetchOnMount: true,
-    initialData: () => {
-      const stored = getStoredBalancesSync();
-      if (stored?.usdc) {
-        return {
-          raw: BigInt(stored.usdc.raw),
-          formatted: stored.usdc.formatted,
-        };
-      }
-      return undefined;
-    },
   });
+
+  useEffect(() => {
+    if (query.data?.raw !== undefined) {
+      storeUsdcBalance(query.data.raw, query.data.formatted);
+    }
+  }, [query.data?.raw, query.data?.formatted]);
+
+  return query;
 }

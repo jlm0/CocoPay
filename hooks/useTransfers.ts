@@ -5,6 +5,7 @@ import { getAlchemyInstance } from '@/lib/alchemy';
 import type { SupportedChainId } from '@/lib/chains';
 import { DEFAULT_CHAIN } from '@/lib/chains';
 import { useParaAccount } from './useParaAccount';
+import { queryKeys } from '@/lib/query';
 
 export function useTransfers(address?: Hex, chainId: SupportedChainId = DEFAULT_CHAIN.id) {
   const { address: accountAddress } = useParaAccount();
@@ -12,7 +13,7 @@ export function useTransfers(address?: Hex, chainId: SupportedChainId = DEFAULT_
   const targetAddress = address ?? accountAddress;
 
   return useQuery({
-    queryKey: ['transfers', targetAddress, chainId],
+    queryKey: queryKeys.transfers(targetAddress, chainId),
     queryFn: async () => {
       if (!targetAddress) return null;
       const alchemy = getAlchemyInstance(chainId);

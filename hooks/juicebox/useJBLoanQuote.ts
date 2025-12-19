@@ -7,6 +7,7 @@ import {
   USDC_DECIMALS,
   USDC_CURRENCY,
 } from '@/lib/juicebox/constants';
+import { queryKeys } from '@/lib/query';
 import { useJBPublicClient } from './useJBPublicClient';
 
 interface UseJBLoanQuoteResult {
@@ -19,11 +20,10 @@ export function useJBLoanQuote(params: LoanQuoteParams | null): UseJBLoanQuoteRe
   const publicClient = useJBPublicClient();
 
   const query = useQuery({
-    queryKey: [
-      'jb-loan-quote',
+    queryKey: queryKeys.jb.loanQuote(
       params?.projectId?.toString(),
-      params?.collateralAmount?.toString(),
-    ],
+      params?.collateralAmount?.toString()
+    ),
     queryFn: async (): Promise<LoanQuoteResult> => {
       if (!params) {
         throw new Error('Missing params');

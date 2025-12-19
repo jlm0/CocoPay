@@ -3,6 +3,7 @@ import { jbTerminalStoreAbi, JBDAO_CASHOUT_FEE_PERCENT } from 'juice-sdk-core';
 import type { CashOutQuoteParams, CashOutQuoteResult } from '@/types/juicebox';
 import { JB_TERMINAL_STORE_ADDRESS } from '@/lib/juicebox/contracts';
 import { USDC_DECIMALS, USDC_CURRENCY } from '@/lib/juicebox/constants';
+import { queryKeys } from '@/lib/query';
 import { useJBPublicClient } from './useJBPublicClient';
 
 interface UseJBCashOutQuoteResult {
@@ -19,7 +20,10 @@ export function useJBCashOutQuote(params: CashOutQuoteParams | null): UseJBCashO
   const publicClient = useJBPublicClient();
 
   const query = useQuery({
-    queryKey: ['jb-cashout-quote', params?.projectId?.toString(), params?.tokenAmount?.toString()],
+    queryKey: queryKeys.jb.cashOutQuote(
+      params?.projectId?.toString(),
+      params?.tokenAmount?.toString()
+    ),
     queryFn: async (): Promise<CashOutQuoteResult> => {
       if (!params) {
         throw new Error('Missing params');

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { BendystrawPayEvent, BendystrawPayEventsQueryParams } from '@/lib/bendystraw';
 import { fetchPayEvents } from '@/lib/bendystraw';
+import { queryKeys } from '@/lib/query';
 
 interface UseBendystrawPayEventsResult {
   payEvents: BendystrawPayEvent[];
@@ -14,7 +15,7 @@ export function useBendystrawPayEvents(
   params: BendystrawPayEventsQueryParams | null
 ): UseBendystrawPayEventsResult {
   const query = useQuery({
-    queryKey: ['bendystraw', 'payEvents', params?.projectId, params?.chainId, params?.limit],
+    queryKey: queryKeys.bendystraw.payEvents(params?.projectId, params?.chainId, params?.limit),
     queryFn: async () => {
       if (!params) {
         throw new Error('Params are required');

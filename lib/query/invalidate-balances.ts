@@ -1,5 +1,6 @@
 import { queryClient } from './client';
+import { queryKeys } from './keys';
 
 export function invalidateBalances() {
-  queryClient.invalidateQueries({ queryKey: ['balance'] });
+  queryClient.invalidateQueries({ queryKey: queryKeys.balance.all });
 }

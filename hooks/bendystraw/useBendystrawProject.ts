@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { BendystrawProject } from '@/lib/bendystraw';
 import { fetchProject } from '@/lib/bendystraw';
+import { queryKeys } from '@/lib/query';
 
 interface UseBendystrawProjectResult {
   project: BendystrawProject | null;
@@ -14,7 +15,7 @@ export function useBendystrawProject(
   chainId: number
 ): UseBendystrawProjectResult {
   const query = useQuery({
-    queryKey: ['bendystraw', 'project', projectId, chainId],
+    queryKey: queryKeys.bendystraw.project(projectId, chainId),
     queryFn: async () => {
       if (projectId === null) {
         throw new Error('Project ID is required');

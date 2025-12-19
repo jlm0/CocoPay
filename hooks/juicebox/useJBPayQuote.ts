@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getTokenAToBQuote, ReservedPercent, RulesetWeight, Ether } from 'juice-sdk-core';
 import type { PayQuoteParams, PayQuoteResult } from '@/types/juicebox';
+import { queryKeys } from '@/lib/query';
 import { useJBProjectRead } from './useJBProjectRead';
 
 interface UseJBPayQuoteResult {
@@ -13,7 +14,10 @@ export function useJBPayQuote(params: PayQuoteParams | null): UseJBPayQuoteResul
   const { project, isLoading: isProjectLoading } = useJBProjectRead(params?.projectId ?? null);
 
   const query = useQuery({
-    queryKey: ['jb-pay-quote', params?.projectId?.toString(), params?.paymentAmount?.toString()],
+    queryKey: queryKeys.jb.payQuote(
+      params?.projectId?.toString(),
+      params?.paymentAmount?.toString()
+    ),
     queryFn: (): PayQuoteResult => {
       if (!params || !project) {
         throw new Error('Missing params or project data');

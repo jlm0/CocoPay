@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { BendystrawProject, BendystrawProjectsQueryParams } from '@/lib/bendystraw';
 import { fetchProjects } from '@/lib/bendystraw';
+import { queryKeys } from '@/lib/query';
 
 interface UseBendystrawProjectsResult {
   projects: BendystrawProject[];
@@ -15,14 +16,12 @@ export function useBendystrawProjects(
   params: BendystrawProjectsQueryParams = {}
 ): UseBendystrawProjectsResult {
   const query = useQuery({
-    queryKey: [
-      'bendystraw',
-      'projects',
+    queryKey: queryKeys.bendystraw.projects(
       params.where?.owner,
       params.where?.chainId,
       params.orderBy,
-      params.limit,
-    ],
+      params.limit
+    ),
     queryFn: () => fetchProjects(params),
     staleTime: 30_000,
   });

@@ -8,6 +8,7 @@ import { useJBLoanQuote } from '@/hooks/juicebox/useJBLoanQuote';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { JB_TOKEN_DECIMALS, USDC_DECIMALS } from '@/lib/juicebox/constants';
+import { queryKeys } from '@/lib/query';
 import type { StoreDetails } from '@/types';
 
 interface UseStoreDetailsResult {
@@ -30,7 +31,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
   const { metadata, isLoading: metadataLoading } = useProjectMetadata(project?.metadataUri);
 
   const { data: userParticipant, isLoading: participantLoading } = useQuery({
-    queryKey: ['bendystraw', 'participant', projectId, chainId, address],
+    queryKey: queryKeys.bendystraw.participant(projectId, chainId, address ?? null),
     queryFn: () =>
       fetchParticipant({
         projectId,

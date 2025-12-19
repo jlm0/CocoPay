@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { BendystrawParticipant, BendystrawParticipantsQueryParams } from '@/lib/bendystraw';
 import { fetchParticipants } from '@/lib/bendystraw';
+import { queryKeys } from '@/lib/query';
 
 interface UseBendystrawParticipantsResult {
   participants: BendystrawParticipant[];
@@ -14,14 +15,12 @@ export function useBendystrawParticipants(
   params: BendystrawParticipantsQueryParams | null
 ): UseBendystrawParticipantsResult {
   const query = useQuery({
-    queryKey: [
-      'bendystraw',
-      'participants',
+    queryKey: queryKeys.bendystraw.participants(
       params?.projectId,
       params?.chainId,
       params?.orderBy,
-      params?.limit,
-    ],
+      params?.limit
+    ),
     queryFn: async () => {
       if (!params) {
         throw new Error('Params are required');

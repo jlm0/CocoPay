@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchByCid, type FetchResponse } from '@/lib/pinata';
+import { queryKeys } from '@/lib/query';
 
 interface UsePinataFetchResult<T = unknown> {
   data: FetchResponse<T> | null;
@@ -10,7 +11,7 @@ interface UsePinataFetchResult<T = unknown> {
 
 export function usePinataFetch(cid: string | null): UsePinataFetchResult {
   const query = useQuery({
-    queryKey: ['pinata', 'fetch', cid],
+    queryKey: queryKeys.pinata.fetch(cid ?? ''),
     queryFn: async () => {
       if (!cid) {
         throw new Error('CID is required');

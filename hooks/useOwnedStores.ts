@@ -6,6 +6,7 @@ import { fetchParticipant } from '@/lib/bendystraw';
 import { fetchMetadataFromIPFS, extractCidFromUri } from '@/lib/juicebox/metadata';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID, JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
+import { queryKeys } from '@/lib/query';
 import type { Store } from '@/types';
 
 interface UseOwnedStoresResult {
@@ -34,7 +35,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     queries: projects.map((project) => {
       const cid = project.metadataUri ? extractCidFromUri(project.metadataUri) : null;
       return {
-        queryKey: ['project-metadata', cid],
+        queryKey: queryKeys.projectMetadata.byCid(cid),
         queryFn: async () => {
           if (!cid) throw new Error('No CID');
           return fetchMetadataFromIPFS(cid);
@@ -48,7 +49,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
 
   const participantQueries = useQueries({
     queries: projects.map((project) => ({
-      queryKey: ['bendystraw', 'participant', project.projectId, project.chainId, ownerAddress],
+      queryKey: queryKeys.bendystraw.participant(project.projectId, project.chainId, ownerAddress),
       queryFn: () =>
         fetchParticipant({
           projectId: project.projectId,

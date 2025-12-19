@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { BendystrawActivityEvent, BendystrawActivityQueryParams } from '@/lib/bendystraw';
 import { fetchActivityEvents } from '@/lib/bendystraw';
+import { queryKeys } from '@/lib/query';
 
 interface UseBendystrawActivityResult {
   activityEvents: BendystrawActivityEvent[];
@@ -14,14 +15,12 @@ export function useBendystrawActivity(
   params: BendystrawActivityQueryParams | null
 ): UseBendystrawActivityResult {
   const query = useQuery({
-    queryKey: [
-      'bendystraw',
-      'activity',
+    queryKey: queryKeys.bendystraw.activity(
       params?.projectId,
       params?.chainId,
       params?.type,
-      params?.limit,
-    ],
+      params?.limit
+    ),
     queryFn: async () => {
       if (!params) {
         throw new Error('Params are required');

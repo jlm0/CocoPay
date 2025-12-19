@@ -15,6 +15,7 @@ import { Text } from '@/components/ui/text';
 import { useJBProjectCreate } from '@/hooks/juicebox';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { queryKeys } from '@/lib/query';
 
 function getTickerSymbol(ticker: string): string {
   return ticker.replace(/^\$/, '');
@@ -67,8 +68,8 @@ export default function CreateStorePage() {
         chainId: COCOPAY_CHAIN_ID,
       });
 
-      await queryClient.invalidateQueries({ queryKey: ['bendystraw'] });
-      await queryClient.invalidateQueries({ queryKey: ['project-metadata'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.bendystraw.all });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.projectMetadata.all });
 
       const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
 

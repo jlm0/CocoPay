@@ -8,6 +8,7 @@ import {
   type StoredProject,
 } from '@/lib/storage';
 import { fetchProject } from '@/lib/bendystraw';
+import { queryKeys } from '@/lib/query';
 
 interface UseCocoPayProjectRegistryResult {
   projects: StoredProject[];
@@ -18,20 +19,19 @@ interface UseCocoPayProjectRegistryResult {
   refetch: () => void;
 }
 
-const REGISTRY_QUERY_KEY = ['cocopay-registry'];
 const SYNC_STALE_TIME = 5 * 60 * 1000;
 
 export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
   const queryClient = useQueryClient();
 
   const localQuery = useQuery({
-    queryKey: [...REGISTRY_QUERY_KEY, 'local'],
+    queryKey: queryKeys.cocopayRegistry.local(),
     queryFn: () => getStoredProjects(),
     staleTime: Infinity,
   });
 
   const syncQuery = useQuery({
-    queryKey: [...REGISTRY_QUERY_KEY, 'sync'],
+    queryKey: queryKeys.cocopayRegistry.sync(),
     queryFn: async () => {
       const local = await getStoredProjects();
 
@@ -65,7 +65,7 @@ export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
   const addProject = useCallback(
     async (project: Omit<StoredProject, 'addedAt'>) => {
       await addStoredProject(project);
-      queryClient.invalidateQueries({ queryKey: REGISTRY_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
     },
     [queryClient]
   );
@@ -73,13 +73,13 @@ export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
   const removeProjectFn = useCallback(
     async (projectId: number, chainId: number) => {
       await removeStoredProject(projectId, chainId);
-      queryClient.invalidateQueries({ queryKey: REGISTRY_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
     },
     [queryClient]
   );
 
   const refetch = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: REGISTRY_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
   }, [queryClient]);
 
   const projects = syncQuery.data ?? localQuery.data ?? [];

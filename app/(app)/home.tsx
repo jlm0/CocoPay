@@ -8,6 +8,7 @@ import { PayButton } from '@/components/presentational/pay-button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { useAccountSheet } from '@/providers/AccountSheetProvider';
+import { queryKeys } from '@/lib/query';
 import { HEX_COLORS } from '@/lib/theme';
 
 export default function HomePage() {
@@ -19,10 +20,10 @@ export default function HomePage() {
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['token-balances'] }),
-      queryClient.invalidateQueries({ queryKey: ['bendystraw'] }),
-      queryClient.invalidateQueries({ queryKey: ['project-metadata'] }),
-      queryClient.invalidateQueries({ queryKey: ['cocopay-registry'] }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.balance.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.bendystraw.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.projectMetadata.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all }),
     ]);
     setIsRefreshing(false);
   }, [queryClient]);
