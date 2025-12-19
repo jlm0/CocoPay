@@ -106,8 +106,8 @@ export default function CreateStorePage() {
       <ScrollView
         className="flex-1 px-6"
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="pb-64">
-        <FeatureHeader title="Create a store" className="mb-6" />
+        contentContainerClassName="gap-6 pb-64">
+        <FeatureHeader title="Create a store" />
 
         <StepsList
           title="How Coco works"
@@ -118,7 +118,7 @@ export default function CreateStorePage() {
             'Use cash back to send a % of your issued coins to payers.',
             "Your coin's issuance can be set to decrease each quarter, rewarding early and loyal customers as your coin grows.",
           ]}
-          className="mb-8"
+          className="mb-2"
         />
 
         <NameInput
@@ -128,7 +128,6 @@ export default function CreateStorePage() {
             setCreateError(null);
           }}
           warning={nameWarning}
-          className="mb-6"
         />
 
         <TickerInput
@@ -138,7 +137,6 @@ export default function CreateStorePage() {
             setCreateError(null);
           }}
           warning={tickerWarning}
-          className="mb-6"
         />
 
         <PercentageSlider
@@ -148,7 +146,6 @@ export default function CreateStorePage() {
           onValueChange={setCashBack}
           minPercent={0}
           maxPercent={10}
-          className="mb-6"
         />
 
         <PercentageSlider

@@ -84,8 +84,8 @@ export function TokenBalanceContainer({ tokenSymbol: tokenParam }: TokenBalanceC
   if (hasError) {
     return (
       <ScreenContainer>
-        <View className="flex-1 items-center justify-center p-4">
-          <Text variant="body" className="mb-4 text-center text-destructive">
+        <View className="flex-1 items-center justify-center gap-4 p-4">
+          <Text variant="body" className="text-center text-destructive">
             Failed to load balance
           </Text>
           <Button onPress={handleRefresh} variant="secondary">
