@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useJBCashOut } from '@/hooks/juicebox/useJBCashOut';
 import { useJBCashOutQuote } from '@/hooks/juicebox/useJBCashOutQuote';
-import { JB_TOKEN_DECIMALS, USDC_DECIMALS } from '@/lib/juicebox/constants';
+import { JB_TOKEN_DECIMALS, USDC_DECIMALS, COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { invalidateAfterCashOut } from '@/lib/query';
 
 type CashOutContainerProps = {
   projectId?: string;
@@ -127,6 +128,8 @@ function CashOutContainerContent({
       });
 
       const usdcReceived = Number(result.amountReceived) / 10 ** USDC_DECIMALS;
+
+      invalidateAfterCashOut(projectId, COCOPAY_CHAIN_ID);
 
       router.push({
         pathname: '/(app)/cashout/success',

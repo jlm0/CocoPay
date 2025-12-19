@@ -16,6 +16,7 @@ import { useEthWithdraw } from '@/hooks/useEthWithdraw';
 import { useErc20Withdraw } from '@/hooks/useErc20Withdraw';
 import { ETH_GAS_BUFFER_WEI, USDC_SEPOLIA_ADDRESS, TOKEN_DECIMALS } from '@/lib/constants';
 import { HEX_COLORS } from '@/lib/theme';
+import { invalidateAfterWithdraw } from '@/lib/query';
 import type { TokenType } from '@/types';
 
 type WithdrawContainerProps = {
@@ -106,7 +107,7 @@ export function WithdrawContainer({ token: tokenParam }: WithdrawContainerProps)
 
     try {
       await withdrawHook.withdraw(resolvedAddress, amountInSmallestUnit);
-      await balance.refetch();
+      invalidateAfterWithdraw();
       router.push({
         pathname: '/(app)/withdraw/success',
         params: {

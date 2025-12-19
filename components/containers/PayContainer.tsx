@@ -20,6 +20,7 @@ import { useAmountInputLogic } from '@/hooks/useAmountInputLogic';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
 import { TOKEN_DECIMALS } from '@/lib/constants';
 import { JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
+import { invalidateAfterPay } from '@/lib/query';
 import type { DeepLinkResult } from '@/hooks/useDeepLinkSource';
 
 export type PaySource = 'manual' | 'navigation' | 'qr' | 'deeplink';
@@ -189,6 +190,8 @@ function PayContainerContent({
         projectId: Number(storeInput.parsedCode.projectId),
         chainId: storeInput.parsedCode.chainId,
       });
+
+      invalidateAfterPay(Number(storeInput.parsedCode.projectId), storeInput.parsedCode.chainId);
 
       const cashBack = formatUnits(result.tokensReceived, JB_TOKEN_DECIMALS);
 
