@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { HEX_COLORS } from '@/lib/theme';
@@ -28,6 +28,7 @@ export default function CreateStorePage() {
   const [ticker, setTicker] = useState('');
   const [cashBack, setCashBack] = useState(4);
   const [loyaltyBonus, setLoyaltyBonus] = useState(2);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const { createProject, isLoading } = useJBProjectCreate();
   const { addProject } = useCocoPayProjectRegistry();
@@ -81,8 +82,7 @@ export default function CreateStorePage() {
         },
       });
     } catch (err) {
-      Alert.alert(
-        'Creation Failed',
+      setCreateError(
         err instanceof Error ? err.message : 'Failed to create store. Please try again.'
       );
     }
@@ -93,6 +93,7 @@ export default function CreateStorePage() {
       horizontalPadding={false}
       bottomActionBar={
         <BottomActionBar>
+          {createError && <Text className="mb-3 text-center text-destructive">{createError}</Text>}
           <Button
             onPress={handleCreate}
             disabled={!isValid || isLoading}
@@ -120,11 +121,22 @@ export default function CreateStorePage() {
           className="mb-8"
         />
 
-        <NameInput value={name} onChangeText={setName} warning={nameWarning} className="mb-6" />
+        <NameInput
+          value={name}
+          onChangeText={(text) => {
+            setName(text);
+            setCreateError(null);
+          }}
+          warning={nameWarning}
+          className="mb-6"
+        />
 
         <TickerInput
           value={ticker}
-          onChangeText={setTicker}
+          onChangeText={(text) => {
+            setTicker(text);
+            setCreateError(null);
+          }}
           warning={tickerWarning}
           className="mb-6"
         />

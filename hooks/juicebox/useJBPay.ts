@@ -73,7 +73,10 @@ export function useJBPay(projectId: bigint): UseJBPayResult {
               tokensReceived = decoded.args.newlyIssuedTokenCount as bigint;
               break;
             }
-          } catch {
+          } catch (err) {
+            if (__DEV__) {
+              console.warn('[useJBPay] Failed to decode event log:', err);
+            }
             continue;
           }
         }
