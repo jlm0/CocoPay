@@ -50,6 +50,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.cocopay.app",
       "associatedDomains": ["applinks:cocopay.app"],
+      "config": {
+        "googleMapsApiKey": "REDACTED_GOOGLE_API_KEY"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "CocoPay uses the camera to scan QR codes for payments",
         "ITSAppUsesNonExemptEncryption": false
@@ -60,6 +63,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/coconut.png",
         "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "REDACTED_GOOGLE_API_KEY"
+        }
       },
       "permissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"],
       "intentFilters": [

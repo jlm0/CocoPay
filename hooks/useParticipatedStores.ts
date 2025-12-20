@@ -17,14 +17,16 @@ interface UseParticipatedStoresResult {
 }
 
 export function useParticipatedStores(userAddress: Address | null): UseParticipatedStoresResult {
+  const normalizedAddress = userAddress?.toLowerCase() as Address | undefined;
+
   const participationsQuery = useQuery({
-    queryKey: queryKeys.bendystraw.participations(userAddress, COCOPAY_CHAIN_ID),
+    queryKey: queryKeys.bendystraw.participations(normalizedAddress ?? null, COCOPAY_CHAIN_ID),
     queryFn: () =>
       fetchParticipantsByAddress({
-        address: userAddress!,
+        address: normalizedAddress!,
         chainId: COCOPAY_CHAIN_ID,
       }),
-    enabled: !!userAddress,
+    enabled: !!normalizedAddress,
     staleTime: 30_000,
   });
 

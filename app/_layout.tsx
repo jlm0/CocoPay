@@ -7,17 +7,23 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PortalHost } from '@rn-primitives/portal';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import GooglePlacesSdk from 'react-native-google-places-sdk';
 import { ParaProvider } from '@/providers/ParaProvider';
 import { useLoadFonts } from '@/hooks/useLoadFonts';
 import { queryClient, asyncStoragePersister } from '@/lib/query';
 import { initializeStoresStorage } from '@/lib/storage';
 import { View } from 'react-native';
 
+const GOOGLE_PLACES_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY ?? '';
+
 export default function RootLayout() {
   const fontsLoaded = useLoadFonts();
 
   useEffect(() => {
     initializeStoresStorage();
+    if (GOOGLE_PLACES_API_KEY) {
+      GooglePlacesSdk.initialize(GOOGLE_PLACES_API_KEY);
+    }
   }, []);
 
   if (!fontsLoaded) {

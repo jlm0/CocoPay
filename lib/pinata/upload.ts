@@ -1,5 +1,6 @@
 import { getPinataConfig } from './client';
 import type { UploadOptions, UploadResponse } from './types';
+import { withRetry, type RetryOptions } from '@/lib/retry';
 
 export type { UploadOptions as UploadJsonOptions };
 export type { UploadOptions as UploadFileOptions };
@@ -141,4 +142,24 @@ export async function uploadBase64(
 
   const result = await response.json();
   return result.data as UploadResponse;
+}
+
+const UPLOAD_RETRY_OPTIONS: RetryOptions = {
+  maxAttempts: 3,
+  baseDelayMs: 500,
+  maxDelayMs: 4000,
+};
+
+export async function uploadFileWithRetry(
+  file: File | ReactNativeFileObject,
+  options?: UploadOptions
+): Promise<UploadResponse> {
+  return withRetry(() => uploadFile(file, options), UPLOAD_RETRY_OPTIONS);
+}
+
+export async function uploadJsonWithRetry<T extends object>(
+  data: T,
+  options?: UploadOptions
+): Promise<UploadResponse> {
+  return withRetry(() => uploadJson(data, options), UPLOAD_RETRY_OPTIONS);
 }

@@ -1,5 +1,11 @@
 export { getPinataConfig, resetPinataConfig } from './client';
-export { uploadJson, uploadFile, uploadBase64 } from './upload';
+export {
+  uploadJson,
+  uploadFile,
+  uploadBase64,
+  uploadFileWithRetry,
+  uploadJsonWithRetry,
+} from './upload';
 export type { UploadJsonOptions, UploadFileOptions } from './upload';
 export {
   fetchByCid,

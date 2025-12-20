@@ -18,6 +18,8 @@ interface UseOwnedStoresResult {
 }
 
 export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResult {
+  const normalizedOwner = ownerAddress?.toLowerCase() as Address | undefined;
+
   const {
     projects,
     isLoading: projectsLoading,
@@ -26,7 +28,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     refetch,
   } = useBendystrawProjects({
     where: {
-      owner: ownerAddress ?? undefined,
+      owner: normalizedOwner,
       chainId: COCOPAY_CHAIN_ID,
     },
   });

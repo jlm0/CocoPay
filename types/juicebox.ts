@@ -13,7 +13,6 @@ export interface StoreCreationParams {
   name: string;
   ticker: string;
   description?: string;
-  tagline?: string;
   logoUri?: string;
   address?: StoreAddress;
   website?: string;

@@ -3,13 +3,11 @@ import type { StoreAddress } from '@/types/juicebox';
 
 export const NAME_MAX_LENGTH = 50;
 export const TICKER_MAX_LENGTH = 5;
-export const TAGLINE_MAX_LENGTH = 80;
 
 export interface StoreCreationFormState {
   step: 1 | 2;
   name: string;
   description: string;
-  tagline: string;
   logoUri: string | null;
   address: StoreAddress | null;
   website: string;
@@ -30,7 +28,6 @@ const initialState: StoreCreationFormState = {
   step: 1,
   name: '',
   description: '',
-  tagline: '',
   logoUri: null,
   address: null,
   website: '',
@@ -74,10 +71,6 @@ function validateStep1(state: StoreCreationFormState): ValidationErrors {
     errors.name = 'Name is required';
   } else if (state.name.length > NAME_MAX_LENGTH) {
     errors.name = `Name must be ${NAME_MAX_LENGTH} characters or less`;
-  }
-
-  if (state.tagline.length > TAGLINE_MAX_LENGTH) {
-    errors.tagline = `Tagline must be ${TAGLINE_MAX_LENGTH} characters or less`;
   }
 
   if (state.website && !isValidUrl(state.website)) {

@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { View, Pressable, Image } from 'react-native';
 import { ImagePlus, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 type LogoPickerProps = {
@@ -19,7 +20,10 @@ export function LogoPicker({
   onImageRemoved,
   className = '',
 }: LogoPickerProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handlePickImage = async () => {
+    setIsLoading(true);
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
@@ -30,21 +34,28 @@ export function LogoPicker({
     if (!result.canceled && result.assets[0]) {
       onImageSelected(result.assets[0].uri);
     }
+    setIsLoading(false);
   };
 
-  return (
-    <View className={className}>
-      <View className="mb-2 flex-row items-center justify-between">
-        <Label>Logo</Label>
-        <Text variant="caption">Optional</Text>
+  if (isLoading) {
+    return (
+      <View className={cn('items-center', className)}>
+        <View className="items-center gap-2">
+          <Skeleton className="h-24 w-24 rounded-full" />
+          <Skeleton className="h-4 w-16 rounded" />
+        </View>
       </View>
+    );
+  }
 
+  return (
+    <View className={cn('items-center', className)}>
       {imageUri ? (
-        <View className="flex-row items-center gap-4">
+        <View className="items-center gap-2">
           <View className="relative">
             <Image
               source={{ uri: imageUri }}
-              className="h-20 w-20 rounded-full"
+              className="h-24 w-24 rounded-full"
               resizeMode="cover"
             />
             <Pressable
@@ -54,19 +65,22 @@ export function LogoPicker({
             </Pressable>
           </View>
           <Pressable onPress={handlePickImage}>
-            <Text className="text-primary">Change image</Text>
+            <Text className="text-primary">Change</Text>
           </Pressable>
         </View>
       ) : (
-        <Pressable
-          onPress={handlePickImage}
-          className={cn(
-            'h-20 w-20 items-center justify-center rounded-full',
-            'border-2 border-dashed border-muted-foreground/30',
-            'active:bg-muted'
-          )}>
-          <Icon as={ImagePlus} className="text-muted-foreground" size={24} />
-        </Pressable>
+        <View className="items-center gap-2">
+          <Pressable
+            onPress={handlePickImage}
+            className={cn(
+              'h-24 w-24 items-center justify-center rounded-full',
+              'border-2 border-dashed border-muted-foreground/30',
+              'active:bg-muted'
+            )}>
+            <Icon as={ImagePlus} className="text-muted-foreground" size={28} />
+          </Pressable>
+          <Text variant="caption">Add logo</Text>
+        </View>
       )}
     </View>
   );

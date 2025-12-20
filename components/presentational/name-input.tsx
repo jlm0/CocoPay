@@ -6,23 +6,26 @@ import { Text } from '@/components/ui/text';
 type NameInputProps = {
   value: string;
   onChangeText: (text: string) => void;
-  warning?: string;
   className?: string;
 };
 
 export const NAME_MAX_LENGTH = 50;
 
-export function NameInput({ value, onChangeText, warning, className = '' }: NameInputProps) {
+export function NameInput({ value, onChangeText, className = '' }: NameInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2">Name</Label>
+      <View className="mb-2 flex-row items-center justify-between">
+        <Label>Name</Label>
+        <Text variant="caption" className="text-primary">
+          Required
+        </Text>
+      </View>
       <Input
         value={value}
         onChangeText={onChangeText}
         placeholder="Store name"
         className="text-xl"
       />
-      {warning && <Text className="mt-1 text-sm text-yellow-500">{warning}</Text>}
     </View>
   );
 }

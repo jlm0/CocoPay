@@ -1,11 +1,12 @@
 import type { StoreCreationParams, StoreAddress } from '@/types/juicebox';
 import {
-  uploadJson,
+  uploadJsonWithRetry,
   fetchByCid,
   getIpfsUri,
   getGatewayUrl,
   extractCidFromUri as extractCid,
 } from '@/lib/pinata';
+import { sanitizeForIPFS } from '@/lib/utils/sanitize';
 
 export interface CocoPayMetadata {
   version: number;
@@ -33,7 +34,7 @@ export function buildProjectMetadata(params: StoreCreationParams): ProjectMetada
     name: params.name,
     description: params.description,
     logoUri: params.logoUri,
-    projectTagline: params.tagline || `${params.ticker} rewards program`,
+    projectTagline: `${params.ticker} rewards program`,
     infoUri: params.website,
     tags: ['business'],
     cocopay: {
@@ -48,8 +49,9 @@ export function buildProjectMetadata(params: StoreCreationParams): ProjectMetada
 }
 
 export async function uploadMetadataToIPFS(metadata: ProjectMetadata): Promise<string> {
-  const response = await uploadJson(metadata, {
-    name: `${metadata.name}-metadata`,
+  const sanitized = sanitizeForIPFS(metadata);
+  const response = await uploadJsonWithRetry(sanitized, {
+    name: `${sanitized.name}-metadata`,
     keyvalues: {
       app: 'cocopay',
       type: 'project-metadata',
