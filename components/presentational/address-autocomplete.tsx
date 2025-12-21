@@ -15,6 +15,7 @@ type AddressAutocompleteProps = {
   value: StoreAddress | null;
   onSelect: (address: StoreAddress) => void;
   onClear: () => void;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -22,6 +23,7 @@ export function AddressAutocomplete({
   value,
   onSelect,
   onClear,
+  disabled,
   className = '',
 }: AddressAutocompleteProps) {
   const [query, setQuery] = useState('');
@@ -64,7 +66,7 @@ export function AddressAutocomplete({
               {value.formatted}
             </Text>
           </View>
-          <Pressable onPress={handleClear} className="p-1">
+          <Pressable onPress={handleClear} disabled={disabled} className="p-1">
             <Icon as={X} className="text-muted-foreground" size={16} />
           </Pressable>
         </View>
@@ -86,6 +88,7 @@ export function AddressAutocomplete({
           placeholder="Search for address..."
           onFocus={() => query.length >= 2 && setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+          editable={!disabled}
         />
         {isSearching && (
           <View className="absolute right-3 top-3">

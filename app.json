@@ -31,6 +31,12 @@
         {
           "photosPermission": "CocoPay needs access to your photos to set a store logo."
         }
+      ],
+      [
+        "react-native-maps",
+        {
+          "googleMapsApiKey": "REDACTED_GOOGLE_API_KEY"
+        }
       ]
     ],
     "experiments": {

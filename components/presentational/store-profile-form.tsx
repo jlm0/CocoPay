@@ -19,6 +19,7 @@ type StoreProfileFormProps = {
   onAddressChange: (address: StoreAddress | null) => void;
   onWebsiteChange: (value: string) => void;
   errors: ValidationErrors;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -34,6 +35,7 @@ export function StoreProfileForm({
   onAddressChange,
   onWebsiteChange,
   errors,
+  disabled,
   className = '',
 }: StoreProfileFormProps) {
   return (
@@ -42,21 +44,33 @@ export function StoreProfileForm({
         imageUri={logoUri}
         onImageSelected={(uri) => onLogoChange(uri)}
         onImageRemoved={() => onLogoChange(null)}
+        disabled={disabled}
         className="mb-6"
       />
 
-      <NameInput value={name} onChangeText={onNameChange} className="mb-5" />
+      <NameInput value={name} onChangeText={onNameChange} disabled={disabled} className="mb-5" />
 
-      <DescriptionInput value={description} onChangeText={onDescriptionChange} className="mb-5" />
+      <DescriptionInput
+        value={description}
+        onChangeText={onDescriptionChange}
+        disabled={disabled}
+        className="mb-5"
+      />
 
       <AddressAutocomplete
         value={address}
         onSelect={onAddressChange}
         onClear={() => onAddressChange(null)}
+        disabled={disabled}
         className="mb-5"
       />
 
-      <WebsiteInput value={website} onChangeText={onWebsiteChange} error={errors.website} />
+      <WebsiteInput
+        value={website}
+        onChangeText={onWebsiteChange}
+        error={errors.website}
+        disabled={disabled}
+      />
     </View>
   );
 }

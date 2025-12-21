@@ -12,6 +12,7 @@ type RewardsConfigFormProps = {
   onCashBackChange: (value: number) => void;
   onLoyaltyBonusChange: (value: number) => void;
   errors: ValidationErrors;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -23,6 +24,7 @@ export function RewardsConfigForm({
   onCashBackChange,
   onLoyaltyBonusChange,
   errors,
+  disabled,
   className = '',
 }: RewardsConfigFormProps) {
   return (
@@ -39,7 +41,12 @@ export function RewardsConfigForm({
         className="mb-6"
       />
 
-      <TickerInput value={ticker} onChangeText={onTickerChange} warning={errors.ticker} />
+      <TickerInput
+        value={ticker}
+        onChangeText={onTickerChange}
+        warning={errors.ticker}
+        disabled={disabled}
+      />
 
       <PercentageSlider
         label="Cash back"
@@ -48,6 +55,7 @@ export function RewardsConfigForm({
         onValueChange={onCashBackChange}
         minPercent={0}
         maxPercent={10}
+        disabled={disabled}
         className="mt-6"
       />
 
@@ -58,6 +66,7 @@ export function RewardsConfigForm({
         onValueChange={onLoyaltyBonusChange}
         minPercent={0}
         maxPercent={5}
+        disabled={disabled}
         className="mt-6"
       />
     </View>

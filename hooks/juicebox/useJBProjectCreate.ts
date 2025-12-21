@@ -7,7 +7,7 @@ import { useParaAccount } from '@/hooks/useParaAccount';
 import { COCOPAY_CHAIN } from '@/lib/juicebox/constants';
 import { JB_CONTROLLER_ADDRESS } from '@/lib/juicebox/contracts';
 import { buildLaunchProjectConfig, buildStoreCode } from '@/lib/juicebox/transforms';
-import { buildProjectMetadata, uploadMetadataToIPFS, getIPFSUri } from '@/lib/juicebox/metadata';
+import { buildProjectMetadata, uploadMetadataToIPFS } from '@/lib/juicebox/metadata';
 import { useJBPublicClient } from './useJBPublicClient';
 
 interface UseJBProjectCreateResult {
@@ -49,10 +49,9 @@ export function useJBProjectCreate(): UseJBProjectCreateResult {
         setIsUploading(true);
         const metadata = buildProjectMetadata(params);
         const cid = await uploadMetadataToIPFS(metadata);
-        const projectUri = getIPFSUri(cid);
         setIsUploading(false);
 
-        const launchConfig = buildLaunchProjectConfig(params, projectUri);
+        const launchConfig = buildLaunchProjectConfig(params, cid);
 
         const rulesetConfigs = launchConfig.rulesetConfigurations.map((config) => ({
           mustStartAtOrAfter: config.mustStartAtOrAfter,

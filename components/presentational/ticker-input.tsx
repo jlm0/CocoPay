@@ -7,12 +7,19 @@ type TickerInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   warning?: string;
+  disabled?: boolean;
   className?: string;
 };
 
 export const TICKER_MAX_LENGTH = 5;
 
-export function TickerInput({ value, onChangeText, warning, className = '' }: TickerInputProps) {
+export function TickerInput({
+  value,
+  onChangeText,
+  warning,
+  disabled,
+  className = '',
+}: TickerInputProps) {
   const handleChange = (text: string) => {
     const cleaned = text.replace(/^\$/, '');
     const formatted = `$${cleaned.toUpperCase()}`;
@@ -28,6 +35,7 @@ export function TickerInput({ value, onChangeText, warning, className = '' }: Ti
         placeholder="$ABC"
         autoCapitalize="characters"
         autoCorrect={false}
+        editable={!disabled}
         className="text-xl"
       />
       {warning && <Text className="mt-1 text-sm text-yellow-500">{warning}</Text>}

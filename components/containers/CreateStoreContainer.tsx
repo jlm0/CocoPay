@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { ScrollView, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { WizardStepIndicator } from '@/components/presentational/wizard-step-indicator';
@@ -18,11 +17,10 @@ import { useJBProjectCreate } from '@/hooks/juicebox';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
 import { uploadFileWithRetry } from '@/lib/pinata';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
-import { queryKeys } from '@/lib/query';
+import { refetchAfterStoreCreate } from '@/lib/query';
 
 export function CreateStoreContainer() {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const form = useStoreCreationForm();
   const progress = useStoreCreationProgress();
@@ -107,8 +105,7 @@ export function CreateStoreContainer() {
         chainId: COCOPAY_CHAIN_ID,
       });
 
-      await queryClient.invalidateQueries({ queryKey: queryKeys.bendystraw.all });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.projectMetadata.all });
+      await refetchAfterStoreCreate();
 
       progress.setStep('complete');
       const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
@@ -173,6 +170,7 @@ export function CreateStoreContainer() {
               onAddressChange={(v) => form.updateField('address', v)}
               onWebsiteChange={(v) => form.updateField('website', v)}
               errors={form.errors}
+              disabled={isLoading}
             />
           </Animated.View>
         )}
@@ -187,6 +185,7 @@ export function CreateStoreContainer() {
               onCashBackChange={(v) => form.updateField('cashBack', v)}
               onLoyaltyBonusChange={(v) => form.updateField('loyaltyBonus', v)}
               errors={form.errors}
+              disabled={isLoading}
             />
           </Animated.View>
         )}

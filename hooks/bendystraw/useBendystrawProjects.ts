@@ -16,12 +16,7 @@ export function useBendystrawProjects(
   params: BendystrawProjectsQueryParams = {}
 ): UseBendystrawProjectsResult {
   const query = useQuery({
-    queryKey: queryKeys.bendystraw.projects(
-      params.where?.owner,
-      params.where?.chainId,
-      params.orderBy,
-      params.limit
-    ),
+    queryKey: queryKeys.bendystraw.projects(params),
     queryFn: () => fetchProjects(params),
     staleTime: 30_000,
   });

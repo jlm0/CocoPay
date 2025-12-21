@@ -11,6 +11,7 @@ type LogoPickerProps = {
   imageUri: string | null;
   onImageSelected: (uri: string) => void;
   onImageRemoved: () => void;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -18,11 +19,13 @@ export function LogoPicker({
   imageUri,
   onImageSelected,
   onImageRemoved,
+  disabled,
   className = '',
 }: LogoPickerProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePickImage = async () => {
+    if (disabled) return;
     setIsLoading(true);
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -60,22 +63,24 @@ export function LogoPicker({
             />
             <Pressable
               onPress={onImageRemoved}
+              disabled={disabled}
               className="absolute -right-1 -top-1 h-6 w-6 items-center justify-center rounded-full bg-destructive">
               <Icon as={X} className="text-destructive-foreground" size={14} />
             </Pressable>
           </View>
-          <Pressable onPress={handlePickImage}>
-            <Text className="text-primary">Change</Text>
+          <Pressable onPress={handlePickImage} disabled={disabled}>
+            <Text className={disabled ? 'text-muted-foreground' : 'text-primary'}>Change</Text>
           </Pressable>
         </View>
       ) : (
         <View className="items-center gap-2">
           <Pressable
             onPress={handlePickImage}
+            disabled={disabled}
             className={cn(
               'h-24 w-24 items-center justify-center rounded-full',
               'border-2 border-dashed border-muted-foreground/30',
-              'active:bg-muted'
+              disabled ? 'opacity-50' : 'active:bg-muted'
             )}>
             <Icon as={ImagePlus} className="text-muted-foreground" size={28} />
           </Pressable>

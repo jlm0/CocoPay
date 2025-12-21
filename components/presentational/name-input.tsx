@@ -6,12 +6,13 @@ import { Text } from '@/components/ui/text';
 type NameInputProps = {
   value: string;
   onChangeText: (text: string) => void;
+  disabled?: boolean;
   className?: string;
 };
 
 export const NAME_MAX_LENGTH = 50;
 
-export function NameInput({ value, onChangeText, className = '' }: NameInputProps) {
+export function NameInput({ value, onChangeText, disabled, className = '' }: NameInputProps) {
   return (
     <View className={className}>
       <View className="mb-2 flex-row items-center justify-between">
@@ -24,6 +25,7 @@ export function NameInput({ value, onChangeText, className = '' }: NameInputProp
         value={value}
         onChangeText={onChangeText}
         placeholder="Store name"
+        editable={!disabled}
         className="text-xl"
       />
     </View>

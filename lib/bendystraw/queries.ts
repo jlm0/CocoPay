@@ -25,6 +25,9 @@ const PROJECT_FIELDS = `
   owner
   createdAt
   metadataUri
+  metadata
+  domain
+  tags
   contributorsCount
   paymentsCount
   volume

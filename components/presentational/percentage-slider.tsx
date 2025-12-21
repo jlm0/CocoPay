@@ -10,6 +10,7 @@ type PercentageSliderProps = {
   onValueChange: (value: number) => void;
   minPercent?: number;
   maxPercent?: number;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -20,6 +21,7 @@ export function PercentageSlider({
   onValueChange,
   minPercent = 0,
   maxPercent = 10,
+  disabled,
   className = '',
 }: PercentageSliderProps) {
   return (
@@ -41,6 +43,7 @@ export function PercentageSlider({
         minimumValue={minPercent}
         maximumValue={maxPercent}
         step={1}
+        disabled={disabled}
         minimumTrackTintColor={NATIVE_SLIDER.minimumTrackTintColor}
         maximumTrackTintColor={NATIVE_SLIDER.maximumTrackTintColor}
         thumbTintColor={NATIVE_SLIDER.thumbTintColor}

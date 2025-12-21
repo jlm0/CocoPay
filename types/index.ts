@@ -46,6 +46,22 @@ export interface StoreDetails extends Store {
   loyaltyBonusPercent: number;
 }
 
+export type SortOption = 'name' | 'cashback' | 'loyalty';
+export type ViewMode = 'list' | 'map';
+
+export interface DiscoverStore {
+  id: string;
+  projectId: number;
+  chainId: number;
+  name: string;
+  tokenSymbol: string;
+  description?: string;
+  logoUri?: string;
+  address?: StoreAddress;
+  cashBackPercent: number;
+  loyaltyBonusPercent: number;
+}
+
 export type TokenType = 'USDC';
 
 export interface Balance {

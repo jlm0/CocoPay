@@ -38,12 +38,18 @@ export function getIpfsUri(cid: string): string {
 }
 
 export function extractCidFromUri(uri: string): string | null {
+  if (!uri) {
+    return null;
+  }
   if (uri.startsWith('ipfs://')) {
     return uri.slice(7);
   }
   if (uri.includes('/ipfs/')) {
     const parts = uri.split('/ipfs/');
     return parts[1]?.split('/')[0] ?? null;
+  }
+  if (uri.startsWith('Qm') || uri.startsWith('bafk') || uri.startsWith('bafy')) {
+    return uri;
   }
   return null;
 }

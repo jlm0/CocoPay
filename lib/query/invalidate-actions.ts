@@ -24,3 +24,9 @@ export function invalidateAfterCashOut(projectId: number, chainId: number) {
 export function invalidateAfterWithdraw() {
   queryClient.invalidateQueries({ queryKey: queryKeys.balance.all });
 }
+
+export async function refetchAfterStoreCreate() {
+  await queryClient.refetchQueries({ queryKey: queryKeys.bendystraw.all });
+  await queryClient.refetchQueries({ queryKey: queryKeys.projectMetadata.all });
+  await queryClient.refetchQueries({ queryKey: queryKeys.cocopayRegistry.all });
+}

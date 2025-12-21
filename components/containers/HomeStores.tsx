@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Store as StoreIcon } from 'lucide-react-native';
+import { Store as StoreIcon, Compass, Plus } from 'lucide-react-native';
 import { SectionHeader } from '@/components/presentational/section-header';
 import { StoreList } from '@/components/presentational/store-list';
 import { useCocoPayStores } from '@/hooks/useCocoPayStores';
@@ -28,19 +29,31 @@ export function HomeStores() {
   const router = useRouter();
   const { stores, isLoading, error } = useCocoPayStores();
 
-  const handleAddPress = () => {
-    router.push('/(app)/create');
-  };
-
   const handleStorePress = (store: Store) => {
     router.push(`/(app)/store/${store.id}`);
   };
+
+  const actions = useMemo(
+    () => [
+      {
+        icon: Compass,
+        onPress: () => router.push('/(app)/discover'),
+        accessibilityLabel: 'Discover stores',
+      },
+      {
+        icon: Plus,
+        onPress: () => router.push('/(app)/create'),
+        accessibilityLabel: 'Create store',
+      },
+    ],
+    [router]
+  );
 
   const showSkeleton = isLoading;
 
   return (
     <View className="flex-1">
-      <SectionHeader title="Stores" showAddButton onAddPress={handleAddPress} className="mb-1" />
+      <SectionHeader title="Stores" actions={actions} className="mb-1" />
       {showSkeleton ? (
         <StoresSkeleton />
       ) : error ? (
@@ -58,7 +71,7 @@ export function HomeStores() {
           <Text className="mb-4 mt-1 text-center text-sm text-muted-foreground">
             Create a store or pay at one to start earning rewards
           </Text>
-          <Button variant="outline" size="sm" onPress={handleAddPress}>
+          <Button variant="outline" size="sm" onPress={() => router.push('/(app)/create')}>
             <Text>Create Store</Text>
           </Button>
         </View>

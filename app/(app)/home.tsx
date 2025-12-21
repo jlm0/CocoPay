@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { HomeBalances } from '@/components/containers/HomeBalances';
 import { HomeStores } from '@/components/containers/HomeStores';
@@ -16,6 +17,13 @@ export default function HomePage() {
   const queryClient = useQueryClient();
   const { openAccountSheet } = useAccountSheet();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.bendystraw.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
+    }, [queryClient])
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

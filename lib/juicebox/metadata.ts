@@ -24,8 +24,13 @@ export interface ProjectMetadata {
   projectTagline?: string;
   infoUri?: string;
   tags?: string[];
+  domain?: string;
+  version?: number;
   cocopay?: CocoPayMetadata;
 }
+
+export const COCOPAY_METADATA_DOMAIN = 'cocopay';
+export const COCOPAY_METADATA_SCHEMA_VERSION = 1;
 
 export const COCOPAY_METADATA_VERSION = 1;
 
@@ -37,6 +42,8 @@ export function buildProjectMetadata(params: StoreCreationParams): ProjectMetada
     projectTagline: `${params.ticker} rewards program`,
     infoUri: params.website,
     tags: ['business'],
+    domain: COCOPAY_METADATA_DOMAIN,
+    version: COCOPAY_METADATA_SCHEMA_VERSION,
     cocopay: {
       version: COCOPAY_METADATA_VERSION,
       ticker: params.ticker,

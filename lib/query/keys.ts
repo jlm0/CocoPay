@@ -9,12 +9,12 @@ export const queryKeys = {
     all: ['bendystraw'] as const,
     project: (projectId: number | null, chainId: number) =>
       ['bendystraw', 'project', projectId, chainId] as const,
-    projects: (
-      owner: string | null | undefined,
-      chainId: number | null | undefined,
-      orderBy: string | undefined,
-      limit: number | undefined
-    ) => ['bendystraw', 'projects', owner, chainId, orderBy, limit] as const,
+    projects: (params: {
+      where?: Record<string, unknown>;
+      orderBy?: string;
+      orderDirection?: string;
+      limit?: number;
+    }) => ['bendystraw', 'projects', params] as const,
     participant: (projectId: number, chainId: number, address: string | null) =>
       ['bendystraw', 'participant', projectId, chainId, address] as const,
     participants: (
@@ -62,6 +62,11 @@ export const queryKeys = {
 
   transfers: (address: string | null | undefined, chainId: number) =>
     ['transfers', address, chainId] as const,
+
+  discover: {
+    all: ['discover'] as const,
+    stores: (chainId: number) => ['discover', 'stores', chainId] as const,
+  },
 
   resolveAddress: (input: string) => ['resolveAddress', input] as const,
 

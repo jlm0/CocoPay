@@ -6,10 +6,16 @@ import { Text } from '@/components/ui/text';
 type DescriptionInputProps = {
   value: string;
   onChangeText: (text: string) => void;
+  disabled?: boolean;
   className?: string;
 };
 
-export function DescriptionInput({ value, onChangeText, className = '' }: DescriptionInputProps) {
+export function DescriptionInput({
+  value,
+  onChangeText,
+  disabled,
+  className = '',
+}: DescriptionInputProps) {
   return (
     <View className={className}>
       <View className="mb-2 flex-row items-center justify-between">
@@ -21,6 +27,7 @@ export function DescriptionInput({ value, onChangeText, className = '' }: Descri
         onChangeText={onChangeText}
         placeholder="Tell customers about your store..."
         numberOfLines={4}
+        editable={!disabled}
       />
     </View>
   );
