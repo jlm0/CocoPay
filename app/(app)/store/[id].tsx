@@ -3,6 +3,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreBalance } from '@/components/presentational/store-balance';
 import { StoreValueRow } from '@/components/presentational/store-value-row';
+import { StoreRewardBadges } from '@/components/presentational/store-reward-badges';
+import { StoreAboutSection } from '@/components/presentational/store-about-section';
 import { StoreActions } from '@/components/presentational/store-actions';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
@@ -77,8 +79,16 @@ export default function StoreDetailPage() {
         }>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-6 pb-64">
           <View className="gap-2">
-            <Skeleton className="h-8 w-40 rounded-lg" />
+            <View className="flex-row items-center gap-3">
+              <Skeleton className="size-12 rounded-full" />
+              <Skeleton className="h-8 w-32 rounded-lg" />
+            </View>
             <Skeleton className="h-4 w-28 rounded" />
+          </View>
+
+          <View className="flex-row gap-2">
+            <Skeleton className="h-6 w-24 rounded-full" />
+            <Skeleton className="h-6 w-20 rounded-full" />
           </View>
 
           <View className="gap-1">
@@ -139,11 +149,23 @@ export default function StoreDetailPage() {
           title={store.name}
           subtitle={`Store code ${store.storeCode}`}
           badge={store.isOwned ? 'Yours' : undefined}
+          logoUri={store.logoUri ?? undefined}
+        />
+
+        <StoreRewardBadges
+          cashBackPercent={store.cashBackPercent}
+          loyaltyBonusPercent={store.loyaltyBonusPercent}
         />
 
         <StoreBalance balance={store.balance} tokenSymbol={store.tokenSymbol} />
 
         <StoreValueRow values={valueItems} />
+
+        <StoreAboutSection
+          description={store.description}
+          address={store.address}
+          website={store.website}
+        />
       </ScrollView>
     </ScreenContainer>
   );

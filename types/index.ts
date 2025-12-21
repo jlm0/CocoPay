@@ -25,10 +25,25 @@ export interface Store {
   isOwned: boolean;
 }
 
+export interface StoreAddress {
+  formatted: string;
+  placeId?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
+
 export interface StoreDetails extends Store {
   valueAtStore: number;
   cashOutValue: number;
   borrowValue: number;
+  description?: string;
+  logoUri?: string;
+  address?: StoreAddress;
+  website?: string;
+  cashBackPercent: number;
+  loyaltyBonusPercent: number;
 }
 
 export type TokenType = 'USDC';

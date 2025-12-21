@@ -8,8 +8,18 @@ import { useJBLoanQuote } from '@/hooks/juicebox/useJBLoanQuote';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { JB_TOKEN_DECIMALS, USDC_DECIMALS } from '@/lib/juicebox/constants';
+import { extractCidFromUri, getGatewayUrl } from '@/lib/pinata';
 import { queryKeys } from '@/lib/query';
 import type { StoreDetails } from '@/types';
+
+function resolveLogoUrl(logoUri: string | undefined): string | undefined {
+  if (!logoUri) return undefined;
+  const cid = extractCidFromUri(logoUri);
+  if (cid) {
+    return getGatewayUrl(cid);
+  }
+  return logoUri;
+}
 
 interface UseStoreDetailsResult {
   store: StoreDetails | null;
@@ -95,6 +105,12 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       valueAtStore,
       cashOutValue,
       borrowValue,
+      description: metadata.description,
+      logoUri: resolveLogoUrl(metadata.logoUri),
+      address: metadata.cocopay.address,
+      website: metadata.infoUri,
+      cashBackPercent: metadata.cocopay.cashBackPercent,
+      loyaltyBonusPercent: metadata.cocopay.loyaltyBonusPercent,
     };
   }, [project, metadata, userBalance, address, cashOutQuote, loanQuote, chainId, projectId]);
 
