@@ -24,6 +24,8 @@ android
 .metro-health-check*
 
 CLAUDE.md
+docs/ECONOMIC_MODEL.md
+docs/BUSINESS_VIABILITY_ASSESSMENT.md
 
 # Yarn
 .yarn/*
