@@ -10,6 +10,7 @@ const PARTICIPATIONS_STALE_TIME = 30_000;
 
 export type UseMultiChainParticipationsResult = {
   participations: BendystrawParticipant[];
+  hasData: boolean;
   isLoading: boolean;
   isFetching: boolean;
   error: Error | null;
@@ -44,7 +45,7 @@ export function useMultiChainParticipations(): UseMultiChainParticipationsResult
     const allParticipations: BendystrawParticipant[] = [];
 
     for (const query of queries) {
-      if (query.data) {
+      if (query.data && Array.isArray(query.data)) {
         allParticipations.push(...query.data);
       }
     }
@@ -52,6 +53,7 @@ export function useMultiChainParticipations(): UseMultiChainParticipationsResult
     return allParticipations.filter((p) => BigInt(p.balance) > 0n);
   }, [queries]);
 
+  const hasData = queries.some((q) => Array.isArray(q.data));
   const isLoading = queries.some((q) => q.isLoading);
   const isFetching = queries.some((q) => q.isFetching);
 
@@ -66,6 +68,7 @@ export function useMultiChainParticipations(): UseMultiChainParticipationsResult
 
   return {
     participations,
+    hasData,
     isLoading,
     isFetching,
     error,

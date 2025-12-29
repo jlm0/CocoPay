@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { alchemy, sepolia as alchemySepolia, type AlchemyTransport } from '@account-kit/infra';
+import {
+  alchemy,
+  sepolia as alchemySepolia,
+  baseSepolia as alchemyBaseSepolia,
+  arbitrumSepolia as alchemyArbitrumSepolia,
+  optimismSepolia as alchemyOptimismSepolia,
+  type AlchemyTransport,
+} from '@account-kit/infra';
 import {
   createModularAccountV2Client,
   type ModularAccountV2Client,
@@ -18,6 +25,9 @@ type AlchemySmartAccountClient = ModularAccountV2Client<
 
 const ALCHEMY_CHAINS: Record<number, Chain> = {
   11155111: alchemySepolia,
+  84532: alchemyBaseSepolia,
+  421614: alchemyArbitrumSepolia,
+  11155420: alchemyOptimismSepolia,
 };
 
 function getAlchemyChain(chain: Chain): Chain {

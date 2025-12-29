@@ -1,11 +1,16 @@
-import { useState, useCallback } from 'react';
-import { encodeFunctionData, type Hash, type Address } from 'viem';
+import { useState, useCallback, useMemo } from 'react';
+import { encodeFunctionData, type Hash } from 'viem';
 import { jbMultiTerminalAbi } from 'juice-sdk-core';
 import type { CashOutParams, CashOutResult } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
 import { useParaAccount } from '@/hooks/useParaAccount';
-import { COCOPAY_CHAIN, USDC_ADDRESS, DEFAULT_METADATA } from '@/lib/juicebox/constants';
-import { JB_MULTI_TERMINAL_ADDRESS } from '@/lib/juicebox/contracts';
+import { DEFAULT_METADATA, type OmnichainChainId } from '@/lib/juicebox/constants';
+import {
+  getPrimaryChainId,
+  getChainById,
+  getUsdcAddress,
+  getMultiTerminalAddress,
+} from '@/lib/juicebox/chain-selection';
 
 interface UseJBCashOutResult {
   cashOut: (params: CashOutParams) => Promise<CashOutResult>;
@@ -14,9 +19,17 @@ interface UseJBCashOutResult {
   reset: () => void;
 }
 
-export function useJBCashOut(projectId: bigint): UseJBCashOutResult {
+export function useJBCashOut(
+  projectId: bigint,
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseJBCashOutResult {
   const { address } = useParaAccount();
-  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(COCOPAY_CHAIN);
+  const chain = getChainById(chainId);
+  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
+
+  const terminalAddress = useMemo(() => getMultiTerminalAddress(chainId), [chainId]);
+  const usdcAddress = useMemo(() => getUsdcAddress(chainId), [chainId]);
+
   const [error, setError] = useState<Error | null>(null);
 
   const reset = useCallback(() => {
@@ -45,14 +58,14 @@ export function useJBCashOut(projectId: bigint): UseJBCashOutResult {
             address,
             projectId,
             params.tokenAmount,
-            USDC_ADDRESS as Address,
+            usdcAddress,
             params.minReceived,
             beneficiary,
             DEFAULT_METADATA,
           ],
         });
 
-        const result = await sendTransaction(JB_MULTI_TERMINAL_ADDRESS, 0n, data);
+        const result = await sendTransaction(terminalAddress, 0n, data);
         const txHash = result.receipt.transactionHash as Hash;
 
         let amountReceived = 0n;
@@ -76,7 +89,7 @@ export function useJBCashOut(projectId: bigint): UseJBCashOutResult {
         throw error;
       }
     },
-    [address, isReady, projectId, sendTransaction]
+    [address, isReady, projectId, usdcAddress, terminalAddress, sendTransaction]
   );
 
   return {

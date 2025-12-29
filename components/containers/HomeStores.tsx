@@ -25,7 +25,11 @@ function StoresSkeleton() {
   );
 }
 
-export function HomeStores() {
+type HomeStoresProps = {
+  isRefreshing?: boolean;
+};
+
+export function HomeStores({ isRefreshing }: HomeStoresProps) {
   const router = useRouter();
   const { stores, isLoading, error } = useCocoPayStores();
 
@@ -49,7 +53,7 @@ export function HomeStores() {
     [router]
   );
 
-  const showSkeleton = isLoading;
+  const showSkeleton = isLoading || isRefreshing;
 
   return (
     <View className="flex-1">

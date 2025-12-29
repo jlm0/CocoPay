@@ -1,16 +1,16 @@
 import { useState, useCallback } from 'react';
-import { encodeFunctionData, type Hash, type Address } from 'viem';
+import { encodeFunctionData, type Hash } from 'viem';
 import { revLoans1_1Abi, getRevnetLoanContract } from 'juice-sdk-core';
 import type { LoanBorrowParams, LoanBorrowResult, Loan } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
 import { useParaAccount } from '@/hooks/useParaAccount';
+import { JB_VERSION, type OmnichainChainId } from '@/lib/juicebox/constants';
 import {
-  COCOPAY_CHAIN,
-  JB_VERSION,
-  COCOPAY_CHAIN_ID,
-  USDC_ADDRESS,
-} from '@/lib/juicebox/constants';
-import { JB_MULTI_TERMINAL_ADDRESS } from '@/lib/juicebox/contracts';
+  getPrimaryChainId,
+  getChainById,
+  getUsdcAddress,
+  getMultiTerminalAddress,
+} from '@/lib/juicebox/chain-selection';
 
 interface UseJBLoanBorrowResult {
   borrow: (params: LoanBorrowParams) => Promise<LoanBorrowResult>;
@@ -19,9 +19,13 @@ interface UseJBLoanBorrowResult {
   reset: () => void;
 }
 
-export function useJBLoanBorrow(projectId: bigint): UseJBLoanBorrowResult {
+export function useJBLoanBorrow(
+  projectId: bigint,
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseJBLoanBorrowResult {
   const { address } = useParaAccount();
-  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(COCOPAY_CHAIN);
+  const chain = getChainById(chainId);
+  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
   const [error, setError] = useState<Error | null>(null);
 
   const reset = useCallback(() => {
@@ -41,12 +45,12 @@ export function useJBLoanBorrow(projectId: bigint): UseJBLoanBorrowResult {
       setError(null);
 
       try {
-        const loanContractAddress = getRevnetLoanContract(JB_VERSION, COCOPAY_CHAIN_ID);
+        const loanContractAddress = getRevnetLoanContract(JB_VERSION, chainId);
         const beneficiary = params.beneficiary ?? address;
 
         const loanSource = {
-          token: USDC_ADDRESS as Address,
-          terminal: JB_MULTI_TERMINAL_ADDRESS,
+          token: getUsdcAddress(chainId),
+          terminal: getMultiTerminalAddress(chainId),
         };
 
         const data = encodeFunctionData({
@@ -93,7 +97,7 @@ export function useJBLoanBorrow(projectId: bigint): UseJBLoanBorrowResult {
         throw error;
       }
     },
-    [address, isReady, projectId, sendTransaction]
+    [address, isReady, projectId, chainId, sendTransaction]
   );
 
   return {

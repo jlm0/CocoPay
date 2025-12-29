@@ -3,6 +3,7 @@ export { useJBPublicClient } from './useJBPublicClient';
 
 export { useJBProjectCreate } from './useJBProjectCreate';
 export { useJBProjectRead } from './useJBProjectRead';
+export { useOmnichainRevnetCreate } from './useOmnichainRevnetCreate';
 
 export { useJBPay } from './useJBPay';
 export { useJBPayQuote } from './useJBPayQuote';

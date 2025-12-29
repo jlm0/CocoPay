@@ -1,6 +1,12 @@
 import type { Chain } from 'viem';
 import { sepolia, baseSepolia, arbitrumSepolia, optimismSepolia } from 'viem/chains';
 import { Network } from 'alchemy-sdk';
+import {
+  OMNICHAIN_CHAINS,
+  OMNICHAIN_CHAIN_IDS,
+  COCOPAY_CHAIN,
+  type OmnichainChainId,
+} from './juicebox/constants';
 
 export const SUPPORTED_CHAINS = {
   sepolia,
@@ -9,14 +15,9 @@ export const SUPPORTED_CHAINS = {
   optimismSepolia,
 } as const;
 
-export const SUPPORTED_CHAINS_ARRAY: Chain[] = [
-  sepolia,
-  baseSepolia,
-  arbitrumSepolia,
-  optimismSepolia,
-];
+export const SUPPORTED_CHAINS_ARRAY: Chain[] = OMNICHAIN_CHAINS;
 
-export type SupportedChainId = (typeof SUPPORTED_CHAINS)[keyof typeof SUPPORTED_CHAINS]['id'];
+export type SupportedChainId = OmnichainChainId;
 
 export const CHAIN_BY_ID: Record<SupportedChainId, Chain> = {
   [sepolia.id]: sepolia,
@@ -32,4 +33,6 @@ export const CHAIN_TO_ALCHEMY_NETWORK: Record<SupportedChainId, Network> = {
   [optimismSepolia.id]: Network.OPT_SEPOLIA,
 };
 
-export const DEFAULT_CHAIN = sepolia;
+export const DEFAULT_CHAIN = COCOPAY_CHAIN;
+
+export { OMNICHAIN_CHAINS, OMNICHAIN_CHAIN_IDS, type OmnichainChainId };

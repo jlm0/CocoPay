@@ -4,7 +4,8 @@ import { revLoans1_1Abi, getRevnetLoanContract } from 'juice-sdk-core';
 import type { LoanRepayParams, LoanRepayResult } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
 import { useParaAccount } from '@/hooks/useParaAccount';
-import { COCOPAY_CHAIN, JB_VERSION, COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { JB_VERSION, type OmnichainChainId } from '@/lib/juicebox/constants';
+import { getPrimaryChainId, getChainById } from '@/lib/juicebox/chain-selection';
 
 interface UseJBLoanRepayResult {
   repay: (params: LoanRepayParams) => Promise<LoanRepayResult>;
@@ -13,9 +14,12 @@ interface UseJBLoanRepayResult {
   reset: () => void;
 }
 
-export function useJBLoanRepay(): UseJBLoanRepayResult {
+export function useJBLoanRepay(
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseJBLoanRepayResult {
   const { address } = useParaAccount();
-  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(COCOPAY_CHAIN);
+  const chain = getChainById(chainId);
+  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
   const [error, setError] = useState<Error | null>(null);
 
   const reset = useCallback(() => {
@@ -35,7 +39,7 @@ export function useJBLoanRepay(): UseJBLoanRepayResult {
       setError(null);
 
       try {
-        const loanContractAddress = getRevnetLoanContract(JB_VERSION, COCOPAY_CHAIN_ID);
+        const loanContractAddress = getRevnetLoanContract(JB_VERSION, chainId);
         const beneficiary = params.beneficiary ?? address;
 
         const allowance = {
@@ -71,7 +75,7 @@ export function useJBLoanRepay(): UseJBLoanRepayResult {
         throw error;
       }
     },
-    [address, isReady, sendTransaction]
+    [address, isReady, chainId, sendTransaction]
   );
 
   return {

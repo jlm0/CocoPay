@@ -2,20 +2,22 @@ import { useState, useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { parseUnits } from 'viem';
+import { calcPrepaidFee } from 'juice-sdk-core';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { HeroTokenInput } from '@/components/presentational/hero-token-input';
 import { StepsList } from '@/components/presentational/steps-list';
+import { PrepaySlider } from '@/components/presentational/prepay-slider';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { useJBCashOut } from '@/hooks/juicebox/useJBCashOut';
-import { useJBCashOutQuote } from '@/hooks/juicebox/useJBCashOutQuote';
+import { useJBLoanBorrow } from '@/hooks/juicebox/useJBLoanBorrow';
+import { useJBLoanQuote } from '@/hooks/juicebox/useJBLoanQuote';
 import { JB_TOKEN_DECIMALS, USDC_DECIMALS, type OmnichainChainId } from '@/lib/juicebox/constants';
 import { isOmnichainChainId } from '@/lib/juicebox/chain-selection';
 import { invalidateAfterCashOut } from '@/lib/query';
 
-type CashOutContainerProps = {
+type BorrowContainerProps = {
   projectId?: string;
   chainId?: string;
   storeName?: string;
@@ -23,13 +25,13 @@ type CashOutContainerProps = {
   balance?: string;
 };
 
-export function CashOutContainer({
+export function BorrowContainer({
   projectId: projectIdStr,
   chainId: chainIdStr,
   storeName: storeNameParam,
   tokenSymbol: tokenSymbolParam,
   balance: balanceStr,
-}: CashOutContainerProps) {
+}: BorrowContainerProps) {
   const router = useRouter();
 
   const projectId = projectIdStr ? parseInt(projectIdStr, 10) : null;
@@ -59,7 +61,7 @@ export function CashOutContainer({
   }
 
   return (
-    <CashOutContainerContent
+    <BorrowContainerContent
       projectId={projectId}
       chainId={chainId as OmnichainChainId}
       storeName={storeNameParam ?? 'Store'}
@@ -69,7 +71,7 @@ export function CashOutContainer({
   );
 }
 
-type CashOutContainerContentProps = {
+type BorrowContainerContentProps = {
   projectId: number;
   chainId: OmnichainChainId;
   storeName: string;
@@ -77,19 +79,20 @@ type CashOutContainerContentProps = {
   balance: number;
 };
 
-function CashOutContainerContent({
+function BorrowContainerContent({
   projectId,
   chainId,
   storeName,
   tokenSymbol,
   balance,
-}: CashOutContainerContentProps) {
+}: BorrowContainerContentProps) {
   const router = useRouter();
   const [amount, setAmount] = useState('');
+  const [prepayMonths, setPrepayMonths] = useState(12);
 
-  const { cashOut, isLoading, error } = useJBCashOut(BigInt(projectId), chainId);
+  const { borrow, isLoading, error } = useJBLoanBorrow(BigInt(projectId), chainId);
 
-  const tokenAmountWei = useMemo(() => {
+  const collateralAmountWei = useMemo(() => {
     if (!amount || amount === '.' || amount === '0.') return 0n;
     try {
       return parseUnits(amount, JB_TOKEN_DECIMALS);
@@ -98,56 +101,71 @@ function CashOutContainerContent({
     }
   }, [amount]);
 
-  const { quote, isLoading: quoteLoading } = useJBCashOutQuote(
-    tokenAmountWei > 0n
+  const { quote, isLoading: quoteLoading } = useJBLoanQuote(
+    collateralAmountWei > 0n
       ? {
           projectId: BigInt(projectId),
-          tokenAmount: tokenAmountWei,
+          collateralAmount: collateralAmountWei,
         }
       : null,
     chainId
   );
+
+  const prepayFeePercent = useMemo(() => {
+    if (!quote) return 0;
+    const monthsInSeconds = prepayMonths * 30 * 24 * 60 * 60;
+    return Number(calcPrepaidFee(monthsInSeconds));
+  }, [quote, prepayMonths]);
+
+  const borrowableAfterFee = useMemo(() => {
+    if (!quote) return 0n;
+    const feeAmount = (quote.borrowableAmount * BigInt(prepayFeePercent)) / 10000n;
+    return quote.borrowableAmount - feeAmount;
+  }, [quote, prepayFeePercent]);
 
   const numericAmount = parseFloat(amount) || 0;
   const amountExceedsBalance = numericAmount > balance;
   const amountError = amountExceedsBalance ? 'Amount exceeds balance' : undefined;
 
   const isValidAmount = numericAmount > 0 && !amountExceedsBalance;
-  const canCashOut = isValidAmount && !isLoading;
+  const canBorrow = isValidAmount && !isLoading && quote !== null;
 
   const estimateText = useMemo(() => {
-    if (!quote || quote.netAmount === 0n) return undefined;
-    const usdcAmount = Number(quote.netAmount) / 10 ** USDC_DECIMALS;
+    if (!quote || borrowableAfterFee === 0n) return undefined;
+    const usdcAmount = Number(borrowableAfterFee) / 10 ** USDC_DECIMALS;
     return `≈ $${usdcAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`;
-  }, [quote]);
+  }, [quote, borrowableAfterFee]);
 
   const handleMaxPress = () => {
     setAmount(balance.toString());
   };
 
-  const handleCashOut = async () => {
-    if (!canCashOut || tokenAmountWei === 0n) return;
+  const handleBorrow = async () => {
+    if (!canBorrow || collateralAmountWei === 0n || !quote) return;
 
     try {
-      const minReceived = quote?.netAmount ? (quote.netAmount * 95n) / 100n : 0n;
+      const minBorrowAmount = (borrowableAfterFee * 95n) / 100n;
 
-      const result = await cashOut({
-        tokenAmount: tokenAmountWei,
-        minReceived,
+      const result = await borrow({
+        collateralAmount: collateralAmountWei,
+        minBorrowAmount,
+        prepaidFeePercent: prepayFeePercent,
       });
 
-      const usdcReceived = Number(result.amountReceived) / 10 ** USDC_DECIMALS;
+      const usdcReceived = Number(result.loan.amount) / 10 ** USDC_DECIMALS;
 
       invalidateAfterCashOut(projectId, chainId);
 
       router.push({
-        pathname: '/(app)/cashout/success',
+        pathname: '/(app)/borrow/success',
         params: {
           txHash: result.txHash,
           tokenAmount: amount,
           tokenSymbol,
           usdcAmount: usdcReceived.toFixed(2),
           storeName,
+          loanId: result.loan.id.toString(),
+          prepayMonths: prepayMonths.toString(),
         },
       });
     } catch {
@@ -160,11 +178,11 @@ function CashOutContainerContent({
       bottomActionBar={
         <BottomActionBar>
           <Button
-            onPress={handleCashOut}
-            disabled={!canCashOut}
+            onPress={handleBorrow}
+            disabled={!canBorrow}
             size="lg"
             className="h-14 rounded-xl">
-            <Text>{isLoading ? 'Cashing out...' : 'Cash out'}</Text>
+            <Text>{isLoading ? 'Borrowing...' : 'Cash out'}</Text>
           </Button>
         </BottomActionBar>
       }>
@@ -174,9 +192,10 @@ function CashOutContainerContent({
         <StepsList
           title="How cash out works"
           steps={[
-            `Exchange your ${tokenSymbol} tokens for USDC.`,
-            'Receive USDC directly to your wallet.',
-            'A 2.5% protocol fee applies.',
+            `Use your ${tokenSymbol} tokens as collateral.`,
+            'Prepay future interest upfront.',
+            'Receive USDC instantly.',
+            'Repay anytime to get your tokens back.',
           ]}
           className="mb-8"
         />
@@ -189,8 +208,16 @@ function CashOutContainerContent({
           onMaxPress={handleMaxPress}
           error={amountError}
           estimate={estimateText}
-          estimateLoading={quoteLoading && tokenAmountWei > 0n}
+          estimateLoading={quoteLoading && collateralAmountWei > 0n}
           disabled={isLoading}
+        />
+
+        <PrepaySlider
+          value={prepayMonths}
+          onValueChange={setPrepayMonths}
+          minMonths={6}
+          maxMonths={120}
+          className="mt-6"
         />
 
         {error && (

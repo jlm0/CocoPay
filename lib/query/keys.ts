@@ -66,14 +66,21 @@ export const queryKeys = {
   },
 
   jb: {
-    project: (projectId: string | undefined) => ['jb-project', projectId] as const,
-    loan: (loanId: string | undefined) => ['jb-loan', loanId] as const,
-    payQuote: (projectId: string | undefined, amount: string | undefined) =>
-      ['jb-pay-quote', projectId, amount] as const,
-    cashOutQuote: (projectId: string | undefined, tokenAmount: string | undefined) =>
-      ['jb-cashout-quote', projectId, tokenAmount] as const,
-    loanQuote: (projectId: string | undefined, collateralAmount: string | undefined) =>
-      ['jb-loan-quote', projectId, collateralAmount] as const,
+    project: (projectId: string | undefined, chainId?: string) =>
+      ['jb-project', projectId, chainId] as const,
+    loan: (loanId: string | undefined, chainId?: string) => ['jb-loan', loanId, chainId] as const,
+    payQuote: (projectId: string | undefined, amount: string | undefined, chainId?: string) =>
+      ['jb-pay-quote', projectId, amount, chainId] as const,
+    cashOutQuote: (
+      projectId: string | undefined,
+      tokenAmount: string | undefined,
+      chainId?: string
+    ) => ['jb-cashout-quote', projectId, tokenAmount, chainId] as const,
+    loanQuote: (
+      projectId: string | undefined,
+      collateralAmount: string | undefined,
+      chainId?: string
+    ) => ['jb-loan-quote', projectId, collateralAmount, chainId] as const,
   },
 
   transfers: (address: string | null | undefined, chainId: number) =>

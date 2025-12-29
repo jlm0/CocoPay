@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 
-const CACHE_BUSTER = 'v2';
+const CACHE_BUSTER = 'v3';
 
 function replacer(_key: string, value: unknown): unknown {
   if (typeof value === 'bigint') {

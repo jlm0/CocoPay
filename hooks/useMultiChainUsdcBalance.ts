@@ -27,6 +27,7 @@ export type UseMultiChainUsdcBalanceResult = {
   balances: ChainBalance[];
   totalBalance: bigint;
   totalFormatted: string;
+  hasData: boolean;
   isLoading: boolean;
   isFetching: boolean;
   error: Error | null;
@@ -72,7 +73,18 @@ export function useMultiChainUsdcBalance(): UseMultiChainUsdcBalanceResult {
   });
 
   const balances = useMemo(() => {
-    return queries.filter((q) => q.data !== undefined).map((q) => q.data as ChainBalance);
+    return SUPPORTED_CHAINS_ARRAY.map((chain, index) => {
+      const query = queries[index];
+      if (query?.data) {
+        return query.data;
+      }
+      return {
+        chainId: chain.id as SupportedChainId,
+        chainName: CHAIN_NAMES[chain.id as SupportedChainId],
+        balance: 0n,
+        formatted: '0',
+      };
+    });
   }, [queries]);
 
   const totalBalance = useMemo(() => {
@@ -83,6 +95,7 @@ export function useMultiChainUsdcBalance(): UseMultiChainUsdcBalanceResult {
     return formatUnits(totalBalance, TOKEN_DECIMALS.USDC);
   }, [totalBalance]);
 
+  const hasData = queries.some((q) => q.data !== undefined);
   const isLoading = queries.some((q) => q.isLoading);
   const isFetching = queries.some((q) => q.isFetching);
 
@@ -99,6 +112,7 @@ export function useMultiChainUsdcBalance(): UseMultiChainUsdcBalanceResult {
     balances,
     totalBalance,
     totalFormatted,
+    hasData,
     isLoading,
     isFetching,
     error,

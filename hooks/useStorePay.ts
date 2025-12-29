@@ -1,17 +1,18 @@
-import { useState, useCallback } from 'react';
-import { encodeFunctionData, decodeEventLog, type Hash, type Address } from 'viem';
-import { jbMultiTerminalAbi, jbControllerAbi } from 'juice-sdk-core';
+import { useState, useCallback, useMemo } from 'react';
+import { encodeFunctionData, decodeEventLog, type Hash } from 'viem';
+import { jbMultiTerminalAbi, jbControllerAbi, JBCoreContracts } from 'juice-sdk-core';
 import type { PayParams, PayResult } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { useUsdcAllowance } from '@/hooks/useUsdcAllowance';
+import { DEFAULT_MEMO, DEFAULT_METADATA, type OmnichainChainId } from '@/lib/juicebox/constants';
+import { getContractAddressForChain } from '@/lib/juicebox/contracts';
 import {
-  COCOPAY_CHAIN,
-  USDC_ADDRESS,
-  DEFAULT_MEMO,
-  DEFAULT_METADATA,
-} from '@/lib/juicebox/constants';
-import { JB_MULTI_TERMINAL_ADDRESS, JB_CONTROLLER_ADDRESS } from '@/lib/juicebox/contracts';
+  getPrimaryChainId,
+  getChainById,
+  getUsdcAddress,
+  getMultiTerminalAddress,
+} from '@/lib/juicebox/chain-selection';
 import { ERC20_ABI, USDC_APPROVAL_AMOUNT } from '@/lib/constants';
 
 export type PaymentStep = 'idle' | 'approving' | 'sending' | 'confirming';
@@ -25,11 +26,22 @@ interface UseStorePayResult {
   reset: () => void;
 }
 
-export function useStorePay(projectId: bigint): UseStorePayResult {
+export function useStorePay(
+  projectId: bigint,
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseStorePayResult {
   const { address } = useParaAccount();
-  const { sendBatchedTransaction, isLoading, isReady } = useAlchemySendTransaction(COCOPAY_CHAIN);
-  const { data: allowance, refetch: refetchAllowance } =
-    useUsdcAllowance(JB_MULTI_TERMINAL_ADDRESS);
+  const chain = getChainById(chainId);
+  const { sendBatchedTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
+
+  const terminalAddress = useMemo(() => getMultiTerminalAddress(chainId), [chainId]);
+  const usdcAddress = useMemo(() => getUsdcAddress(chainId), [chainId]);
+  const controllerAddress = useMemo(
+    () => getContractAddressForChain(JBCoreContracts.JBController, chainId),
+    [chainId]
+  );
+
+  const { data: allowance, refetch: refetchAllowance } = useUsdcAllowance(terminalAddress);
   const [error, setError] = useState<Error | null>(null);
   const [paymentStep, setPaymentStep] = useState<PaymentStep>('idle');
 
@@ -59,15 +71,7 @@ export function useStorePay(projectId: bigint): UseStorePayResult {
         const payData = encodeFunctionData({
           abi: jbMultiTerminalAbi,
           functionName: 'pay',
-          args: [
-            projectId,
-            USDC_ADDRESS as Address,
-            params.amount,
-            beneficiary,
-            0n,
-            memo,
-            DEFAULT_METADATA,
-          ],
+          args: [projectId, usdcAddress, params.amount, beneficiary, 0n, memo, DEFAULT_METADATA],
         });
 
         const claimReservedData = encodeFunctionData({
@@ -85,22 +89,22 @@ export function useStorePay(projectId: bigint): UseStorePayResult {
           const approveData = encodeFunctionData({
             abi: ERC20_ABI,
             functionName: 'approve',
-            args: [JB_MULTI_TERMINAL_ADDRESS, USDC_APPROVAL_AMOUNT],
+            args: [terminalAddress, USDC_APPROVAL_AMOUNT],
           });
 
           setPaymentStep('sending');
           result = await sendBatchedTransaction([
-            { target: USDC_ADDRESS as Address, data: approveData },
-            { target: JB_MULTI_TERMINAL_ADDRESS, data: payData },
-            { target: JB_CONTROLLER_ADDRESS, data: claimReservedData },
+            { target: usdcAddress, data: approveData },
+            { target: terminalAddress, data: payData },
+            { target: controllerAddress, data: claimReservedData },
           ]);
 
           refetchAllowance();
         } else {
           setPaymentStep('sending');
           result = await sendBatchedTransaction([
-            { target: JB_MULTI_TERMINAL_ADDRESS, data: payData },
-            { target: JB_CONTROLLER_ADDRESS, data: claimReservedData },
+            { target: terminalAddress, data: payData },
+            { target: controllerAddress, data: claimReservedData },
           ]);
         }
 
@@ -139,7 +143,17 @@ export function useStorePay(projectId: bigint): UseStorePayResult {
         throw error;
       }
     },
-    [address, isReady, projectId, allowance, sendBatchedTransaction, refetchAllowance]
+    [
+      address,
+      isReady,
+      projectId,
+      allowance,
+      usdcAddress,
+      terminalAddress,
+      controllerAddress,
+      sendBatchedTransaction,
+      refetchAllowance,
+    ]
   );
 
   return {

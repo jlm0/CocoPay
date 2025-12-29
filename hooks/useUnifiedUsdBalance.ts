@@ -8,6 +8,7 @@ export type UseUnifiedUsdBalanceResult = {
   totalUsd: number;
   usdcByChain: ChainBalance[];
   reclaimableByProject: ReclaimableBalance[];
+  hasData: boolean;
   isLoading: boolean;
   isFetching: boolean;
   error: Error | null;
@@ -18,6 +19,7 @@ export function useUnifiedUsdBalance(): UseUnifiedUsdBalanceResult {
   const {
     balances: usdcByChain,
     totalFormatted: totalUsdcFormatted,
+    hasData: usdcHasData,
     isLoading: usdcLoading,
     isFetching: usdcFetching,
     error: usdcError,
@@ -27,6 +29,7 @@ export function useUnifiedUsdBalance(): UseUnifiedUsdBalanceResult {
   const {
     balances: reclaimableByProject,
     totalReclaimableFormatted,
+    hasData: reclaimableHasData,
     isLoading: reclaimableLoading,
     isFetching: reclaimableFetching,
     error: reclaimableError,
@@ -45,7 +48,8 @@ export function useUnifiedUsdBalance(): UseUnifiedUsdBalanceResult {
     return totalUsdc + totalReclaimable;
   }, [totalUsdc, totalReclaimable]);
 
-  const isLoading = usdcLoading || reclaimableLoading;
+  const hasData = usdcHasData || reclaimableHasData;
+  const isLoading = (usdcLoading || reclaimableLoading) && !hasData;
   const isFetching = usdcFetching || reclaimableFetching;
 
   const error = useMemo(() => {
@@ -63,6 +67,7 @@ export function useUnifiedUsdBalance(): UseUnifiedUsdBalanceResult {
     totalUsd,
     usdcByChain,
     reclaimableByProject,
+    hasData,
     isLoading,
     isFetching,
     error,

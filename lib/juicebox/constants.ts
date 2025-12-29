@@ -1,4 +1,5 @@
-import { sepolia } from 'viem/chains';
+import { sepolia, baseSepolia, arbitrumSepolia, optimismSepolia } from 'viem/chains';
+import type { Chain } from 'viem';
 import {
   USDC_ADDRESSES,
   NATIVE_TOKEN,
@@ -19,6 +20,15 @@ export const JB_VERSION = 5 as const;
 
 export const COCOPAY_CHAIN = sepolia;
 export const COCOPAY_CHAIN_ID = sepolia.id;
+
+export const OMNICHAIN_CHAINS: Chain[] = [sepolia, baseSepolia, arbitrumSepolia, optimismSepolia];
+export const OMNICHAIN_CHAIN_IDS = [
+  sepolia.id,
+  baseSepolia.id,
+  arbitrumSepolia.id,
+  optimismSepolia.id,
+] as const;
+export type OmnichainChainId = (typeof OMNICHAIN_CHAIN_IDS)[number];
 
 export const USDC_ADDRESS = USDC_ADDRESSES[COCOPAY_CHAIN_ID];
 export const USDC_DECIMALS = 6;

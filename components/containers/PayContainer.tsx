@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { parseUnits, formatUnits } from 'viem';
@@ -13,7 +13,8 @@ import { Text } from '@/components/ui/text';
 import { Spinner } from '@/components/ui/spinner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useStoreDetails } from '@/hooks/useStoreDetails';
-import { useViemUsdcBalance } from '@/hooks/useViemUsdcBalance';
+import { useMultiChainUsdcBalance } from '@/hooks/useMultiChainUsdcBalance';
+import { useChainForPayment } from '@/hooks/useChainForPayment';
 import { useStorePay } from '@/hooks/useStorePay';
 import { useStoreInputLogic } from '@/hooks/useStoreInputLogic';
 import { useAmountInputLogic } from '@/hooks/useAmountInputLogic';
@@ -98,8 +99,8 @@ function PayContainerContent({
   const router = useRouter();
   const prevStoreIdRef = useRef<string | null>(null);
 
-  const { data: usdcBalance, isLoading: balanceLoading } = useViemUsdcBalance();
-  const usdcBalanceNum = usdcBalance?.formatted ? parseFloat(usdcBalance.formatted) : 0;
+  const { totalFormatted, isLoading: balanceLoading } = useMultiChainUsdcBalance();
+  const usdcBalanceNum = parseFloat(totalFormatted) || 0;
 
   const storeInput = useStoreInputLogic({
     initialStoreCode,
@@ -107,20 +108,31 @@ function PayContainerContent({
   });
 
   const projectId = storeInput.parsedCode?.projectId ?? 0n;
+
+  const amountInput = useAmountInputLogic({
+    initialAmount,
+    balance: usdcBalanceNum,
+    isFromExternal,
+  });
+
+  const amountInSmallestUnit = useMemo(() => {
+    try {
+      if (amountInput.numericAmount <= 0) return 0n;
+      return parseUnits(amountInput.numericAmount.toString(), TOKEN_DECIMALS.USDC);
+    } catch {
+      return 0n;
+    }
+  }, [amountInput.numericAmount]);
+
+  const { chainId: selectedChainId } = useChainForPayment(amountInSmallestUnit);
+
   const {
     pay: payStore,
     isLoading: isPayLoading,
     paymentStep,
     error: payError,
     reset: resetPayError,
-  } = useStorePay(projectId);
-
-  const amountInput = useAmountInputLogic({
-    initialAmount,
-    balance: usdcBalanceNum,
-    isFromExternal,
-    onReset: resetPayError,
-  });
+  } = useStorePay(projectId, selectedChainId);
 
   const {
     store,

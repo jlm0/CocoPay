@@ -10,7 +10,6 @@ import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { useAccountSheet } from '@/providers/AccountSheetProvider';
 import { queryKeys } from '@/lib/query';
-import { HEX_COLORS } from '@/lib/theme';
 
 export default function HomePage() {
   const router = useRouter();
@@ -53,12 +52,12 @@ export default function HomePage() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={HEX_COLORS.primary}
-            colors={[HEX_COLORS.primary]}
+            tintColor="transparent"
+            colors={['transparent']}
           />
         }>
-        <HomeBalances onCoconutPress={openAccountSheet} />
-        <HomeStores />
+        <HomeBalances onCoconutPress={openAccountSheet} isRefreshing={isRefreshing} />
+        <HomeStores isRefreshing={isRefreshing} />
       </ScrollView>
     </ScreenContainer>
   );

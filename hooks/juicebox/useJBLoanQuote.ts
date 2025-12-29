@@ -3,10 +3,11 @@ import { revLoans1_1Abi, calcPrepaidFee, getRevnetLoanContract } from 'juice-sdk
 import type { LoanQuoteParams, LoanQuoteResult } from '@/types/juicebox';
 import {
   JB_VERSION,
-  COCOPAY_CHAIN_ID,
   USDC_DECIMALS,
   USDC_CURRENCY,
+  type OmnichainChainId,
 } from '@/lib/juicebox/constants';
+import { getPrimaryChainId } from '@/lib/juicebox/chain-selection';
 import { queryKeys } from '@/lib/query';
 import { useJBPublicClient } from './useJBPublicClient';
 
@@ -16,20 +17,24 @@ interface UseJBLoanQuoteResult {
   error: Error | null;
 }
 
-export function useJBLoanQuote(params: LoanQuoteParams | null): UseJBLoanQuoteResult {
-  const publicClient = useJBPublicClient();
+export function useJBLoanQuote(
+  params: LoanQuoteParams | null,
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseJBLoanQuoteResult {
+  const publicClient = useJBPublicClient(chainId);
 
   const query = useQuery({
     queryKey: queryKeys.jb.loanQuote(
       params?.projectId?.toString(),
-      params?.collateralAmount?.toString()
+      params?.collateralAmount?.toString(),
+      chainId.toString()
     ),
     queryFn: async (): Promise<LoanQuoteResult> => {
       if (!params) {
         throw new Error('Missing params');
       }
 
-      const loanContractAddress = getRevnetLoanContract(JB_VERSION, COCOPAY_CHAIN_ID);
+      const loanContractAddress = getRevnetLoanContract(JB_VERSION, chainId);
 
       const borrowableAmount = await publicClient.readContract({
         address: loanContractAddress,

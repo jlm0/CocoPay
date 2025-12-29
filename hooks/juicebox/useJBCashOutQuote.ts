@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { jbTerminalStoreAbi, JBDAO_CASHOUT_FEE_PERCENT } from 'juice-sdk-core';
+import { jbTerminalStoreAbi, JBDAO_CASHOUT_FEE_PERCENT, JBCoreContracts } from 'juice-sdk-core';
 import type { CashOutQuoteParams, CashOutQuoteResult } from '@/types/juicebox';
-import { JB_TERMINAL_STORE_ADDRESS } from '@/lib/juicebox/contracts';
-import { USDC_DECIMALS, USDC_CURRENCY } from '@/lib/juicebox/constants';
+import { getContractAddressForChain } from '@/lib/juicebox/contracts';
+import { USDC_DECIMALS, USDC_CURRENCY, type OmnichainChainId } from '@/lib/juicebox/constants';
+import { getPrimaryChainId } from '@/lib/juicebox/chain-selection';
 import { queryKeys } from '@/lib/query';
 import { useJBPublicClient } from './useJBPublicClient';
 
@@ -16,13 +17,18 @@ function applyJbDaoFee(amount: bigint): bigint {
   return (amount * BigInt(Math.floor((1 - JBDAO_CASHOUT_FEE_PERCENT) * 10000))) / 10000n;
 }
 
-export function useJBCashOutQuote(params: CashOutQuoteParams | null): UseJBCashOutQuoteResult {
-  const publicClient = useJBPublicClient();
+export function useJBCashOutQuote(
+  params: CashOutQuoteParams | null,
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseJBCashOutQuoteResult {
+  const publicClient = useJBPublicClient(chainId);
+  const terminalStoreAddress = getContractAddressForChain(JBCoreContracts.JBTerminalStore, chainId);
 
   const query = useQuery({
     queryKey: queryKeys.jb.cashOutQuote(
       params?.projectId?.toString(),
-      params?.tokenAmount?.toString()
+      params?.tokenAmount?.toString(),
+      chainId.toString()
     ),
     queryFn: async (): Promise<CashOutQuoteResult> => {
       if (!params) {
@@ -30,7 +36,7 @@ export function useJBCashOutQuote(params: CashOutQuoteParams | null): UseJBCashO
       }
 
       const grossAmount = await publicClient.readContract({
-        address: JB_TERMINAL_STORE_ADDRESS,
+        address: terminalStoreAddress,
         abi: jbTerminalStoreAbi,
         functionName: 'currentReclaimableSurplusOf',
         args: [

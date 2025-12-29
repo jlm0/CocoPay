@@ -1,6 +1,8 @@
 import { useViemPublicClient } from '@/hooks/useViemPublicClient';
-import { COCOPAY_CHAIN } from '@/lib/juicebox/constants';
+import { type OmnichainChainId } from '@/lib/juicebox/constants';
+import { getChainById, getPrimaryChain } from '@/lib/juicebox/chain-selection';
 
-export function useJBPublicClient() {
-  return useViemPublicClient(COCOPAY_CHAIN);
+export function useJBPublicClient(chainId?: OmnichainChainId) {
+  const chain = chainId ? getChainById(chainId) : getPrimaryChain();
+  return useViemPublicClient(chain);
 }

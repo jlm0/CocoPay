@@ -1,3 +1,5 @@
+export * from './revnet';
+
 export type AuthStatus = 'idle' | 'loading' | 'verifying' | 'completing' | 'success' | 'error';
 
 export interface User {

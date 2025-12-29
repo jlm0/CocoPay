@@ -1,21 +1,19 @@
-import type { Address } from 'viem';
-import { USDC_ADDRESSES } from 'juice-sdk-core';
+import { OMNICHAIN_CHAIN_IDS, type OmnichainChainId } from './juicebox/constants';
+import { getUsdcAddress } from './juicebox/chain-selection';
 
 export const APP_SCHEME = 'cocopay://';
 
-export const SUPPORTED_CHAIN_IDS = [11155111, 84532, 421614, 11155420] as const;
-export type SupportedChainId = (typeof SUPPORTED_CHAIN_IDS)[number];
+export const SUPPORTED_CHAIN_IDS = OMNICHAIN_CHAIN_IDS;
+export type SupportedChainId = OmnichainChainId;
 
 export const CHAIN_NAMES: Record<SupportedChainId, string> = {
-  11155111: 'Ethereum',
-  84532: 'Base',
-  421614: 'Arbitrum',
-  11155420: 'Optimism',
+  11155111: 'Ethereum Sepolia',
+  84532: 'Base Sepolia',
+  421614: 'Arbitrum Sepolia',
+  11155420: 'Optimism Sepolia',
 };
 
-export function getUsdcAddress(chainId: SupportedChainId): Address {
-  return USDC_ADDRESSES[chainId] as Address;
-}
+export { getUsdcAddress };
 
 export const USDC_SEPOLIA_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as const;
 

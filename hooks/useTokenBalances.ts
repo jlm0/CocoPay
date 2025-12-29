@@ -9,6 +9,7 @@ type UseTokenBalancesResult = {
   totalUsd: number;
   usdcByChain: ChainBalance[];
   reclaimableByProject: ReclaimableBalance[];
+  hasData: boolean;
   isLoading: boolean;
   isFetching: boolean;
   refetch: () => Promise<void>;
@@ -21,6 +22,7 @@ export function useTokenBalances(): UseTokenBalancesResult {
     totalUsd,
     usdcByChain,
     reclaimableByProject,
+    hasData,
     isLoading,
     isFetching,
     error,
@@ -47,6 +49,7 @@ export function useTokenBalances(): UseTokenBalancesResult {
     totalUsd,
     usdcByChain,
     reclaimableByProject,
+    hasData,
     isLoading,
     isFetching,
     refetch,

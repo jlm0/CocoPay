@@ -31,12 +31,6 @@
         {
           "photosPermission": "CocoPay needs access to your photos to set a store logo."
         }
-      ],
-      [
-        "react-native-maps",
-        {
-          "googleMapsApiKey": "REDACTED_GOOGLE_API_KEY"
-        }
       ]
     ],
     "experiments": {
@@ -62,7 +56,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "CocoPay uses the camera to scan QR codes for payments",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "appleTeamId": "L94L6SVDJS"
     },
     "android": {
       "package": "com.cocopay.app",

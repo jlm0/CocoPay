@@ -1,5 +1,6 @@
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useIsRestoring } from '@tanstack/react-query';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { HeroBalance } from '@/components/presentational/hero-balance';
 import { FeatureHeader } from '@/components/presentational/feature-header';
@@ -8,24 +9,28 @@ import { useTokenBalances } from '@/hooks/useTokenBalances';
 
 type HomeBalancesProps = {
   onCoconutPress?: () => void;
+  isRefreshing?: boolean;
 };
 
 function HeroBalanceSkeleton() {
   return <Skeleton className="h-14 w-48 rounded" />;
 }
 
-export function HomeBalances({ onCoconutPress }: HomeBalancesProps) {
+export function HomeBalances({ onCoconutPress, isRefreshing }: HomeBalancesProps) {
   const router = useRouter();
-  const { totalUsd, isLoading } = useTokenBalances();
+  const isRestoring = useIsRestoring();
+  const { totalUsd, hasData, isLoading } = useTokenBalances();
 
   const handleBalancePress = () => {
     router.push('/(app)/balance/USDC');
   };
 
+  const showSkeleton = isRestoring || (isLoading && !hasData) || isRefreshing;
+
   return (
     <View className="mb-6">
       <FeatureHeader title="Balance" onCoconutPress={onCoconutPress} className="mb-4" />
-      {isLoading ? (
+      {showSkeleton ? (
         <HeroBalanceSkeleton />
       ) : (
         <Animated.View entering={FadeIn.duration(300)}>

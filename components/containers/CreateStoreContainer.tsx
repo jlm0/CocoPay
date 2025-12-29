@@ -8,12 +8,11 @@ import { StoreProfileForm } from '@/components/presentational/store-profile-form
 import { RewardsConfigForm } from '@/components/presentational/rewards-config-form';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
-import { CreationProgressIndicator } from '@/components/presentational/creation-progress-indicator';
+import { OmnichainDeployProgress } from '@/components/presentational/omnichain-deploy-progress';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useStoreCreationForm } from '@/hooks/useStoreCreationForm';
-import { useStoreCreationProgress } from '@/hooks/useStoreCreationProgress';
-import { useJBProjectCreate } from '@/hooks/juicebox';
+import { useOmnichainRevnetCreate } from '@/hooks/juicebox/useOmnichainRevnetCreate';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
 import { uploadFileWithRetry } from '@/lib/pinata';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
@@ -23,21 +22,26 @@ export function CreateStoreContainer() {
   const router = useRouter();
 
   const form = useStoreCreationForm();
-  const progress = useStoreCreationProgress();
-  const { createProject, isLoading: isCreating } = useJBProjectCreate();
+  const {
+    createRevnet,
+    status: deployStatus,
+    chainResults,
+    error: deployError,
+    reset: resetDeploy,
+  } = useOmnichainRevnetCreate();
   const { addProject } = useCocoPayProjectRegistry();
 
-  const isLoading = progress.isInProgress || isCreating;
+  const isLoading = deployStatus === 'uploading' || deployStatus === 'deploying';
 
   const handleNext = () => {
-    progress.reset();
+    resetDeploy();
     form.goToNextStep();
   };
 
   const handleBack = useCallback(() => {
-    progress.reset();
+    resetDeploy();
     form.goToPrevStep();
-  }, [progress, form]);
+  }, [resetDeploy, form]);
 
   const handleBackPress = useCallback(() => {
     if (isLoading) return true;
@@ -57,11 +61,10 @@ export function CreateStoreContainer() {
 
   const handleCreate = async () => {
     try {
-      progress.reset();
+      resetDeploy();
       let logoUri: string | undefined;
 
       if (form.state.logoUri) {
-        progress.setStep('uploading-logo');
         console.log('[CreateStore] Uploading logo...', { uri: form.state.logoUri });
         const fileName = form.state.logoUri.split('/').pop() ?? 'logo.jpg';
         const uploadResult = await uploadFileWithRetry(
@@ -79,15 +82,14 @@ export function CreateStoreContainer() {
         console.log('[CreateStore] Logo uploaded:', logoUri);
       }
 
-      progress.setStep('creating-store');
       const tickerSymbol = form.state.ticker.replace(/^\$/, '').toUpperCase();
-      console.log('[CreateStore] Creating project...', {
+      console.log('[CreateStore] Creating omnichain revnet...', {
         name: form.state.name.trim(),
         ticker: tickerSymbol,
         logoUri,
       });
 
-      const result = await createProject({
+      const result = await createRevnet({
         name: form.state.name.trim(),
         ticker: tickerSymbol,
         description: form.state.description.trim() || undefined,
@@ -97,9 +99,8 @@ export function CreateStoreContainer() {
         cashBackPercent: form.state.cashBack,
         loyaltyBonusPercent: form.state.loyaltyBonus,
       });
-      console.log('[CreateStore] Project created:', result);
+      console.log('[CreateStore] Revnet created:', result);
 
-      progress.setStep('registering');
       await addProject({
         projectId: Number(result.projectId),
         chainId: COCOPAY_CHAIN_ID,
@@ -107,7 +108,6 @@ export function CreateStoreContainer() {
 
       await refetchAfterStoreCreate();
 
-      progress.setStep('complete');
       const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
 
       router.replace({
@@ -119,7 +119,6 @@ export function CreateStoreContainer() {
       });
     } catch (err) {
       console.error('[CreateStore] Error:', err);
-      progress.setError(err, progress.step);
     }
   };
 
@@ -130,12 +129,16 @@ export function CreateStoreContainer() {
     <ScreenContainer
       horizontalPadding={false}
       bottomActionBar={
-        <BottomActionBar onBack={form.step === 2 ? handleBack : undefined}>
-          {progress.isInProgress && (
-            <CreationProgressIndicator label={progress.label} className="mb-3" />
+        <BottomActionBar onBack={form.step === 2 && !isLoading ? handleBack : undefined}>
+          {isLoading && (
+            <OmnichainDeployProgress
+              chainResults={chainResults}
+              isUploading={deployStatus === 'uploading'}
+              className="mb-4"
+            />
           )}
-          {progress.error && (
-            <Text className="mb-3 text-center text-destructive">{progress.error}</Text>
+          {deployError && (
+            <Text className="mb-3 text-center text-destructive">{deployError.message}</Text>
           )}
           <Button
             onPress={form.step === 1 ? handleNext : handleCreate}

@@ -1,16 +1,16 @@
-import { useState, useCallback } from 'react';
-import { encodeFunctionData, decodeEventLog, type Hash, type Address } from 'viem';
+import { useState, useCallback, useMemo } from 'react';
+import { encodeFunctionData, decodeEventLog, type Hash } from 'viem';
 import { jbMultiTerminalAbi } from 'juice-sdk-core';
 import type { PayParams, PayResult } from '@/types/juicebox';
 import { useAlchemySendTransaction } from '@/hooks/useAlchemySendTransaction';
 import { useParaAccount } from '@/hooks/useParaAccount';
+import { DEFAULT_MEMO, DEFAULT_METADATA, type OmnichainChainId } from '@/lib/juicebox/constants';
 import {
-  COCOPAY_CHAIN,
-  USDC_ADDRESS,
-  DEFAULT_MEMO,
-  DEFAULT_METADATA,
-} from '@/lib/juicebox/constants';
-import { JB_MULTI_TERMINAL_ADDRESS } from '@/lib/juicebox/contracts';
+  getPrimaryChainId,
+  getChainById,
+  getUsdcAddress,
+  getMultiTerminalAddress,
+} from '@/lib/juicebox/chain-selection';
 
 interface UseJBPayResult {
   pay: (params: PayParams) => Promise<PayResult>;
@@ -19,9 +19,17 @@ interface UseJBPayResult {
   reset: () => void;
 }
 
-export function useJBPay(projectId: bigint): UseJBPayResult {
+export function useJBPay(
+  projectId: bigint,
+  chainId: OmnichainChainId = getPrimaryChainId()
+): UseJBPayResult {
   const { address } = useParaAccount();
-  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(COCOPAY_CHAIN);
+  const chain = getChainById(chainId);
+  const { sendTransaction, isLoading, isReady } = useAlchemySendTransaction(chain);
+
+  const terminalAddress = useMemo(() => getMultiTerminalAddress(chainId), [chainId]);
+  const usdcAddress = useMemo(() => getUsdcAddress(chainId), [chainId]);
+
   const [error, setError] = useState<Error | null>(null);
 
   const reset = useCallback(() => {
@@ -47,18 +55,10 @@ export function useJBPay(projectId: bigint): UseJBPayResult {
         const data = encodeFunctionData({
           abi: jbMultiTerminalAbi,
           functionName: 'pay',
-          args: [
-            projectId,
-            USDC_ADDRESS as Address,
-            params.amount,
-            beneficiary,
-            0n,
-            memo,
-            DEFAULT_METADATA,
-          ],
+          args: [projectId, usdcAddress, params.amount, beneficiary, 0n, memo, DEFAULT_METADATA],
         });
 
-        const result = await sendTransaction(JB_MULTI_TERMINAL_ADDRESS, 0n, data);
+        const result = await sendTransaction(terminalAddress, 0n, data);
         const txHash = result.receipt.transactionHash as Hash;
 
         let tokensReceived = 0n;
@@ -91,7 +91,7 @@ export function useJBPay(projectId: bigint): UseJBPayResult {
         throw error;
       }
     },
-    [address, isReady, projectId, sendTransaction]
+    [address, isReady, projectId, usdcAddress, terminalAddress, sendTransaction]
   );
 
   return {

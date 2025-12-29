@@ -37,13 +37,9 @@ export default function StoreDetailPage() {
 
   const { store, isLoading, error } = useStoreDetails(parsedId.projectId, parsedId.chainId);
 
-  const handleBorrowPress = () => {
-    router.push('/(app)/borrow');
-  };
-
   const handleCashOutPress = () => {
     router.push({
-      pathname: '/(app)/cashout',
+      pathname: '/(app)/borrow',
       params: {
         projectId: parsedId.projectId.toString(),
         chainId: parsedId.chainId.toString(),
@@ -128,7 +124,6 @@ export default function StoreDetailPage() {
   const valueItems = [
     { label: store.isOwned ? 'Spend value' : 'Value at store', value: store.valueAtStore },
     { label: 'Cash out value', value: store.cashOutValue },
-    { label: 'Borrow value', value: 0, comingSoon: true },
   ];
 
   return (
@@ -137,7 +132,6 @@ export default function StoreDetailPage() {
         <BottomActionBar>
           <StoreActions
             isOwned={store.isOwned}
-            onBorrowPress={handleBorrowPress}
             onCashOutPress={handleCashOutPress}
             onSpendPress={handleSpendPress}
             onChargePress={handleChargePress}

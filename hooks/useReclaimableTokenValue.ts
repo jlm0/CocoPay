@@ -24,6 +24,7 @@ export type UseReclaimableTokenValueResult = {
   balances: ReclaimableBalance[];
   totalReclaimableUsdc: bigint;
   totalReclaimableFormatted: string;
+  hasData: boolean;
   isLoading: boolean;
   isFetching: boolean;
   error: Error | null;
@@ -31,7 +32,7 @@ export type UseReclaimableTokenValueResult = {
 };
 
 export function useReclaimableTokenValue(): UseReclaimableTokenValueResult {
-  const { participations, isLoading: participationsLoading } = useMultiChainParticipations();
+  const { participations, hasData: participationsHasData } = useMultiChainParticipations();
 
   const queries = useQueries({
     queries: participations.map((participation) => ({
@@ -80,7 +81,7 @@ export function useReclaimableTokenValue(): UseReclaimableTokenValueResult {
           reclaimableFormatted: formatUnits(reclaimableUsdc, TOKEN_DECIMALS.USDC),
         };
       },
-      enabled: participations.length > 0 && !participationsLoading,
+      enabled: participations.length > 0,
       staleTime: RECLAIMABLE_STALE_TIME,
     })),
   });
@@ -97,7 +98,11 @@ export function useReclaimableTokenValue(): UseReclaimableTokenValueResult {
     return formatUnits(totalReclaimableUsdc, TOKEN_DECIMALS.USDC);
   }, [totalReclaimableUsdc]);
 
-  const isLoading = participationsLoading || queries.some((q) => q.isLoading);
+  const hasData =
+    participationsHasData &&
+    (participations.length === 0 || queries.some((q) => q.data !== undefined));
+  const isLoading =
+    !participationsHasData || (participations.length > 0 && queries.some((q) => q.isLoading));
   const isFetching = queries.some((q) => q.isFetching);
 
   const error = useMemo(() => {
@@ -113,6 +118,7 @@ export function useReclaimableTokenValue(): UseReclaimableTokenValueResult {
     balances,
     totalReclaimableUsdc,
     totalReclaimableFormatted,
+    hasData,
     isLoading,
     isFetching,
     error,
