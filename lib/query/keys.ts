@@ -3,6 +3,22 @@ export const queryKeys = {
     all: ['balance'] as const,
     usdc: (address: string | null | undefined, chainId: number) =>
       ['balance', 'usdc', address, chainId] as const,
+    multiChainUsdc: (address: string | null | undefined) =>
+      ['balance', 'multi-chain-usdc', address] as const,
+    unified: (address: string | null | undefined) => ['balance', 'unified', address] as const,
+  },
+
+  multiChain: {
+    all: ['multi-chain'] as const,
+    participations: (address: string | null | undefined) =>
+      ['multi-chain', 'participations', address] as const,
+    reclaimable: (address: string | null | undefined) =>
+      ['multi-chain', 'reclaimable', address] as const,
+    reclaimableByProject: (
+      projectId: number | undefined,
+      chainId: number | undefined,
+      tokenAmount: string | undefined
+    ) => ['multi-chain', 'reclaimable', projectId, chainId, tokenAmount] as const,
   },
 
   bendystraw: {

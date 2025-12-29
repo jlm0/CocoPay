@@ -1,9 +1,14 @@
-import { useCallback } from 'react';
-import { useViemUsdcBalance } from './useViemUsdcBalance';
+import { useCallback, useMemo } from 'react';
+import { useUnifiedUsdBalance } from './useUnifiedUsdBalance';
+import type { ChainBalance } from './useMultiChainUsdcBalance';
+import type { ReclaimableBalance } from './useReclaimableTokenValue';
 import type { Balance } from '@/types';
 
 type UseTokenBalancesResult = {
   balances: Balance[];
+  totalUsd: number;
+  usdcByChain: ChainBalance[];
+  reclaimableByProject: ReclaimableBalance[];
   isLoading: boolean;
   isFetching: boolean;
   refetch: () => Promise<void>;
@@ -11,27 +16,40 @@ type UseTokenBalancesResult = {
 };
 
 export function useTokenBalances(): UseTokenBalancesResult {
-  const usdcBalance = useViemUsdcBalance();
+  const {
+    totalUsdc,
+    totalUsd,
+    usdcByChain,
+    reclaimableByProject,
+    isLoading,
+    isFetching,
+    error,
+    refetch: refetchUnified,
+  } = useUnifiedUsdBalance();
 
-  const usdcAmount = usdcBalance.data?.formatted ? parseFloat(usdcBalance.data.formatted) : 0;
-
-  const balances: Balance[] = [
-    {
-      token: 'USDC',
-      amount: usdcAmount,
-      usdValue: usdcAmount,
-    },
-  ];
+  const balances: Balance[] = useMemo(
+    () => [
+      {
+        token: 'USDC' as const,
+        amount: totalUsdc,
+        usdValue: totalUsd,
+      },
+    ],
+    [totalUsdc, totalUsd]
+  );
 
   const refetch = useCallback(async () => {
-    await usdcBalance.refetch();
-  }, [usdcBalance]);
+    refetchUnified();
+  }, [refetchUnified]);
 
   return {
     balances,
-    isLoading: usdcBalance.isLoading,
-    isFetching: usdcBalance.isFetching,
+    totalUsd,
+    usdcByChain,
+    reclaimableByProject,
+    isLoading,
+    isFetching,
     refetch,
-    error: usdcBalance.error as Error | null,
+    error,
   };
 }

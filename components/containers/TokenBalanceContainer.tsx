@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ScrollView, RefreshControl, View } from 'react-native';
+import { ScrollView, RefreshControl, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { BalanceDisplay } from '@/components/presentational/balance-display';
 import { DepositAddress } from '@/components/presentational/deposit-address';
@@ -9,8 +11,10 @@ import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
-import { useViemUsdcBalance } from '@/hooks/useViemUsdcBalance';
+import { Icon } from '@/components/ui/icon';
+import { useUnifiedUsdBalance } from '@/hooks/useUnifiedUsdBalance';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { HEX_COLORS } from '@/lib/theme';
 
@@ -18,16 +22,17 @@ export function TokenBalanceContainer() {
   const router = useRouter();
   const { address } = useParaAccount();
 
-  const usdcBalance = useViemUsdcBalance();
+  const { totalUsdc, totalReclaimable, totalUsd, usdcByChain, isLoading, error, refetch } =
+    useUnifiedUsdBalance();
 
-  const amount = usdcBalance.data?.formatted ? parseFloat(usdcBalance.data.formatted) : 0;
-  const usdValue = amount;
+  const amount = totalUsdc;
+  const usdValue = totalUsd;
 
-  const isLoading = usdcBalance.isLoading && !usdcBalance.data;
-  const hasError = !!usdcBalance.error;
+  const hasError = !!error;
 
   const [copied, setCopied] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (copied) {
@@ -38,9 +43,9 @@ export function TokenBalanceContainer() {
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await usdcBalance.refetch();
+    refetch();
     setIsRefreshing(false);
-  }, [usdcBalance]);
+  }, [refetch]);
 
   const handleCopyAddress = async () => {
     if (address) {
@@ -53,7 +58,11 @@ export function TokenBalanceContainer() {
     router.push('/(app)/withdraw');
   };
 
-  if (isLoading) {
+  const handleToggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  if (isLoading && usdcByChain.length === 0) {
     return (
       <ScreenContainer>
         <View className="p-4">
@@ -112,7 +121,48 @@ export function TokenBalanceContainer() {
         }>
         <FeatureHeader title="USDC" className="mb-8" />
 
-        <BalanceDisplay amount={amount} tokenSymbol="USDC" usdValue={usdValue} className="mb-8" />
+        <Pressable
+          onPress={handleToggleExpand}
+          className="mb-4 flex-row items-center justify-between active:opacity-80">
+          <BalanceDisplay amount={amount} tokenSymbol="USDC" usdValue={usdValue} />
+          <Icon
+            as={isExpanded ? ChevronUp : ChevronDown}
+            size={24}
+            className="text-muted-foreground"
+          />
+        </Pressable>
+
+        {isExpanded && (
+          <Animated.View
+            entering={FadeIn.duration(200)}
+            exiting={FadeOut.duration(150)}
+            className="mb-8 rounded-lg border border-border bg-card p-4">
+            <Text variant="small" className="mb-3 text-muted-foreground">
+              Balance by Chain
+            </Text>
+            {usdcByChain.map((chain) => (
+              <View key={chain.chainId} className="flex-row justify-between py-2">
+                <Text variant="body">{chain.chainName}</Text>
+                <Text variant="body">${parseFloat(chain.formatted).toFixed(2)}</Text>
+              </View>
+            ))}
+            {totalReclaimable > 0 && (
+              <>
+                <Separator className="my-2" />
+                <View className="flex-row justify-between py-2">
+                  <Text variant="body" className="text-muted-foreground">
+                    Reclaimable
+                  </Text>
+                  <Text variant="body" className="text-primary">
+                    +${totalReclaimable.toFixed(2)}
+                  </Text>
+                </View>
+              </>
+            )}
+          </Animated.View>
+        )}
+
+        {!isExpanded && <View className="mb-4" />}
 
         <DepositAddress tokenName="USDC" address={address ?? ''} />
       </ScrollView>

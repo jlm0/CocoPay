@@ -1,4 +1,21 @@
+import type { Address } from 'viem';
+import { USDC_ADDRESSES } from 'juice-sdk-core';
+
 export const APP_SCHEME = 'cocopay://';
+
+export const SUPPORTED_CHAIN_IDS = [11155111, 84532, 421614, 11155420] as const;
+export type SupportedChainId = (typeof SUPPORTED_CHAIN_IDS)[number];
+
+export const CHAIN_NAMES: Record<SupportedChainId, string> = {
+  11155111: 'Ethereum',
+  84532: 'Base',
+  421614: 'Arbitrum',
+  11155420: 'Optimism',
+};
+
+export function getUsdcAddress(chainId: SupportedChainId): Address {
+  return USDC_ADDRESSES[chainId] as Address;
+}
 
 export const USDC_SEPOLIA_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as const;
 

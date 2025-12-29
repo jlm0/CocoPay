@@ -32,8 +32,8 @@ const initialState: StoreCreationFormState = {
   address: null,
   website: '',
   ticker: '',
-  cashBack: 4,
-  loyaltyBonus: 2,
+  cashBack: 5,
+  loyaltyBonus: 0.5,
 };
 
 function reducer(
@@ -88,6 +88,10 @@ function validateStep2(state: StoreCreationFormState): ValidationErrors {
     errors.ticker = 'Ticker is required';
   } else if (tickerSymbol.length > TICKER_MAX_LENGTH) {
     errors.ticker = `Ticker must be ${TICKER_MAX_LENGTH} characters or less`;
+  }
+
+  if (state.cashBack < 0 || state.cashBack > 10) {
+    errors.cashBack = 'Cash back must be between 0% and 10%';
   }
 
   return errors;

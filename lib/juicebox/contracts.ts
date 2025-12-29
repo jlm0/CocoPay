@@ -9,6 +9,11 @@ export function getContractAddress(contract: V5Contracts): Address {
   return jbContractAddress[JB_VERSION][contract][COCOPAY_CHAIN_ID] as Address;
 }
 
+export function getContractAddressForChain(contract: V5Contracts, chainId: number): Address {
+  const addresses = jbContractAddress[JB_VERSION][contract] as Record<number, Address>;
+  return addresses[chainId];
+}
+
 export const JB_CONTROLLER_ADDRESS = getContractAddress(JBCoreContracts.JBController);
 export const JB_MULTI_TERMINAL_ADDRESS = getContractAddress(JBCoreContracts.JBMultiTerminal);
 export const JB_DIRECTORY_ADDRESS = getContractAddress(JBCoreContracts.JBDirectory);

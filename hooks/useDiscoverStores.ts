@@ -119,7 +119,8 @@ export function useDiscoverStores(): UseDiscoverStoresResult {
     return result;
   }, [projects, ipfsMetadataMap]);
 
-  const isLoading = projectsLoading || (ipfsQueries.length > 0 && ipfsQueries.every((q) => q.isLoading));
+  const isLoading =
+    projectsLoading || (ipfsQueries.length > 0 && ipfsQueries.every((q) => q.isLoading));
   const error = projectsError ?? null;
 
   return {

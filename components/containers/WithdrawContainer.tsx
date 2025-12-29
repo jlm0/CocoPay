@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ScrollView, RefreshControl } from 'react-native';
+import { useState, useMemo } from 'react';
+import { ScrollView, RefreshControl, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { parseUnits, formatUnits } from 'viem';
 import { FeatureHeader } from '@/components/presentational/feature-header';
@@ -9,21 +9,80 @@ import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { useViemUsdcBalance } from '@/hooks/useViemUsdcBalance';
+import { useMultiChainUsdcBalance, type ChainBalance } from '@/hooks/useMultiChainUsdcBalance';
 import { useResolveAddress } from '@/hooks/useResolveAddress';
 import { useErc20Withdraw } from '@/hooks/useErc20Withdraw';
-import { USDC_SEPOLIA_ADDRESS, TOKEN_DECIMALS } from '@/lib/constants';
+import { getUsdcAddress, TOKEN_DECIMALS, type SupportedChainId } from '@/lib/constants';
+import { CHAIN_BY_ID } from '@/lib/chains';
 import { HEX_COLORS } from '@/lib/theme';
 import { invalidateAfterWithdraw } from '@/lib/query';
+import { cn } from '@/lib/utils';
+
+function ChainSelector({
+  balances,
+  selectedChainId,
+  onSelect,
+}: {
+  balances: ChainBalance[];
+  selectedChainId: SupportedChainId;
+  onSelect: (chainId: SupportedChainId) => void;
+}) {
+  return (
+    <View className="mb-6">
+      <Text variant="small" className="mb-2 text-muted-foreground">
+        Select chain to withdraw from
+      </Text>
+      <View className="flex-row flex-wrap gap-2">
+        {balances.map((balance) => {
+          const isSelected = balance.chainId === selectedChainId;
+          const hasBalance = balance.balance > 0n;
+
+          return (
+            <Pressable
+              key={balance.chainId}
+              onPress={() => onSelect(balance.chainId)}
+              disabled={!hasBalance}
+              className={cn(
+                'rounded-lg border px-3 py-2',
+                isSelected ? 'border-primary bg-primary/10' : 'border-border bg-card',
+                !hasBalance && 'opacity-50'
+              )}>
+              <Text
+                variant="small"
+                className={cn('font-sans-medium', isSelected ? 'text-primary' : 'text-foreground')}>
+                {balance.chainName}
+              </Text>
+              <Text variant="small" className="text-muted-foreground">
+                {parseFloat(balance.formatted).toFixed(2)} USDC
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
 export function WithdrawContainer() {
   const router = useRouter();
   const [amount, setAmount] = useState('');
   const [recipient, setRecipient] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedChainId, setSelectedChainId] = useState<SupportedChainId>(11155111);
 
-  const usdcBalance = useViemUsdcBalance();
-  const usdcWithdraw = useErc20Withdraw(USDC_SEPOLIA_ADDRESS);
+  const {
+    balances,
+    isLoading: balancesLoading,
+    refetch: refetchBalances,
+  } = useMultiChainUsdcBalance();
+
+  const selectedBalance = useMemo(() => {
+    return balances.find((b) => b.chainId === selectedChainId);
+  }, [balances, selectedChainId]);
+
+  const selectedChain = CHAIN_BY_ID[selectedChainId];
+  const usdcAddress = getUsdcAddress(selectedChainId);
+  const usdcWithdraw = useErc20Withdraw(usdcAddress, selectedChain);
 
   const {
     resolvedAddress,
@@ -32,8 +91,8 @@ export function WithdrawContainer() {
     error: recipientError,
   } = useResolveAddress(recipient);
 
-  const rawBalance = usdcBalance.data?.raw ?? 0n;
-  const displayBalance = usdcBalance.data?.formatted ? parseFloat(usdcBalance.data.formatted) : 0;
+  const rawBalance = selectedBalance?.balance ?? 0n;
+  const displayBalance = selectedBalance?.formatted ? parseFloat(selectedBalance.formatted) : 0;
 
   const parseAmountSafe = (value: string): bigint | null => {
     if (!value || value === '.' || value === '0.') return 0n;
@@ -62,8 +121,13 @@ export function WithdrawContainer() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await usdcBalance.refetch();
+    await refetchBalances();
     setIsRefreshing(false);
+  };
+
+  const handleChainSelect = (chainId: SupportedChainId) => {
+    setSelectedChainId(chainId);
+    setAmount('');
   };
 
   const handleWithdraw = async () => {
@@ -78,6 +142,7 @@ export function WithdrawContainer() {
           amount,
           tokenSymbol: 'USDC',
           recipient: resolvedAddress,
+          chainName: selectedBalance?.chainName ?? 'Unknown',
         },
       });
     } catch {
@@ -111,13 +176,19 @@ export function WithdrawContainer() {
         }>
         <FeatureHeader title="Withdraw USDC" className="mb-6" />
 
+        <ChainSelector
+          balances={balances}
+          selectedChainId={selectedChainId}
+          onSelect={handleChainSelect}
+        />
+
         <HeroTokenInput
           value={amount}
           onChangeText={setAmount}
           tokenSymbol="USDC"
           balance={displayBalance}
           onMaxPress={handleMaxPress}
-          isLoading={usdcBalance.isLoading}
+          isLoading={balancesLoading}
           error={amountError}
           disabled={usdcWithdraw.isLoading}
         />

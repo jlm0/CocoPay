@@ -16,13 +16,11 @@ function HeroBalanceSkeleton() {
 
 export function HomeBalances({ onCoconutPress }: HomeBalancesProps) {
   const router = useRouter();
-  const { balances, isLoading } = useTokenBalances();
+  const { totalUsd, isLoading } = useTokenBalances();
 
   const handleBalancePress = () => {
     router.push('/(app)/balance/USDC');
   };
-
-  const usdcBalance = balances[0];
 
   return (
     <View className="mb-6">
@@ -32,7 +30,7 @@ export function HomeBalances({ onCoconutPress }: HomeBalancesProps) {
       ) : (
         <Animated.View entering={FadeIn.duration(300)}>
           <Pressable onPress={handleBalancePress} className="active:opacity-80">
-            <HeroBalance value={usdcBalance?.usdValue ?? 0} />
+            <HeroBalance value={totalUsd} />
           </Pressable>
         </Animated.View>
       )}
