@@ -10,6 +10,7 @@ type StoreAboutSectionProps = {
   description?: string;
   address?: StoreAddress;
   website?: string;
+  onAddressPress?: () => void;
   className?: string;
 };
 
@@ -19,6 +20,7 @@ export function StoreAboutSection({
   description,
   address,
   website,
+  onAddressPress,
   className,
 }: StoreAboutSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -49,7 +51,7 @@ export function StoreAboutSection({
   return (
     <View className={cn('gap-4', className)}>
       {description && (
-        <View className="gap-1">
+        <View className="gap-1 border-l-2 border-border pl-4">
           <Text
             variant="body"
             numberOfLines={isExpanded ? undefined : DESCRIPTION_LINE_LIMIT}
@@ -69,20 +71,27 @@ export function StoreAboutSection({
       {(address || website) && (
         <View className="gap-2">
           {address && (
-            <View className="flex-row items-center gap-2">
-              <Icon as={MapPin} size={14} className="text-muted-foreground" />
-              <Text variant="small" className="flex-1 text-muted-foreground">
-                {address.formatted}
-              </Text>
-            </View>
+            <Pressable
+              onPress={onAddressPress}
+              disabled={!onAddressPress}
+              className="active:opacity-70">
+              <View className="flex-row items-center gap-1.5">
+                <Icon as={MapPin} size={16} className="text-muted-foreground" />
+                <Text
+                  variant="caption"
+                  className={`text-muted-foreground ${onAddressPress ? 'underline' : ''}`}>
+                  {address.formatted}
+                </Text>
+              </View>
+            </Pressable>
           )}
 
           {website && (
             <Pressable onPress={handleWebsitePress} className="active:opacity-70">
-              <View className="flex-row items-center gap-2">
-                <Icon as={Globe} size={14} className="text-muted-foreground" />
-                <Text variant="small" className="text-primary">
-                  {website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+              <View className="flex-row items-center gap-1.5">
+                <Icon as={Globe} size={16} className="text-muted-foreground" />
+                <Text variant="caption" className="text-muted-foreground underline">
+                  {website}
                 </Text>
               </View>
             </Pressable>

@@ -25,8 +25,10 @@ export function invalidateAfterWithdraw() {
   queryClient.invalidateQueries({ queryKey: queryKeys.balance.all });
 }
 
-export async function refetchAfterStoreCreate() {
-  await queryClient.refetchQueries({ queryKey: queryKeys.bendystraw.all });
-  await queryClient.refetchQueries({ queryKey: queryKeys.projectMetadata.all });
-  await queryClient.refetchQueries({ queryKey: queryKeys.cocopayRegistry.all });
+export function refetchAfterStoreCreate() {
+  Promise.all([
+    queryClient.refetchQueries({ queryKey: queryKeys.bendystraw.all }),
+    queryClient.refetchQueries({ queryKey: queryKeys.projectMetadata.all }),
+    queryClient.refetchQueries({ queryKey: queryKeys.cocopayRegistry.all }),
+  ]);
 }

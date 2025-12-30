@@ -16,6 +16,10 @@ import {
   USDC_CURRENCY,
   USDC_DECIMALS,
   COCOPAY_ISSUANCE_CUT_PERCENT,
+  COCOPAY_LABS_MULTISIG,
+  COCOPAY_LABS_SPLIT_PERCENT,
+  STORE_OWNER_SPLIT_PERCENT,
+  SPLITS_TOTAL_PERCENT,
   type OmnichainChainId,
 } from './constants';
 import { getRevLoansAddress, getMultiTerminalAddress } from './revnet';
@@ -49,16 +53,36 @@ export function buildRevnetStageConfig(
   const splitPercent = cashBackToReservedPercent(params.cashBackPercent);
   const issuanceCutPercent = loyaltyBonusToWeightCutPercent(COCOPAY_ISSUANCE_CUT_PERCENT);
 
-  const splits: JBSplit[] = [
-    {
+  const splits: JBSplit[] = [];
+
+  if (COCOPAY_LABS_MULTISIG) {
+    splits.push({
       preferAddToBalance: false,
-      percent: 1_000_000_000,
+      percent: COCOPAY_LABS_SPLIT_PERCENT,
+      projectId: 0n,
+      beneficiary: COCOPAY_LABS_MULTISIG,
+      lockedUntil: 0,
+      hook: zeroAddress,
+    });
+
+    splits.push({
+      preferAddToBalance: false,
+      percent: STORE_OWNER_SPLIT_PERCENT,
       projectId: 0n,
       beneficiary: operatorAddress,
       lockedUntil: 0,
       hook: zeroAddress,
-    },
-  ];
+    });
+  } else {
+    splits.push({
+      preferAddToBalance: false,
+      percent: SPLITS_TOTAL_PERCENT,
+      projectId: 0n,
+      beneficiary: operatorAddress,
+      lockedUntil: 0,
+      hook: zeroAddress,
+    });
+  }
 
   return {
     startsAtOrAfter: 0,

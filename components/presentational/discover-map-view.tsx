@@ -1,13 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { View, Text as RNText, StyleSheet } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Callout } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Text } from '@/components/ui/text';
 import { MAP_STYLE } from '@/lib/map-style';
 import type { DiscoverStore } from '@/types';
 
 type DiscoverMapViewProps = {
   stores: DiscoverStore[];
-  onStorePress: (store: DiscoverStore) => void;
+  onMarkerPress: (store: DiscoverStore) => void;
+  focusedStoreId?: string;
 };
 
 const DEFAULT_REGION = {
@@ -17,13 +18,30 @@ const DEFAULT_REGION = {
   longitudeDelta: 0.1,
 };
 
-export function DiscoverMapView({ stores, onStorePress }: DiscoverMapViewProps) {
+const ZOOM_DELTA = 0.01;
+const ANIMATION_DURATION = 300;
+
+export function DiscoverMapView({ stores, onMarkerPress, focusedStoreId }: DiscoverMapViewProps) {
+  const mapRef = useRef<MapView>(null);
+
   const storesWithCoordinates = useMemo(
     () => stores.filter((s) => s.address?.coordinates),
     [stores]
   );
 
   const initialRegion = useMemo(() => {
+    if (focusedStoreId) {
+      const focusedStore = storesWithCoordinates.find((s) => s.id === focusedStoreId);
+      if (focusedStore) {
+        return {
+          latitude: focusedStore.address!.coordinates!.lat,
+          longitude: focusedStore.address!.coordinates!.lng,
+          latitudeDelta: ZOOM_DELTA,
+          longitudeDelta: ZOOM_DELTA,
+        };
+      }
+    }
+
     if (storesWithCoordinates.length === 0) {
       return DEFAULT_REGION;
     }
@@ -57,7 +75,7 @@ export function DiscoverMapView({ stores, onStorePress }: DiscoverMapViewProps) 
       latitudeDelta: deltaLat,
       longitudeDelta: deltaLng,
     };
-  }, [storesWithCoordinates]);
+  }, [storesWithCoordinates, focusedStoreId]);
 
   if (storesWithCoordinates.length === 0) {
     return (
@@ -70,6 +88,7 @@ export function DiscoverMapView({ stores, onStorePress }: DiscoverMapViewProps) 
   return (
     <View style={styles.mapContainer}>
       <MapView
+        ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={initialRegion}
@@ -82,22 +101,20 @@ export function DiscoverMapView({ stores, onStorePress }: DiscoverMapViewProps) 
             coordinate={{
               latitude: store.address!.coordinates!.lat,
               longitude: store.address!.coordinates!.lng,
+            }}
+            onPress={() => {
+              mapRef.current?.animateToRegion(
+                {
+                  latitude: store.address!.coordinates!.lat,
+                  longitude: store.address!.coordinates!.lng,
+                  latitudeDelta: ZOOM_DELTA,
+                  longitudeDelta: ZOOM_DELTA,
+                },
+                ANIMATION_DURATION
+              );
+              onMarkerPress(store);
             }}>
             <RNText style={styles.markerEmoji}>🥥</RNText>
-            <Callout tooltip onPress={() => onStorePress(store)}>
-              <View style={styles.callout}>
-                <View style={styles.calloutHeader}>
-                  <View>
-                    <RNText style={styles.calloutTitle}>{store.name}</RNText>
-                    <RNText style={styles.calloutSubtitle}>{store.tokenSymbol}</RNText>
-                  </View>
-                  <RNText style={styles.calloutChevron}>›</RNText>
-                </View>
-                <View style={styles.calloutAction}>
-                  <RNText style={styles.calloutActionText}>Tap to view store</RNText>
-                </View>
-              </View>
-            </Callout>
           </Marker>
         ))}
       </MapView>
@@ -116,48 +133,5 @@ const styles = StyleSheet.create({
   },
   markerEmoji: {
     fontSize: 32,
-  },
-  callout: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 12,
-    minWidth: 160,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  calloutHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  calloutTitle: {
-    fontWeight: '600',
-    fontSize: 15,
-    color: '#0F172A',
-  },
-  calloutSubtitle: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 2,
-  },
-  calloutChevron: {
-    fontSize: 24,
-    color: '#2DD4BF',
-    fontWeight: '300',
-  },
-  calloutAction: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  calloutActionText: {
-    fontSize: 12,
-    color: '#2DD4BF',
-    fontWeight: '500',
-    textAlign: 'center',
   },
 });

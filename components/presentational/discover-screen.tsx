@@ -6,8 +6,10 @@ import { DiscoverStoreList } from './discover-store-list';
 import { DiscoverMapView } from './discover-map-view';
 import { DiscoverViewToggle } from './discover-view-toggle';
 import { DiscoverEmptyState } from './discover-empty-state';
+import { StorePreviewSheet } from './store-preview-sheet';
 import { BottomActionBar } from './bottom-action-bar';
 import { ScreenContainer } from './screen-container';
+import { BottomSheet, type BottomSheetMethods } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
@@ -26,6 +28,11 @@ type DiscoverScreenProps = {
   onViewModeChange: (mode: ViewMode) => void;
   onStorePress: (store: DiscoverStore) => void;
   onBack: () => void;
+  selectedStore: DiscoverStore | null;
+  onMarkerPress: (store: DiscoverStore) => void;
+  onViewStore: () => void;
+  storeSheetRef: React.RefObject<BottomSheetMethods | null>;
+  focusedStoreId?: string;
 };
 
 const SORT_LABELS: Record<SortOption, string> = {
@@ -67,6 +74,11 @@ export function DiscoverScreen({
   onViewModeChange,
   onStorePress,
   onBack,
+  selectedStore,
+  onMarkerPress,
+  onViewStore,
+  storeSheetRef,
+  focusedStoreId,
 }: DiscoverScreenProps) {
   const hasStores = stores.length > 0;
   const showEmptySearch = !isLoading && !hasStores && searchQuery.length > 0;
@@ -100,13 +112,21 @@ export function DiscoverScreen({
         ) : viewMode === 'list' ? (
           <DiscoverStoreList stores={stores} onStorePress={onStorePress} />
         ) : (
-          <DiscoverMapView stores={stores} onStorePress={onStorePress} />
+          <DiscoverMapView
+            stores={stores}
+            onMarkerPress={onMarkerPress}
+            focusedStoreId={focusedStoreId}
+          />
         )}
 
         <DiscoverViewToggle value={viewMode} onValueChange={onViewModeChange} />
       </View>
 
       <BottomActionBar onBack={onBack} />
+
+      <BottomSheet ref={storeSheetRef}>
+        {selectedStore && <StorePreviewSheet store={selectedStore} onViewStore={onViewStore} />}
+      </BottomSheet>
     </ScreenContainer>
   );
 }

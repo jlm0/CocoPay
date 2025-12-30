@@ -31,9 +31,7 @@ export function useGooglePlaces() {
     setIsSearching(true);
     debounceRef.current = setTimeout(async () => {
       try {
-        const results = await GooglePlacesSdk.fetchPredictions(query, {
-          types: ['address'],
-        });
+        const results = await GooglePlacesSdk.fetchPredictions(query);
         setPredictions(results.slice(0, 3));
       } catch (error) {
         if (__DEV__) {

@@ -39,6 +39,12 @@ export const QUARTERLY_DURATION = 7_776_000;
 
 export const COCOPAY_ISSUANCE_CUT_PERCENT = 0.5;
 
+export const COCOPAY_LABS_MULTISIG = process.env.EXPO_PUBLIC_COCOPAY_LABS_MULTISIG as
+  | `0x${string}`
+  | undefined;
+export const COCOPAY_LABS_SPLIT_PERCENT = 10_000_000;
+export const STORE_OWNER_SPLIT_PERCENT = 990_000_000;
+
 export const CHAIN_PREFIXES: Record<number, string> = {
   1: 'eth',
   11155111: 'sep',

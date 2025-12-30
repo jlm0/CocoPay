@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FeatureHeader } from '@/components/presentational/feature-header';
@@ -15,7 +16,7 @@ import { Text } from '@/components/ui/text';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function StoreDetailPage() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, source } = useLocalSearchParams<{ id: string; source?: string }>();
   const router = useRouter();
 
   const parsedId = (() => {
@@ -64,6 +65,16 @@ export default function StoreDetailPage() {
       },
     });
   };
+
+  const handleAddressPress = useCallback(() => {
+    if (!store?.address?.coordinates) return;
+
+    if (source === 'discover-map') {
+      router.back();
+    } else {
+      router.push(`/(app)/discover?viewMode=map&storeId=${store.id}`);
+    }
+  }, [source, store, router]);
 
   if (isLoading) {
     return (
@@ -156,6 +167,7 @@ export default function StoreDetailPage() {
           description={store.description}
           address={store.address}
           website={store.website}
+          onAddressPress={store.address?.coordinates ? handleAddressPress : undefined}
         />
       </ScrollView>
     </ScreenContainer>

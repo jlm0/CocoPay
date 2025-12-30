@@ -105,7 +105,7 @@ export function CreateStoreContainer() {
         chainId: COCOPAY_CHAIN_ID,
       });
 
-      await refetchAfterStoreCreate();
+      refetchAfterStoreCreate();
 
       const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
 
