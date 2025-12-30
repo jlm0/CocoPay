@@ -12,7 +12,6 @@ type DiscoverSortContentProps = {
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'name', label: 'Name (A-Z)' },
   { value: 'cashback', label: 'Highest Cashback' },
-  { value: 'loyalty', label: 'Highest Loyalty Bonus' },
 ];
 
 export function DiscoverSortContent({ value, onValueChange }: DiscoverSortContentProps) {

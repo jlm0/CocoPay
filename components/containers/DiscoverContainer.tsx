@@ -22,8 +22,6 @@ const sortStores = (stores: DiscoverStore[], sortBy: SortOption): DiscoverStore[
       return sorted.sort((a, b) => a.name.localeCompare(b.name));
     case 'cashback':
       return sorted.sort((a, b) => b.cashBackPercent - a.cashBackPercent);
-    case 'loyalty':
-      return sorted.sort((a, b) => b.loyaltyBonusPercent - a.loyaltyBonusPercent);
     default:
       return sorted;
   }

@@ -50,7 +50,7 @@ function transformToStore(
     logoUri: resolveLogoUrl(metadata.logoUri),
     address: cocopay.address,
     cashBackPercent: cocopay.cashBackPercent,
-    loyaltyBonusPercent: cocopay.loyaltyBonusPercent,
+    issuanceCutPercent: cocopay.issuanceCutPercent,
   };
 }
 

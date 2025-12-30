@@ -37,6 +37,8 @@ export const USDC_CURRENCY = USD_CURRENCY_ID(JB_VERSION);
 
 export const QUARTERLY_DURATION = 7_776_000;
 
+export const COCOPAY_ISSUANCE_CUT_PERCENT = 0.5;
+
 export const CHAIN_PREFIXES: Record<number, string> = {
   1: 'eth',
   11155111: 'sep',

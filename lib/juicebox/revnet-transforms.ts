@@ -15,6 +15,7 @@ import {
   OMNICHAIN_CHAIN_IDS,
   USDC_CURRENCY,
   USDC_DECIMALS,
+  COCOPAY_ISSUANCE_CUT_PERCENT,
   type OmnichainChainId,
 } from './constants';
 import { getRevLoansAddress, getMultiTerminalAddress } from './revnet';
@@ -46,7 +47,7 @@ export function buildRevnetStageConfig(
   operatorAddress: Address
 ): REVStageConfig {
   const splitPercent = cashBackToReservedPercent(params.cashBackPercent);
-  const issuanceCutPercent = loyaltyBonusToWeightCutPercent(params.loyaltyBonusPercent);
+  const issuanceCutPercent = loyaltyBonusToWeightCutPercent(COCOPAY_ISSUANCE_CUT_PERCENT);
 
   const splits: JBSplit[] = [
     {

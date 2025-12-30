@@ -13,7 +13,6 @@ export interface StoreCreationFormState {
   website: string;
   ticker: string;
   cashBack: number;
-  loyaltyBonus: number;
 }
 
 export type ValidationErrors = Partial<Record<keyof StoreCreationFormState, string>>;
@@ -33,7 +32,6 @@ const initialState: StoreCreationFormState = {
   website: '',
   ticker: '',
   cashBack: 5,
-  loyaltyBonus: 0.5,
 };
 
 function reducer(

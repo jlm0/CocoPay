@@ -5,34 +5,19 @@ import { cn } from '@/lib/utils';
 
 type StoreRewardBadgesProps = {
   cashBackPercent: number;
-  loyaltyBonusPercent: number;
   className?: string;
 };
 
-export function StoreRewardBadges({
-  cashBackPercent,
-  loyaltyBonusPercent,
-  className,
-}: StoreRewardBadgesProps) {
-  const showCashBack = cashBackPercent > 0;
-  const showLoyalty = loyaltyBonusPercent > 0;
-
-  if (!showCashBack && !showLoyalty) {
+export function StoreRewardBadges({ cashBackPercent, className }: StoreRewardBadgesProps) {
+  if (cashBackPercent <= 0) {
     return null;
   }
 
   return (
     <View className={cn('flex-row gap-2', className)}>
-      {showCashBack && (
-        <Badge variant="secondary" className="rounded-full">
-          <Text>{cashBackPercent}% cashback</Text>
-        </Badge>
-      )}
-      {showLoyalty && (
-        <Badge variant="secondary" className="rounded-full">
-          <Text>{loyaltyBonusPercent}% loyalty</Text>
-        </Badge>
-      )}
+      <Badge variant="secondary" className="rounded-full">
+        <Text>{cashBackPercent}% cashback</Text>
+      </Badge>
     </View>
   );
 }

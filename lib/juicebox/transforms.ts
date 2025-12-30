@@ -3,6 +3,7 @@ import {
   MAX_RESERVED_PERCENT,
   MAX_WEIGHT_CUT_PERCENT,
   COCOPAY_CHAIN_ID,
+  COCOPAY_ISSUANCE_CUT_PERCENT,
   CHAIN_PREFIXES,
   PREFIX_TO_CHAIN,
 } from './constants';
@@ -32,7 +33,7 @@ export function weightCutPercentToLoyaltyBonus(weightCutPercent: number): number
 
 export function buildRulesetConfig(params: StoreCreationParams): JBRulesetConfig {
   const reservedPercent = cashBackToReservedPercent(params.cashBackPercent);
-  const weightCutPercent = loyaltyBonusToWeightCutPercent(params.loyaltyBonusPercent);
+  const weightCutPercent = loyaltyBonusToWeightCutPercent(COCOPAY_ISSUANCE_CUT_PERCENT);
 
   return {
     mustStartAtOrAfter: 0,

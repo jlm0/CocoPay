@@ -45,10 +45,10 @@ export interface StoreDetails extends Store {
   address?: StoreAddress;
   website?: string;
   cashBackPercent: number;
-  loyaltyBonusPercent: number;
+  issuanceCutPercent: number;
 }
 
-export type SortOption = 'name' | 'cashback' | 'loyalty';
+export type SortOption = 'name' | 'cashback';
 export type ViewMode = 'list' | 'map';
 
 export interface DiscoverStore {
@@ -61,7 +61,7 @@ export interface DiscoverStore {
   logoUri?: string;
   address?: StoreAddress;
   cashBackPercent: number;
-  loyaltyBonusPercent: number;
+  issuanceCutPercent: number;
 }
 
 export type TokenType = 'USDC';

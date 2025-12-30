@@ -1,5 +1,5 @@
 import { View, Pressable } from 'react-native';
-import { MapPin, Percent, Gift, Store } from 'lucide-react-native';
+import { MapPin, Percent, Store } from 'lucide-react-native';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { Badge } from '@/components/ui/badge';
@@ -43,20 +43,14 @@ export function DiscoverStoreCard({ store, onPress }: DiscoverStoreCardProps) {
           )}
         </View>
       </View>
-      <View className="mt-3 flex-row gap-2">
-        {store.cashBackPercent > 0 && (
+      {store.cashBackPercent > 0 && (
+        <View className="mt-3 flex-row gap-2">
           <Badge variant="secondary" className="flex-row items-center gap-1">
             <Icon as={Percent} size={12} className="text-foreground" />
             <Text variant="caption">{store.cashBackPercent}% cashback</Text>
           </Badge>
-        )}
-        {store.loyaltyBonusPercent > 0 && (
-          <Badge variant="secondary" className="flex-row items-center gap-1">
-            <Icon as={Gift} size={12} className="text-foreground" />
-            <Text variant="caption">{store.loyaltyBonusPercent}% loyalty</Text>
-          </Badge>
-        )}
-      </View>
+        </View>
+      )}
     </Pressable>
   );
 }

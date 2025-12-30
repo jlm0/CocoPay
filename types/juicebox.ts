@@ -17,7 +17,6 @@ export interface StoreCreationParams {
   address?: StoreAddress;
   website?: string;
   cashBackPercent: number;
-  loyaltyBonusPercent: number;
 }
 
 export interface StoreCreationResult {

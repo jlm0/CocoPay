@@ -7,10 +7,8 @@ import type { ValidationErrors } from '@/hooks/useStoreCreationForm';
 type RewardsConfigFormProps = {
   ticker: string;
   cashBack: number;
-  loyaltyBonus: number;
   onTickerChange: (value: string) => void;
   onCashBackChange: (value: number) => void;
-  onLoyaltyBonusChange: (value: number) => void;
   errors: ValidationErrors;
   disabled?: boolean;
   className?: string;
@@ -19,10 +17,8 @@ type RewardsConfigFormProps = {
 export function RewardsConfigForm({
   ticker,
   cashBack,
-  loyaltyBonus,
   onTickerChange,
   onCashBackChange,
-  onLoyaltyBonusChange,
   errors,
   disabled,
   className = '',
@@ -55,17 +51,6 @@ export function RewardsConfigForm({
         onValueChange={onCashBackChange}
         minPercent={0}
         maxPercent={10}
-        disabled={disabled}
-        className="mt-6"
-      />
-
-      <PercentageSlider
-        label="Loyalty bonus"
-        description="Each quarter your stablecoin costs slightly more to make."
-        value={loyaltyBonus}
-        onValueChange={onLoyaltyBonusChange}
-        minPercent={0}
-        maxPercent={5}
         disabled={disabled}
         className="mt-6"
       />

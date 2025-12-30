@@ -7,12 +7,13 @@ import {
   extractCidFromUri as extractCid,
 } from '@/lib/pinata';
 import { sanitizeForIPFS } from '@/lib/utils/sanitize';
+import { COCOPAY_ISSUANCE_CUT_PERCENT } from './constants';
 
 export interface CocoPayMetadata {
   version: number;
   ticker: string;
   cashBackPercent: number;
-  loyaltyBonusPercent: number;
+  issuanceCutPercent: number;
   address?: StoreAddress;
   createdAt: string;
 }
@@ -48,7 +49,7 @@ export function buildProjectMetadata(params: StoreCreationParams): ProjectMetada
       version: COCOPAY_METADATA_VERSION,
       ticker: params.ticker,
       cashBackPercent: params.cashBackPercent,
-      loyaltyBonusPercent: params.loyaltyBonusPercent,
+      issuanceCutPercent: COCOPAY_ISSUANCE_CUT_PERCENT,
       address: params.address,
       createdAt: new Date().toISOString(),
     },

@@ -97,7 +97,6 @@ export function CreateStoreContainer() {
         address: form.state.address ?? undefined,
         website: form.state.website.trim() || undefined,
         cashBackPercent: form.state.cashBack,
-        loyaltyBonusPercent: form.state.loyaltyBonus,
       });
       console.log('[CreateStore] Revnet created:', result);
 
@@ -183,10 +182,8 @@ export function CreateStoreContainer() {
             <RewardsConfigForm
               ticker={form.state.ticker}
               cashBack={form.state.cashBack}
-              loyaltyBonus={form.state.loyaltyBonus}
               onTickerChange={(v) => form.updateField('ticker', v)}
               onCashBackChange={(v) => form.updateField('cashBack', v)}
-              onLoyaltyBonusChange={(v) => form.updateField('loyaltyBonus', v)}
               errors={form.errors}
               disabled={isLoading}
             />

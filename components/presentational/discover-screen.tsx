@@ -31,7 +31,6 @@ type DiscoverScreenProps = {
 const SORT_LABELS: Record<SortOption, string> = {
   name: 'Name',
   cashback: 'Cashback',
-  loyalty: 'Loyalty',
 };
 
 function DiscoverSkeleton() {

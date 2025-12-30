@@ -146,10 +146,7 @@ export default function StoreDetailPage() {
           logoUri={store.logoUri ?? undefined}
         />
 
-        <StoreRewardBadges
-          cashBackPercent={store.cashBackPercent}
-          loyaltyBonusPercent={store.loyaltyBonusPercent}
-        />
+        <StoreRewardBadges cashBackPercent={store.cashBackPercent} />
 
         <StoreBalance balance={store.balance} tokenSymbol={store.tokenSymbol} />
 

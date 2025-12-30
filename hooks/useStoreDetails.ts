@@ -110,7 +110,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
       address: metadata.cocopay.address,
       website: metadata.infoUri,
       cashBackPercent: metadata.cocopay.cashBackPercent,
-      loyaltyBonusPercent: metadata.cocopay.loyaltyBonusPercent,
+      issuanceCutPercent: metadata.cocopay.issuanceCutPercent,
     };
   }, [project, metadata, userBalance, address, cashOutQuote, loanQuote, chainId, projectId]);
 
