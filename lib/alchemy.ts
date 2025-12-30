@@ -1,6 +1,6 @@
 import { Alchemy } from 'alchemy-sdk';
 import type { Chain } from 'viem';
-import { CHAIN_TO_ALCHEMY_NETWORK, type SupportedChainId } from './chains';
+import { CHAIN_RPC_PREFIX, CHAIN_TO_ALCHEMY_NETWORK, type SupportedChainId } from '@/lib/network';
 
 const ALCHEMY_API_KEY = process.env.EXPO_PUBLIC_ALCHEMY_API_KEY || '';
 const GAS_POLICY_ID = process.env.EXPO_PUBLIC_ALCHEMY_GAS_POLICY_ID || '';
@@ -11,15 +11,8 @@ if (!ALCHEMY_API_KEY) {
   );
 }
 
-const CHAIN_RPC_PREFIX: Record<number, string> = {
-  11155111: 'eth-sepolia',
-  84532: 'base-sepolia',
-  421614: 'arb-sepolia',
-  11155420: 'opt-sepolia',
-};
-
 export const getAlchemyRpcUrl = (chain: Chain): string => {
-  const prefix = CHAIN_RPC_PREFIX[chain.id];
+  const prefix = CHAIN_RPC_PREFIX[chain.id as SupportedChainId];
 
   if (!prefix) {
     throw new Error(`Unsupported chain: ${chain.id}`);

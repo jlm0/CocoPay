@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  alchemy,
-  sepolia as alchemySepolia,
-  baseSepolia as alchemyBaseSepolia,
-  arbitrumSepolia as alchemyArbitrumSepolia,
-  optimismSepolia as alchemyOptimismSepolia,
-  type AlchemyTransport,
-} from '@account-kit/infra';
+import { alchemy, type AlchemyTransport } from '@account-kit/infra';
 import {
   createModularAccountV2Client,
   type ModularAccountV2Client,
@@ -15,6 +8,7 @@ import { LocalAccountSigner, type SmartAccountSigner } from '@aa-sdk/core';
 import type { Chain } from 'viem';
 import { ALCHEMY_API_KEY, GAS_POLICY_ID } from '@/lib/alchemy';
 import { DEFAULT_CHAIN } from '@/lib/chains';
+import { ALCHEMY_AA_CHAINS, type SupportedChainId } from '@/lib/network';
 import { useParaAccount } from './useParaAccount';
 
 type AlchemySmartAccountClient = ModularAccountV2Client<
@@ -23,15 +17,8 @@ type AlchemySmartAccountClient = ModularAccountV2Client<
   AlchemyTransport
 >;
 
-const ALCHEMY_CHAINS: Record<number, Chain> = {
-  11155111: alchemySepolia,
-  84532: alchemyBaseSepolia,
-  421614: alchemyArbitrumSepolia,
-  11155420: alchemyOptimismSepolia,
-};
-
 function getAlchemyChain(chain: Chain): Chain {
-  return ALCHEMY_CHAINS[chain.id] ?? chain;
+  return ALCHEMY_AA_CHAINS[chain.id as SupportedChainId] ?? chain;
 }
 
 export function useAlchemySmartAccountClient(

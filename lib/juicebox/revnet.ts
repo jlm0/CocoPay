@@ -1,6 +1,7 @@
 import type { Address } from 'viem';
 import { jbContractAddress, getRevnetLoanContract } from 'juice-sdk-core';
-import { JB_VERSION, OMNICHAIN_CHAIN_IDS, type OmnichainChainId } from './constants';
+import { JB_VERSION, type OmnichainChainId } from './constants';
+import { CHAIN_NAMES, isNetworkChainId } from '@/lib/network';
 
 export const REV_DEPLOYER_ADDRESS = '0x2ca27bde7e7d33e353b44c27acfcf6c78dde251d' as Address;
 export const JB_SUCKER_REGISTRY_ADDRESS = '0x07c8c5bf08f0361883728a8a5f8824ba5724ece3' as Address;
@@ -25,16 +26,11 @@ export function getMultiTerminalAddress(chainId: OmnichainChainId): Address {
 }
 
 export function isOmnichainChainId(chainId: number): chainId is OmnichainChainId {
-  return (OMNICHAIN_CHAIN_IDS as readonly number[]).includes(chainId);
+  return isNetworkChainId(chainId);
 }
 
-export const CHAIN_ID_TO_NAME: Record<OmnichainChainId, string> = {
-  11155111: 'Sepolia',
-  84532: 'Base Sepolia',
-  421614: 'Arbitrum Sepolia',
-  11155420: 'Optimism Sepolia',
-};
+export const CHAIN_ID_TO_NAME = CHAIN_NAMES;
 
 export function getChainName(chainId: OmnichainChainId): string {
-  return CHAIN_ID_TO_NAME[chainId];
+  return CHAIN_NAMES[chainId];
 }

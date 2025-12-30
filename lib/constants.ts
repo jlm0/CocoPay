@@ -1,19 +1,13 @@
 import { OMNICHAIN_CHAIN_IDS, type OmnichainChainId } from './juicebox/constants';
 import { getUsdcAddress } from './juicebox/chain-selection';
+import { CHAIN_NAMES } from '@/lib/network';
 
 export const APP_SCHEME = 'cocopay://';
 
 export const SUPPORTED_CHAIN_IDS = OMNICHAIN_CHAIN_IDS;
 export type SupportedChainId = OmnichainChainId;
 
-export const CHAIN_NAMES: Record<SupportedChainId, string> = {
-  11155111: 'Ethereum Sepolia',
-  84532: 'Base Sepolia',
-  421614: 'Arbitrum Sepolia',
-  11155420: 'Optimism Sepolia',
-};
-
-export { getUsdcAddress };
+export { CHAIN_NAMES, getUsdcAddress };
 
 export const USDC_SEPOLIA_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as const;
 

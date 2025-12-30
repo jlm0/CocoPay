@@ -3,11 +3,11 @@ import { AssetTransfersCategory, SortingOrder } from 'alchemy-sdk';
 import type { Hex } from 'viem';
 import { getAlchemyInstance } from '@/lib/alchemy';
 import type { SupportedChainId } from '@/lib/chains';
-import { DEFAULT_CHAIN } from '@/lib/chains';
+import { DEFAULT_CHAIN_ID } from '@/lib/chains';
 import { useParaAccount } from './useParaAccount';
 import { queryKeys } from '@/lib/query';
 
-export function useTransfers(address?: Hex, chainId: SupportedChainId = DEFAULT_CHAIN.id) {
+export function useTransfers(address?: Hex, chainId: SupportedChainId = DEFAULT_CHAIN_ID) {
   const { address: accountAddress } = useParaAccount();
 
   const targetAddress = address ?? accountAddress;
