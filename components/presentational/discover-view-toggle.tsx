@@ -11,7 +11,7 @@ type DiscoverViewToggleProps = {
 
 export function DiscoverViewToggle({ value, onValueChange }: DiscoverViewToggleProps) {
   return (
-    <View className="absolute bottom-16 left-0 right-0 items-center">
+    <View className="absolute bottom-20 left-0 right-0 items-center">
       <View className="flex-row rounded-full border border-border bg-card p-1">
         <Pressable
           onPress={() => onValueChange('list')}

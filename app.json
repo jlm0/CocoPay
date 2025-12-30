@@ -51,7 +51,7 @@
       "bundleIdentifier": "com.cocopay.app",
       "associatedDomains": ["applinks:cocopay.app"],
       "config": {
-        "googleMapsApiKey": "REDACTED_GOOGLE_API_KEY"
+        "googleMapsApiKey": "REDACTED_GOOGLE_MAPS_API_KEY"
       },
       "infoPlist": {
         "NSCameraUsageDescription": "CocoPay uses the camera to scan QR codes for payments",
@@ -67,7 +67,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "REDACTED_GOOGLE_API_KEY"
+          "apiKey": "REDACTED_GOOGLE_MAPS_API_KEY"
         }
       },
       "permissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"],

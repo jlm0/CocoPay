@@ -82,10 +82,12 @@ export function DiscoverScreen({
           <View className="flex-1">
             <DiscoverSearchBar value={searchQuery} onChangeText={onSearchChange} />
           </View>
-          <Button variant="outline" size="sm" onPress={onSortPress} className="flex-row gap-1">
-            <Icon as={ArrowUpDown} size={16} className="text-foreground" />
-            <Text variant="caption">{SORT_LABELS[sortBy]}</Text>
-          </Button>
+          {viewMode === 'list' && (
+            <Button variant="outline" size="sm" onPress={onSortPress} className="flex-row gap-1">
+              <Icon as={ArrowUpDown} size={16} className="text-foreground" />
+              <Text variant="caption">{SORT_LABELS[sortBy]}</Text>
+            </Button>
+          )}
         </View>
 
         {isLoading ? (
