@@ -71,6 +71,14 @@ function validateStep1(state: StoreCreationFormState): ValidationErrors {
     errors.name = `Name must be ${NAME_MAX_LENGTH} characters or less`;
   }
 
+  if (!state.logoUri) {
+    errors.logoUri = 'Logo is required';
+  }
+
+  if (!state.description.trim()) {
+    errors.description = 'Description is required';
+  }
+
   if (state.website && !isValidUrl(state.website)) {
     errors.website = 'Please enter a valid URL';
   }

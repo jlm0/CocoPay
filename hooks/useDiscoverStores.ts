@@ -6,7 +6,6 @@ import {
   type CocoPayMetadata,
   type ProjectMetadata,
   fetchMetadataFromIPFS,
-  COCOPAY_METADATA_DOMAIN,
 } from '@/lib/juicebox/metadata';
 import { extractCidFromUri, getGatewayUrl } from '@/lib/pinata';
 import { queryKeys } from '@/lib/query/keys';
@@ -63,11 +62,7 @@ export function useDiscoverStores(): UseDiscoverStoresResult {
   } = useBendystrawProjects({
     where: {
       chainId: COCOPAY_CHAIN_ID,
-      OR: [
-        { domain: COCOPAY_METADATA_DOMAIN },
-        { metadataUri_starts_with: 'bafk' },
-        { metadataUri_starts_with: 'ipfs://bafk' },
-      ],
+      isRevnet: true,
     },
     orderBy: 'createdAt',
     orderDirection: 'desc',

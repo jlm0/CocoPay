@@ -38,13 +38,22 @@ export function useCocoPayStores(): UseCocoPayStoresResult {
   } = useParticipatedStores(address);
 
   const freshStores = useMemo(() => {
-    const ownedIds = new Set(ownedStores.map((s) => s.id));
+    const seenIds = new Set<string>();
+    const merged: Store[] = [];
 
-    const filteredParticipated = participatedStores
-      .filter((s) => !ownedIds.has(s.id))
-      .map((s) => ({ ...s, isOwned: false }));
+    for (const store of ownedStores) {
+      if (!seenIds.has(store.id)) {
+        seenIds.add(store.id);
+        merged.push(store);
+      }
+    }
 
-    const merged = [...ownedStores, ...filteredParticipated];
+    for (const store of participatedStores) {
+      if (!seenIds.has(store.id)) {
+        seenIds.add(store.id);
+        merged.push({ ...store, isOwned: false });
+      }
+    }
 
     return merged.sort((a, b) => {
       if (a.isOwned && !b.isOwned) return -1;

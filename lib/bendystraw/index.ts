@@ -9,6 +9,7 @@ export {
   fetchParticipantsByAddress,
   fetchPayEvents,
   fetchActivityEvents,
+  fetchPermissionHolders,
 } from './queries';
 
 export type {
@@ -18,14 +19,17 @@ export type {
   BendystrawCashOutEvent,
   BendystrawActivityEvent,
   BendystrawActivityEventType,
+  BendystrawPermissionHolder,
   BendystrawProjectsQueryParams,
   BendystrawParticipantsQueryParams,
   BendystrawParticipantParams,
   BendystrawParticipantsByAddressParams,
   BendystrawActivityQueryParams,
   BendystrawPayEventsQueryParams,
+  BendystrawPermissionHoldersQueryParams,
   projectFilter,
   participantFilter,
   payEventFilter,
   activityEventFilter,
+  permissionHolderFilter,
 } from './types';

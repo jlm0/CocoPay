@@ -5,13 +5,21 @@ import type {
   activityEvent,
   activityEventType,
   cashOutTokensEvent,
+  permissionHolder,
   projectFilter,
   participantFilter,
   payEventFilter,
   activityEventFilter,
+  permissionHolderFilter,
 } from './generated/schema';
 
-export type { projectFilter, participantFilter, payEventFilter, activityEventFilter };
+export type {
+  projectFilter,
+  participantFilter,
+  payEventFilter,
+  activityEventFilter,
+  permissionHolderFilter,
+};
 
 export type BendystrawProject = Pick<
   project,
@@ -85,6 +93,11 @@ export type BendystrawCashOutEvent = Pick<
   | 'reclaimAmount'
   | 'reclaimAmountUsd'
   | 'metadata'
+>;
+
+export type BendystrawPermissionHolder = Pick<
+  permissionHolder,
+  'account' | 'operator' | 'projectId' | 'chainId' | 'isRevnetOperator' | 'version'
 >;
 
 export interface BendystrawProjectsQueryParams {
@@ -164,6 +177,20 @@ export interface BendystrawPayEventsResponse {
 export interface BendystrawActivityEventsResponse {
   activityEvents: {
     items: BendystrawActivityEvent[];
+    totalCount: number;
+  };
+}
+
+export interface BendystrawPermissionHoldersQueryParams {
+  where?: permissionHolderFilter;
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
+  limit?: number;
+}
+
+export interface BendystrawPermissionHoldersResponse {
+  permissionHolders: {
+    items: BendystrawPermissionHolder[];
     totalCount: number;
   };
 }

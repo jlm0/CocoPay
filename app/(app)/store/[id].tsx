@@ -152,7 +152,7 @@ export default function StoreDetailPage() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-6 pb-64">
         <FeatureHeader
           title={store.name}
-          subtitle={`Store code ${store.storeCode}`}
+          subtitle={`#${parsedId.projectId}`}
           badge={store.isOwned ? 'Yours' : undefined}
           logoUri={store.logoUri ?? undefined}
         />

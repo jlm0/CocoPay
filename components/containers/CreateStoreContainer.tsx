@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { ScrollView, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -8,9 +8,9 @@ import { StoreProfileForm } from '@/components/presentational/store-profile-form
 import { RewardsConfigForm } from '@/components/presentational/rewards-config-form';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
-import { OmnichainDeployProgress } from '@/components/presentational/omnichain-deploy-progress';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { Spinner } from '@/components/ui/spinner';
 import { useStoreCreationForm } from '@/hooks/useStoreCreationForm';
 import { useOmnichainRevnetCreate } from '@/hooks/juicebox/useOmnichainRevnetCreate';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
@@ -25,7 +25,6 @@ export function CreateStoreContainer() {
   const {
     createRevnet,
     status: deployStatus,
-    chainResults,
     error: deployError,
     reset: resetDeploy,
   } = useOmnichainRevnetCreate();
@@ -122,20 +121,19 @@ export function CreateStoreContainer() {
   };
 
   const canProceed = form.step === 1 ? form.isStep1Valid : form.isStep2Valid;
-  const buttonText = form.step === 1 ? 'Next' : 'Create';
+
+  const buttonText = useMemo(() => {
+    if (form.step === 1) return 'Next';
+    if (deployStatus === 'uploading') return 'Uploading store info...';
+    if (deployStatus === 'deploying') return 'Creating your store...';
+    return 'Create';
+  }, [form.step, deployStatus]);
 
   return (
     <ScreenContainer
       horizontalPadding={false}
       bottomActionBar={
         <BottomActionBar onBack={form.step === 2 && !isLoading ? handleBack : undefined}>
-          {isLoading && (
-            <OmnichainDeployProgress
-              chainResults={chainResults}
-              isUploading={deployStatus === 'uploading'}
-              className="mb-4"
-            />
-          )}
           {deployError && (
             <Text className="mb-3 text-center text-destructive">{deployError.message}</Text>
           )}
@@ -143,7 +141,8 @@ export function CreateStoreContainer() {
             onPress={form.step === 1 ? handleNext : handleCreate}
             disabled={!canProceed || isLoading}
             size="lg"
-            className="h-14 rounded-xl">
+            className="h-14 flex-row items-center gap-2 rounded-xl">
+            {isLoading && <Spinner size="small" />}
             <Text>{buttonText}</Text>
           </Button>
         </BottomActionBar>

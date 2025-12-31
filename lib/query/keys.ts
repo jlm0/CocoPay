@@ -52,6 +52,8 @@ export const queryKeys = {
       chainId: number | undefined,
       limit: number | undefined
     ) => ['bendystraw', 'payEvents', projectId, chainId, limit] as const,
+    permissionHolders: (params: { where?: Record<string, unknown>; limit?: number }) =>
+      ['bendystraw', 'permissionHolders', params] as const,
   },
 
   projectMetadata: {

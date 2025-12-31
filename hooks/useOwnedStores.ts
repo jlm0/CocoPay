@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import type { Address } from 'viem';
-import { useQueries } from '@tanstack/react-query';
-import { useBendystrawProjects } from '@/hooks/bendystraw';
-import { fetchParticipant } from '@/lib/bendystraw';
+import { useQuery, useQueries } from '@tanstack/react-query';
+import { fetchProject, fetchParticipant, fetchPermissionHolders } from '@/lib/bendystraw';
 import { fetchMetadataFromIPFS, extractCidFromUri } from '@/lib/juicebox/metadata';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID, JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
@@ -17,21 +16,43 @@ interface UseOwnedStoresResult {
   refetch: () => void;
 }
 
-export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResult {
-  const normalizedOwner = ownerAddress?.toLowerCase() as Address | undefined;
+export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresResult {
+  const normalizedOperator = operatorAddress?.toLowerCase() as Address | undefined;
 
-  const {
-    projects,
-    isLoading: projectsLoading,
-    isFetching: projectsFetching,
-    error: projectsError,
-    refetch,
-  } = useBendystrawProjects({
-    where: {
-      owner: normalizedOwner,
-      chainId: COCOPAY_CHAIN_ID,
-    },
+  const permissionHoldersQuery = useQuery({
+    queryKey: queryKeys.bendystraw.permissionHolders({
+      where: {
+        operator: normalizedOperator,
+        isRevnetOperator: true,
+        chainId: COCOPAY_CHAIN_ID,
+      },
+    }),
+    queryFn: () =>
+      fetchPermissionHolders({
+        where: {
+          operator: normalizedOperator,
+          isRevnetOperator: true,
+          chainId: COCOPAY_CHAIN_ID,
+        },
+      }),
+    enabled: !!normalizedOperator,
+    staleTime: 30_000,
   });
+
+  const operatedProjects = permissionHoldersQuery.data?.items ?? [];
+
+  const projectQueries = useQueries({
+    queries: operatedProjects.map((ph) => ({
+      queryKey: queryKeys.bendystraw.project(ph.projectId, ph.chainId),
+      queryFn: () => fetchProject(ph.projectId, ph.chainId),
+      enabled: !!normalizedOperator,
+      staleTime: 30_000,
+    })),
+  });
+
+  const projects = projectQueries
+    .map((q) => q.data)
+    .filter((p): p is NonNullable<typeof p> => p !== null && p !== undefined);
 
   const metadataQueries = useQueries({
     queries: projects.map((project) => {
@@ -42,7 +63,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
           if (!cid) throw new Error('No CID');
           return fetchMetadataFromIPFS(cid);
         },
-        enabled: !!cid && !!ownerAddress,
+        enabled: !!cid && !!operatorAddress,
         staleTime: Infinity,
         gcTime: 24 * 60 * 60 * 1000,
       };
@@ -51,20 +72,24 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
 
   const participantQueries = useQueries({
     queries: projects.map((project) => ({
-      queryKey: queryKeys.bendystraw.participant(project.projectId, project.chainId, ownerAddress),
+      queryKey: queryKeys.bendystraw.participant(
+        project.projectId,
+        project.chainId,
+        operatorAddress
+      ),
       queryFn: () =>
         fetchParticipant({
           projectId: project.projectId,
           chainId: project.chainId,
-          address: ownerAddress!,
+          address: operatorAddress!,
         }),
-      enabled: !!ownerAddress,
+      enabled: !!operatorAddress,
       staleTime: 30_000,
     })),
   });
 
   const stores = useMemo(() => {
-    if (!ownerAddress) {
+    if (!operatorAddress) {
       return [];
     }
 
@@ -95,15 +120,21 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     }
 
     return result;
-  }, [ownerAddress, projects, metadataQueries, participantQueries]);
+  }, [operatorAddress, projects, metadataQueries, participantQueries]);
+
+  const permissionHoldersLoading =
+    permissionHoldersQuery.isLoading && permissionHoldersQuery.fetchStatus !== 'idle';
+  const projectsLoading = projectQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle');
 
   const isLoading =
+    permissionHoldersLoading ||
     projectsLoading ||
     metadataQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle') ||
     participantQueries.some((q) => q.isLoading && q.fetchStatus !== 'idle');
 
   const isFetching =
-    projectsFetching ||
+    permissionHoldersQuery.isFetching ||
+    projectQueries.some((q) => q.isFetching) ||
     metadataQueries.some((q) => q.isFetching) ||
     participantQueries.some((q) => q.isFetching);
 
@@ -111,7 +142,7 @@ export function useOwnedStores(ownerAddress: Address | null): UseOwnedStoresResu
     stores,
     isLoading,
     isFetching,
-    error: projectsError,
-    refetch,
+    error: permissionHoldersQuery.error as Error | null,
+    refetch: permissionHoldersQuery.refetch,
   };
 }

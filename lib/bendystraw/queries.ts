@@ -6,6 +6,7 @@ import type {
   BendystrawPayEventsQueryParams,
   BendystrawParticipantParams,
   BendystrawParticipantsByAddressParams,
+  BendystrawPermissionHoldersQueryParams,
   BendystrawParticipant,
   BendystrawProjectsResponse,
   BendystrawProjectResponse,
@@ -13,6 +14,7 @@ import type {
   BendystrawPayEventsResponse,
   BendystrawActivityEventsResponse,
   BendystrawParticipantsByAddressResponse,
+  BendystrawPermissionHoldersResponse,
 } from './types';
 import { getBendystrawClient, getNetworkFromChainId } from './client';
 
@@ -73,6 +75,15 @@ const ACTIVITY_EVENT_FIELDS = `
   txHash
   from
   type
+`;
+
+const PERMISSION_HOLDER_FIELDS = `
+  account
+  operator
+  projectId
+  chainId
+  isRevnetOperator
+  version
 `;
 
 export async function fetchProject(
@@ -299,4 +310,41 @@ export async function fetchParticipant(
   });
 
   return data.participants.items[0] ?? null;
+}
+
+export async function fetchPermissionHolders(
+  params: BendystrawPermissionHoldersQueryParams
+): Promise<BendystrawPermissionHoldersResponse['permissionHolders']> {
+  const chainId = (params.where?.chainId as number) ?? 11155111;
+  const client = getBendystrawClient(getNetworkFromChainId(chainId));
+
+  const query = gql`
+    query GetPermissionHolders(
+      $where: permissionHolderFilter
+      $orderBy: String
+      $orderDirection: String
+      $limit: Int
+    ) {
+      permissionHolders(
+        where: $where
+        orderBy: $orderBy
+        orderDirection: $orderDirection
+        limit: $limit
+      ) {
+        items {
+          ${PERMISSION_HOLDER_FIELDS}
+        }
+        totalCount
+      }
+    }
+  `;
+
+  const data = await client.request<BendystrawPermissionHoldersResponse>(query, {
+    where: params.where,
+    orderBy: params.orderBy,
+    orderDirection: params.orderDirection,
+    limit: params.limit ?? 50,
+  });
+
+  return data.permissionHolders;
 }

@@ -6,10 +6,9 @@ import { DiscoverStoreList } from './discover-store-list';
 import { DiscoverMapView } from './discover-map-view';
 import { DiscoverViewToggle } from './discover-view-toggle';
 import { DiscoverEmptyState } from './discover-empty-state';
-import { StorePreviewSheet } from './store-preview-sheet';
+import { StoreFloatingCard } from './store-floating-card';
 import { BottomActionBar } from './bottom-action-bar';
 import { ScreenContainer } from './screen-container';
-import { BottomSheet, type BottomSheetMethods } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
@@ -31,7 +30,6 @@ type DiscoverScreenProps = {
   selectedStore: DiscoverStore | null;
   onMarkerPress: (store: DiscoverStore) => void;
   onViewStore: () => void;
-  storeSheetRef: React.RefObject<BottomSheetMethods | null>;
   focusedStoreId?: string;
 };
 
@@ -77,7 +75,6 @@ export function DiscoverScreen({
   selectedStore,
   onMarkerPress,
   onViewStore,
-  storeSheetRef,
   focusedStoreId,
 }: DiscoverScreenProps) {
   const hasStores = stores.length > 0;
@@ -119,14 +116,14 @@ export function DiscoverScreen({
           />
         )}
 
+        {viewMode === 'map' && selectedStore && (
+          <StoreFloatingCard store={selectedStore} onPress={onViewStore} />
+        )}
+
         <DiscoverViewToggle value={viewMode} onValueChange={onViewModeChange} />
       </View>
 
       <BottomActionBar onBack={onBack} />
-
-      <BottomSheet ref={storeSheetRef}>
-        {selectedStore && <StorePreviewSheet store={selectedStore} onViewStore={onViewStore} />}
-      </BottomSheet>
     </ScreenContainer>
   );
 }

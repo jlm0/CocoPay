@@ -37,13 +37,12 @@ export function DiscoverContainer() {
   }>();
 
   const sortSheetRef = useRef<BottomSheetMethods>(null);
-  const storeSheetRef = useRef<BottomSheetMethods>(null);
 
   const { stores: rawStores, isLoading, error } = useDiscoverStores();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
-  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode === 'map' ? 'map' : 'list');
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode === 'list' ? 'list' : 'map');
   const [selectedStore, setSelectedStore] = useState<SelectedStore>(null);
 
   useEffect(() => {
@@ -51,7 +50,6 @@ export function DiscoverContainer() {
       const store = rawStores.find((s) => s.id === focusStoreId);
       if (store) {
         setSelectedStore(store);
-        storeSheetRef.current?.expand();
       }
     }
   }, [focusStoreId, rawStores, selectedStore]);
@@ -70,7 +68,6 @@ export function DiscoverContainer() {
 
   const handleMarkerPress = useCallback((store: DiscoverStore) => {
     setSelectedStore(store);
-    storeSheetRef.current?.expand();
   }, []);
 
   const handleViewStore = useCallback(() => {
@@ -109,7 +106,6 @@ export function DiscoverContainer() {
         selectedStore={selectedStore}
         onMarkerPress={handleMarkerPress}
         onViewStore={handleViewStore}
-        storeSheetRef={storeSheetRef}
         focusedStoreId={focusStoreId}
       />
 
