@@ -25,6 +25,7 @@ export interface Store {
   storeCode: string;
   balance: number;
   isOwned: boolean;
+  logoUri?: string;
 }
 
 export interface StoreAddress {

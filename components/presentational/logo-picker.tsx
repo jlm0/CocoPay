@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, Pressable, Image } from 'react-native';
+import { View, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 import { ImagePlus, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '@/components/ui/text';
@@ -58,8 +59,10 @@ export function LogoPicker({
           <View className="relative">
             <Image
               source={{ uri: imageUri }}
-              className="h-24 w-24 rounded-full"
-              resizeMode="cover"
+              style={{ width: 96, height: 96, borderRadius: 48 }}
+              contentFit="cover"
+              cachePolicy="disk"
+              transition={200}
             />
             <Pressable
               onPress={onImageRemoved}

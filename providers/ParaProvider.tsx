@@ -30,6 +30,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
   const [initError, setInitError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRouteResolved, setIsRouteResolved] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   const queryClient = useQueryClient();
@@ -113,6 +114,8 @@ export function ParaProvider({ children }: ParaProviderProps) {
     } else if (!isAuthenticated && inAuthGroup) {
       router.replace('/');
     }
+
+    setIsRouteResolved(true);
   }, [isReady, isLoading, isAuthenticated, segments, router]);
 
   if (initError) {
@@ -126,7 +129,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
     );
   }
 
-  if (!isReady || isLoading) {
+  if (!isReady || isLoading || !isRouteResolved) {
     return <AppSkeleton />;
   }
 

@@ -1,6 +1,6 @@
 import { View, Pressable } from 'react-native';
 import { Store } from 'lucide-react-native';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { CachedAvatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
@@ -27,12 +27,12 @@ export function FeatureHeader({
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           {logoUri !== undefined && (
-            <Avatar className="size-12" alt={`${title} logo`}>
-              <AvatarImage source={{ uri: logoUri }} />
-              <AvatarFallback className="bg-muted">
-                <Icon as={Store} size={24} className="text-muted-foreground" />
-              </AvatarFallback>
-            </Avatar>
+            <CachedAvatar
+              source={logoUri}
+              className="size-12"
+              fallback={<Icon as={Store} size={24} className="text-muted-foreground" />}
+              alt={`${title} logo`}
+            />
           )}
           <View className="flex-row items-center gap-2">
             <Text variant="title">{title}</Text>

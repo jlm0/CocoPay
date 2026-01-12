@@ -5,6 +5,7 @@ import { fetchProject, fetchParticipant, fetchPermissionHolders } from '@/lib/be
 import { fetchMetadataFromIPFS, extractCidFromUri } from '@/lib/juicebox/metadata';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID, JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
+import { resolveIpfsUri } from '@/lib/pinata';
 import { queryKeys } from '@/lib/query';
 import type { Store } from '@/types';
 
@@ -116,6 +117,7 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
         storeCode: buildStoreCode(BigInt(project.projectId), project.chainId),
         balance,
         isOwned: true,
+        logoUri: resolveIpfsUri(metadata.logoUri),
       });
     }
 

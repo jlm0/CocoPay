@@ -7,7 +7,7 @@ import {
   type ProjectMetadata,
   fetchMetadataFromIPFS,
 } from '@/lib/juicebox/metadata';
-import { extractCidFromUri, getGatewayUrl } from '@/lib/pinata';
+import { extractCidFromUri, resolveIpfsUri } from '@/lib/pinata';
 import { queryKeys } from '@/lib/query/keys';
 import type { DiscoverStore } from '@/types';
 import type { BendystrawProject } from '@/lib/bendystraw/types';
@@ -21,15 +21,6 @@ interface UseDiscoverStoresResult {
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
-}
-
-function resolveLogoUrl(logoUri: string | undefined): string | undefined {
-  if (!logoUri) return undefined;
-  const cid = extractCidFromUri(logoUri);
-  if (cid) {
-    return getGatewayUrl(cid);
-  }
-  return logoUri;
 }
 
 function transformToStore(
@@ -46,7 +37,7 @@ function transformToStore(
     name: metadata.name ?? 'Unknown Store',
     tokenSymbol: `$${cocopay.ticker}`,
     description: metadata.description,
-    logoUri: resolveLogoUrl(metadata.logoUri),
+    logoUri: resolveIpfsUri(metadata.logoUri),
     address: cocopay.address,
     cashBackPercent: cocopay.cashBackPercent,
     issuanceCutPercent: cocopay.issuanceCutPercent,

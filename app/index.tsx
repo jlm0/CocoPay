@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { View, Animated } from 'react-native';
+import { View, Animated, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
+import { HEX_COLORS } from '@/lib/theme';
 
 function useEntryAnimation() {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -84,6 +86,29 @@ function AccentLine() {
   );
 }
 
+function GradientWaveTop() {
+  const { width } = useWindowDimensions();
+  const height = 320;
+
+  return (
+    <View className="absolute left-0 right-0 top-0" style={{ height }}>
+      <LinearGradient
+        colors={['rgba(45, 212, 191, 0.18)', 'rgba(45, 212, 191, 0.10)', 'transparent']}
+        locations={[0, 0.5, 1]}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+      <View className="absolute bottom-0 left-0 right-0">
+        <Svg width={width} height={80} viewBox={`0 0 ${width} 80`}>
+          <Path
+            d={`M0,50 Q${width * 0.25},65 ${width * 0.5},50 T${width},50 L${width},80 L0,80 Z`}
+            fill={HEX_COLORS.background}
+          />
+        </Svg>
+      </View>
+    </View>
+  );
+}
+
 export default function WelcomePage() {
   const router = useRouter();
 
@@ -97,12 +122,7 @@ export default function WelcomePage() {
 
   return (
     <ScreenContainer>
-      <LinearGradient
-        colors={['hsla(168, 76%, 50%, 0.05)', 'transparent']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0.6 }}
-        className="absolute inset-0"
-      />
+      <GradientWaveTop />
 
       <View className="flex-[0.35]" />
 
@@ -137,13 +157,12 @@ export default function WelcomePage() {
       <View className="flex-1" />
 
       <Animated.View
-        className="gap-3"
         style={{
           opacity: buttonAnim.opacity,
           transform: [{ translateY: buttonAnim.translateY }],
         }}>
-        <Button onPress={handleGetStarted} size="lg" className="h-14 rounded-xl">
-          <Text>Get started</Text>
+        <Button onPress={handleGetStarted} size="lg" className="h-14 rounded-2xl">
+          <Text className="font-sans-semibold">Get started</Text>
         </Button>
       </Animated.View>
     </ScreenContainer>

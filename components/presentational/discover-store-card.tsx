@@ -1,10 +1,9 @@
 import { View, Pressable } from 'react-native';
 import { MapPin, Percent, Store } from 'lucide-react-native';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { CachedAvatar } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { Badge } from '@/components/ui/badge';
 import { Icon } from '@/components/ui/icon';
-import { Skeleton } from '@/components/ui/skeleton';
 import type { DiscoverStore } from '@/types';
 
 type DiscoverStoreCardProps = {
@@ -18,16 +17,12 @@ export function DiscoverStoreCard({ store, onPress }: DiscoverStoreCardProps) {
       onPress={onPress}
       className="rounded-xl border border-border bg-card p-4 active:bg-muted">
       <View className="flex-row items-start gap-3">
-        <Avatar className="size-12" alt={`${store.name} logo`}>
-          {store.logoUri && <AvatarImage source={{ uri: store.logoUri }} />}
-          <AvatarFallback className="bg-muted">
-            {store.logoUri ? (
-              <Skeleton className="size-full rounded-full" />
-            ) : (
-              <Icon as={Store} size={24} className="text-muted-foreground" />
-            )}
-          </AvatarFallback>
-        </Avatar>
+        <CachedAvatar
+          source={store.logoUri}
+          className="size-12"
+          fallback={<Icon as={Store} size={24} className="text-muted-foreground" />}
+          alt={`${store.name} logo`}
+        />
         <View className="flex-1 gap-1">
           <View className="flex-row items-center gap-2">
             <Text className="font-sans-semibold text-lg">{store.name}</Text>

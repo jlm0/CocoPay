@@ -13,5 +13,6 @@ export {
   getGatewayUrl,
   getIpfsUri,
   extractCidFromUri,
+  resolveIpfsUri,
 } from './fetch';
 export type { PinataConfig, UploadOptions, UploadResponse, FetchResponse } from './types';

@@ -53,3 +53,12 @@ export function extractCidFromUri(uri: string): string | null {
   }
   return null;
 }
+
+export function resolveIpfsUri(uri: string | undefined): string | undefined {
+  if (!uri) return undefined;
+  const cid = extractCidFromUri(uri);
+  if (cid) {
+    return getGatewayUrl(cid);
+  }
+  return uri;
+}

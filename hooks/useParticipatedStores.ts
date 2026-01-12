@@ -5,6 +5,7 @@ import { fetchParticipantsByAddress, fetchProject } from '@/lib/bendystraw';
 import { fetchMetadataFromIPFS, extractCidFromUri } from '@/lib/juicebox/metadata';
 import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID, JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
+import { resolveIpfsUri } from '@/lib/pinata';
 import { queryKeys } from '@/lib/query';
 import type { Store } from '@/types';
 
@@ -88,6 +89,7 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
         storeCode: buildStoreCode(BigInt(participation.projectId), participation.chainId),
         balance,
         isOwned: false,
+        logoUri: resolveIpfsUri(metadata.logoUri),
       });
     }
 
