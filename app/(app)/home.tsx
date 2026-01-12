@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { HomeBalances } from '@/components/containers/HomeBalances';
 import { HomeStores } from '@/components/containers/HomeStores';
