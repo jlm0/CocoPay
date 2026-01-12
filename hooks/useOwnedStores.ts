@@ -42,6 +42,8 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
 
   const operatedProjects = permissionHoldersQuery.data?.items ?? [];
 
+  console.log('[useOwnedStores] permission holders:', operatedProjects);
+
   const projectQueries = useQueries({
     queries: operatedProjects.map((ph) => ({
       queryKey: queryKeys.bendystraw.project(ph.projectId, ph.chainId),
@@ -101,6 +103,8 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
       const metadataQuery = metadataQueries[i];
       const participantQuery = participantQueries[i];
 
+      console.log('[useOwnedStores] project', project.projectId, 'metadata:', metadataQuery?.data);
+
       if (!metadataQuery?.data?.cocopay) {
         continue;
       }
@@ -121,6 +125,7 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
       });
     }
 
+    console.log('[useOwnedStores] final stores:', result.length, result);
     return result;
   }, [operatorAddress, projects, metadataQueries, participantQueries]);
 

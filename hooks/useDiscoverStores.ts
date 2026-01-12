@@ -60,9 +60,15 @@ export function useDiscoverStores(): UseDiscoverStoresResult {
     limit: 100,
   });
 
-  const projectsNeedingIpfsFetch = useMemo(() => {
-    return projects.filter((project) => !!project.metadataUri);
+  const v5Projects = useMemo(() => {
+    return projects.filter((project) => project.id.startsWith('5-'));
   }, [projects]);
+
+  console.log('[useDiscoverStores] v5 projects from Bendystraw:', v5Projects.length, v5Projects);
+
+  const projectsNeedingIpfsFetch = useMemo(() => {
+    return v5Projects.filter((project) => !!project.metadataUri);
+  }, [v5Projects]);
 
   const ipfsQueries = useQueries({
     queries: projectsNeedingIpfsFetch.map((project) => {
@@ -94,16 +100,18 @@ export function useDiscoverStores(): UseDiscoverStoresResult {
   const stores = useMemo(() => {
     const result: DiscoverStore[] = [];
 
-    for (const project of projects) {
+    for (const project of v5Projects) {
       const ipfsMetadata = ipfsMetadataMap.get(project.projectId);
+      console.log('[useDiscoverStores] project', project.projectId, 'metadata:', ipfsMetadata);
       if (ipfsMetadata?.cocopay) {
         const store = transformToStore(project, ipfsMetadata);
         if (store) result.push(store);
       }
     }
 
+    console.log('[useDiscoverStores] final stores:', result.length, result);
     return result;
-  }, [projects, ipfsMetadataMap]);
+  }, [v5Projects, ipfsMetadataMap]);
 
   const isLoading =
     projectsLoading || (ipfsQueries.length > 0 && ipfsQueries.every((q) => q.isLoading));

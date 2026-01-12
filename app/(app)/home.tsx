@@ -4,16 +4,15 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { HomeBalances } from '@/components/containers/HomeBalances';
 import { HomeStores } from '@/components/containers/HomeStores';
+import { HomeHeader } from '@/components/presentational/home-header';
 import { PayButton } from '@/components/presentational/pay-button';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
-import { useAccountSheet } from '@/providers/AccountSheetProvider';
 import { queryKeys } from '@/lib/query';
 
 export default function HomePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { openAccountSheet } = useAccountSheet();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useFocusEffect(
@@ -38,6 +37,10 @@ export default function HomePage() {
     router.push('/(app)/pay');
   };
 
+  const handleSettingsPress = () => {
+    router.push('/(app)/settings');
+  };
+
   return (
     <ScreenContainer
       bottomActionBar={
@@ -45,6 +48,7 @@ export default function HomePage() {
           <PayButton onPress={handlePayPress} />
         </BottomActionBar>
       }>
+      <HomeHeader onSettingsPress={handleSettingsPress} className="mb-4" />
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -55,7 +59,7 @@ export default function HomePage() {
             colors={['transparent']}
           />
         }>
-        <HomeBalances onCoconutPress={openAccountSheet} isRefreshing={isRefreshing} />
+        <HomeBalances isRefreshing={isRefreshing} />
         <HomeStores isRefreshing={isRefreshing} />
       </ScrollView>
     </ScreenContainer>

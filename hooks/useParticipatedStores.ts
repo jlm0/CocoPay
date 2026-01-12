@@ -36,6 +36,8 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
     [participationsQuery.data?.items]
   );
 
+  console.log('[useParticipatedStores] participations:', participations);
+
   const projectQueries = useQueries({
     queries: participations.map((p) => ({
       queryKey: queryKeys.bendystraw.project(p.projectId, p.chainId),
@@ -74,6 +76,8 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
       const projectQuery = projectQueries[i];
       const metadataQuery = metadataQueries[i];
 
+      console.log('[useParticipatedStores] participation', participation.projectId, 'project:', projectQuery?.data, 'metadata:', metadataQuery?.data);
+
       if (!projectQuery?.data || !metadataQuery?.data?.cocopay) {
         continue;
       }
@@ -93,6 +97,7 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
       });
     }
 
+    console.log('[useParticipatedStores] final stores:', result.length, result);
     return result;
   }, [userAddress, participations, projectQueries, metadataQueries]);
 
