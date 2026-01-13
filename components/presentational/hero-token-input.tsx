@@ -8,13 +8,14 @@ type HeroTokenInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   tokenSymbol: string;
-  balance: number;
+  balance?: number;
   onMaxPress?: () => void;
   isLoading?: boolean;
   error?: string;
   estimate?: string;
   estimateLoading?: boolean;
   disabled?: boolean;
+  showBalance?: boolean;
   className?: string;
 };
 
@@ -29,6 +30,7 @@ export function HeroTokenInput({
   estimate,
   estimateLoading,
   disabled = false,
+  showBalance = true,
   className = '',
 }: HeroTokenInputProps) {
   const hasValue = value.length > 0 && value !== '0';
@@ -66,29 +68,31 @@ export function HeroTokenInput({
         <Text className="ml-2 font-sans-semibold text-xl text-muted-foreground">{tokenSymbol}</Text>
       </View>
 
-      <View className="mt-4 flex-row items-center gap-3">
-        {isLoading ? (
-          <Skeleton className="h-5 w-32 rounded" />
-        ) : (
-          <Text variant="caption">
-            Balance: {formatBalance(balance)} {tokenSymbol}
-          </Text>
-        )}
-
-        {onMaxPress && (
-          <Pressable
-            onPress={onMaxPress}
-            disabled={disabled}
-            className={cn(
-              'rounded-lg bg-secondary px-3 py-1.5 active:bg-secondary/60',
-              disabled && 'opacity-50'
-            )}>
-            <Text variant="caption" className="font-sans-semibold text-secondary-foreground">
-              Max
+      {showBalance && (
+        <View className="mt-4 flex-row items-center gap-3">
+          {isLoading ? (
+            <Skeleton className="h-5 w-32 rounded" />
+          ) : (
+            <Text variant="caption">
+              Balance: {formatBalance(balance ?? 0)} {tokenSymbol}
             </Text>
-          </Pressable>
-        )}
-      </View>
+          )}
+
+          {onMaxPress && (
+            <Pressable
+              onPress={onMaxPress}
+              disabled={disabled}
+              className={cn(
+                'rounded-lg bg-secondary px-3 py-1.5 active:bg-secondary/60',
+                disabled && 'opacity-50'
+              )}>
+              <Text variant="caption" className="font-sans-semibold text-secondary-foreground">
+                Max
+              </Text>
+            </Pressable>
+          )}
+        </View>
+      )}
 
       {error && (
         <Text variant="small" className="mt-2 text-destructive">

@@ -12,6 +12,7 @@ type BottomActionBarProps = {
   children?: React.ReactNode;
   onBack?: () => void;
   showBackButton?: boolean;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -22,6 +23,7 @@ export function BottomActionBar({
   children,
   onBack,
   showBackButton = true,
+  disabled = false,
   className,
 }: BottomActionBarProps) {
   const router = useRouter();
@@ -51,8 +53,16 @@ export function BottomActionBar({
         <View className="gap-3 pb-2">
           {children}
           {showBackButton && (
-            <Button variant="ghost" className="h-12 w-full" onPress={handleBack}>
-              <Icon as={ChevronDown} size={32} className="text-primary" />
+            <Button
+              variant="ghost"
+              className="h-12 w-full"
+              onPress={handleBack}
+              disabled={disabled}>
+              <Icon
+                as={ChevronDown}
+                size={32}
+                className={disabled ? 'text-muted-foreground' : 'text-primary'}
+              />
             </Button>
           )}
         </View>

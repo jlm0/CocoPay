@@ -4,12 +4,13 @@ import { useRouter } from 'expo-router';
 import { useIsRestoring } from '@tanstack/react-query';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { HeroBalance } from '@/components/presentational/hero-balance';
+import { BalanceRewardsSection } from '@/components/presentational/balance-rewards-section';
+import { BalanceWalletSection } from '@/components/presentational/balance-wallet-section';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { ReceiveBottomSheet } from '@/components/containers/ReceiveBottomSheet';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import type { BottomSheetMethods } from '@/components/ui/bottom-sheet';
 import { useUnifiedUsdBalance } from '@/hooks/useUnifiedUsdBalance';
@@ -20,7 +21,7 @@ export function TokenBalanceContainer() {
   const isRestoring = useIsRestoring();
   const receiveSheetRef = useRef<BottomSheetMethods>(null);
 
-  const { totalReclaimable, totalUsd, usdcByChain, hasData, isLoading, error, refetch } =
+  const { totalUsdc, totalReclaimable, totalUsd, usdcByChain, hasData, isLoading, error, refetch } =
     useUnifiedUsdBalance();
 
   const showSkeleton = isRestoring || (isLoading && !hasData);
@@ -104,33 +105,14 @@ export function TokenBalanceContainer() {
 
           <View className="mb-6">
             <Text variant="caption" className="mb-1">
-              Your Balance
+              Total Balance
             </Text>
             <HeroBalance value={totalUsd} />
           </View>
 
-          <View className="rounded-lg border border-border bg-card p-4">
-            <Text variant="small" className="mb-3 text-muted-foreground">
-              Balance by Network
-            </Text>
-            {usdcByChain.map((chain) => (
-              <View key={chain.chainId} className="flex-row justify-between py-2">
-                <Text variant="body">{chain.chainName}</Text>
-                <Text variant="body">${parseFloat(chain.formatted).toFixed(2)}</Text>
-              </View>
-            ))}
-            <Separator className="my-2" />
-            <View className="flex-row justify-between py-2">
-              <Text variant="body" className="text-muted-foreground">
-                Store Rewards
-              </Text>
-              <Text
-                variant="body"
-                className={totalReclaimable > 0 ? 'text-primary' : 'text-foreground'}>
-                {totalReclaimable > 0 ? '+' : ''}${totalReclaimable.toFixed(2)}
-              </Text>
-            </View>
-          </View>
+          <BalanceRewardsSection totalRewards={totalReclaimable} className="mb-4" />
+
+          <BalanceWalletSection totalWallet={totalUsdc} chainBalances={usdcByChain} />
         </ScrollView>
       </ScreenContainer>
 
