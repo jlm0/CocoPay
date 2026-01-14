@@ -199,8 +199,9 @@ function PayContainerContent({
       const result = await payStore({ amount: amountInSmallestUnit });
 
       await addProject({
-        projectId: Number(storeInput.parsedCode.projectId),
-        chainId: storeInput.parsedCode.chainId,
+        suckerGroupId: store.suckerGroupId,
+        primaryChainId: storeInput.parsedCode.chainId,
+        primaryProjectId: Number(storeInput.parsedCode.projectId),
       });
 
       invalidateAfterPay(Number(storeInput.parsedCode.projectId), storeInput.parsedCode.chainId);

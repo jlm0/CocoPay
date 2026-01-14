@@ -20,6 +20,7 @@ export interface OAuthLoginResult {
 
 export interface Store {
   id: string;
+  suckerGroupId: string;
   name: string;
   tokenSymbol: string;
   storeCode: string;

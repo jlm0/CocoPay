@@ -88,6 +88,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
 
     return {
       id: `${chainId}-${projectId}`,
+      suckerGroupId: project.suckerGroupId,
       name: metadata.name,
       tokenSymbol: `$${metadata.cocopay.ticker}`,
       storeCode: buildStoreCode(BigInt(projectId), chainId),

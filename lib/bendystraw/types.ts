@@ -26,6 +26,7 @@ export type BendystrawProject = Pick<
   | 'id'
   | 'projectId'
   | 'chainId'
+  | 'suckerGroupId'
   | 'handle'
   | 'deployer'
   | 'owner'
@@ -193,4 +194,29 @@ export interface BendystrawPermissionHoldersResponse {
     items: BendystrawPermissionHolder[];
     totalCount: number;
   };
+}
+
+export interface BendystrawSuckerGroupProject {
+  projectId: number;
+  chainId: number;
+  suckerGroupId: string;
+  balance: string;
+}
+
+export interface BendystrawSuckerGroup {
+  id: string;
+  tokenSupply: string;
+  balance: string;
+  projects: BendystrawSuckerGroupProject[];
+}
+
+export interface BendystrawSuckerGroupResponse {
+  suckerGroup: {
+    id: string;
+    tokenSupply: string;
+    balance: string;
+    projects: {
+      items: BendystrawSuckerGroupProject[];
+    };
+  } | null;
 }

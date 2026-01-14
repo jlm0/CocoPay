@@ -15,6 +15,8 @@ import type {
   BendystrawActivityEventsResponse,
   BendystrawParticipantsByAddressResponse,
   BendystrawPermissionHoldersResponse,
+  BendystrawSuckerGroup,
+  BendystrawSuckerGroupResponse,
 } from './types';
 import { getBendystrawClient, getNetworkFromChainId } from './client';
 
@@ -22,6 +24,7 @@ const PROJECT_FIELDS = `
   id
   projectId
   chainId
+  suckerGroupId
   handle
   deployer
   owner
@@ -347,4 +350,50 @@ export async function fetchPermissionHolders(
   });
 
   return data.permissionHolders;
+}
+
+const SUCKER_GROUP_PROJECT_FIELDS = `
+  projectId
+  chainId
+  suckerGroupId
+  balance
+`;
+
+export async function fetchSuckerGroup(
+  suckerGroupId: string,
+  chainId: number,
+  version: number = 5
+): Promise<BendystrawSuckerGroup | null> {
+  const client = getBendystrawClient(getNetworkFromChainId(chainId));
+
+  const query = gql`
+    query GetSuckerGroup($suckerGroupId: String!, $version: Float!) {
+      suckerGroup(suckerGroupId: $suckerGroupId, version: $version) {
+        id
+        tokenSupply
+        balance
+        projects {
+          items {
+            ${SUCKER_GROUP_PROJECT_FIELDS}
+          }
+        }
+      }
+    }
+  `;
+
+  const data = await client.request<BendystrawSuckerGroupResponse>(query, {
+    suckerGroupId,
+    version,
+  });
+
+  if (!data.suckerGroup) {
+    return null;
+  }
+
+  return {
+    id: data.suckerGroup.id,
+    tokenSupply: data.suckerGroup.tokenSupply,
+    balance: data.suckerGroup.balance,
+    projects: data.suckerGroup.projects.items,
+  };
 }

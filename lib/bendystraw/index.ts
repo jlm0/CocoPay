@@ -10,6 +10,7 @@ export {
   fetchPayEvents,
   fetchActivityEvents,
   fetchPermissionHolders,
+  fetchSuckerGroup,
 } from './queries';
 
 export type {
@@ -20,6 +21,8 @@ export type {
   BendystrawActivityEvent,
   BendystrawActivityEventType,
   BendystrawPermissionHolder,
+  BendystrawSuckerGroup,
+  BendystrawSuckerGroupProject,
   BendystrawProjectsQueryParams,
   BendystrawParticipantsQueryParams,
   BendystrawParticipantParams,

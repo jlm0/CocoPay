@@ -13,7 +13,7 @@ import { queryKeys } from '@/lib/query';
 interface UseCocoPayProjectRegistryResult {
   projects: StoredProject[];
   addProject: (project: Omit<StoredProject, 'addedAt'>) => Promise<void>;
-  removeProject: (projectId: number, chainId: number) => Promise<void>;
+  removeProject: (suckerGroupId: string) => Promise<void>;
   isLoading: boolean;
   isSyncing: boolean;
   refetch: () => void;
@@ -42,7 +42,10 @@ export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
       const results = await Promise.all(
         local.map(async (project) => {
           try {
-            const bendystrawProject = await fetchProject(project.projectId, project.chainId);
+            const bendystrawProject = await fetchProject(
+              project.primaryProjectId,
+              project.primaryChainId
+            );
             return { project, valid: !!bendystrawProject };
           } catch {
             return { project, valid: true };
@@ -71,8 +74,8 @@ export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
   );
 
   const removeProjectFn = useCallback(
-    async (projectId: number, chainId: number) => {
-      await removeStoredProject(projectId, chainId);
+    async (suckerGroupId: string) => {
+      await removeStoredProject(suckerGroupId);
       queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
     },
     [queryClient]

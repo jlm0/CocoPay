@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreBalance } from '@/components/presentational/store-balance';
@@ -36,7 +36,10 @@ export default function StoreDetailPage() {
     return { chainId: COCOPAY_CHAIN_ID, projectId: parseInt(id, 10) };
   })();
 
-  const { store, isLoading, error } = useStoreDetails(parsedId.projectId, parsedId.chainId);
+  const { store, isLoading, error, refetch } = useStoreDetails(
+    parsedId.projectId,
+    parsedId.chainId
+  );
 
   const handleCashOutPress = () => {
     router.push({
@@ -125,8 +128,20 @@ export default function StoreDetailPage() {
   if (error || !store) {
     return (
       <ScreenContainer>
-        <View className="flex-1 items-center justify-center">
+        <FeatureHeader title="Store" />
+        <View className="flex-1 items-center justify-center gap-4">
           <Text className="text-destructive">Store not found</Text>
+          <Text className="px-8 text-center text-sm text-muted-foreground">
+            This store may still be processing. Please try again in a moment.
+          </Text>
+          <Pressable
+            onPress={() => refetch()}
+            className="rounded-full bg-primary px-6 py-2 active:opacity-80">
+            <Text className="font-sans-semibold text-primary-foreground">Try again</Text>
+          </Pressable>
+          <Pressable onPress={() => router.back()} className="mt-2 active:opacity-80">
+            <Text className="text-sm text-muted-foreground">Go back</Text>
+          </Pressable>
         </View>
       </ScreenContainer>
     );

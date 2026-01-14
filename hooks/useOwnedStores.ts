@@ -37,7 +37,8 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
         },
       }),
     enabled: !!normalizedOperator,
-    staleTime: 30_000,
+    staleTime: 15_000,
+    refetchOnMount: 'always',
   });
 
   const operatedProjects = permissionHoldersQuery.data?.items ?? [];
@@ -47,7 +48,8 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
       queryKey: queryKeys.bendystraw.project(ph.projectId, ph.chainId),
       queryFn: () => fetchProject(ph.projectId, ph.chainId),
       enabled: !!normalizedOperator,
-      staleTime: 30_000,
+      staleTime: 15_000,
+      refetchOnMount: 'always' as const,
     })),
   });
 
@@ -85,7 +87,8 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
           address: operatorAddress!,
         }),
       enabled: !!operatorAddress,
-      staleTime: 30_000,
+      staleTime: 15_000,
+      refetchOnMount: 'always' as const,
     })),
   });
 
@@ -112,6 +115,7 @@ export function useOwnedStores(operatorAddress: Address | null): UseOwnedStoresR
 
       result.push({
         id: `${project.chainId}-${project.projectId}`,
+        suckerGroupId: project.suckerGroupId,
         name: metadata.name,
         tokenSymbol: `$${metadata.cocopay!.ticker}`,
         storeCode: buildStoreCode(BigInt(project.projectId), project.chainId),

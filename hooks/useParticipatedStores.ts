@@ -28,7 +28,8 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
         chainId: COCOPAY_CHAIN_ID,
       }),
     enabled: !!normalizedAddress,
-    staleTime: 30_000,
+    staleTime: 15_000,
+    refetchOnMount: 'always',
   });
 
   const participations = useMemo(
@@ -41,7 +42,8 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
       queryKey: queryKeys.bendystraw.project(p.projectId, p.chainId),
       queryFn: () => fetchProject(p.projectId, p.chainId),
       enabled: !!userAddress,
-      staleTime: 30_000,
+      staleTime: 15_000,
+      refetchOnMount: 'always' as const,
     })),
   });
 
@@ -78,12 +80,14 @@ export function useParticipatedStores(userAddress: Address | null): UseParticipa
         continue;
       }
 
+      const project = projectQuery.data;
       const metadata = metadataQuery.data;
       const balanceRaw = BigInt(participation.balance);
       const balance = Number(balanceRaw) / 10 ** JB_TOKEN_DECIMALS;
 
       result.push({
         id: `${participation.chainId}-${participation.projectId}`,
+        suckerGroupId: project.suckerGroupId,
         name: metadata.name,
         tokenSymbol: `$${metadata.cocopay!.ticker}`,
         storeCode: buildStoreCode(BigInt(participation.projectId), participation.chainId),
