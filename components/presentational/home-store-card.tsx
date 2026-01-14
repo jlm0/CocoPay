@@ -28,7 +28,7 @@ export function HomeStoreCard({ store, onPress }: HomeStoreCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-1 rounded-2xl border border-border bg-card p-3 active:bg-muted">
+      className="rounded-2xl border border-border bg-card p-3 active:bg-muted">
       <View className="flex-row items-center gap-2.5">
         <CachedAvatar
           source={store.logoUri}
