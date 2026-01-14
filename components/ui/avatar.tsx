@@ -48,29 +48,41 @@ type CachedAvatarProps = {
 
 function CachedAvatar({ source, fallback, fallbackClassName, className, alt }: CachedAvatarProps) {
   const [hasError, setHasError] = useState(false);
-  const showImage = !!source && !hasError;
+  const [isLoading, setIsLoading] = useState(!!source);
+
+  const showFallback = !source || hasError || isLoading;
 
   return (
     <View
       className={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}
       accessibilityLabel={alt}>
-      {showImage ? (
+      {showFallback && (
+        <View
+          className={cn(
+            'absolute inset-0 flex flex-row items-center justify-center rounded-full bg-muted',
+            isLoading && !hasError && 'animate-pulse',
+            fallbackClassName
+          )}>
+          {fallback}
+        </View>
+      )}
+      {!!source && !hasError && (
         <Image
           source={{ uri: source }}
           cachePolicy="disk"
           transition={200}
           contentFit="cover"
-          style={{ width: '100%', height: '100%' }}
-          onError={() => setHasError(true)}
+          style={{
+            width: '100%',
+            height: '100%',
+            opacity: isLoading ? 0 : 1,
+          }}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setHasError(true);
+            setIsLoading(false);
+          }}
         />
-      ) : (
-        <View
-          className={cn(
-            'flex size-full flex-row items-center justify-center rounded-full bg-muted',
-            fallbackClassName
-          )}>
-          {fallback}
-        </View>
       )}
     </View>
   );

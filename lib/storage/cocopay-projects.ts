@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const COCOPAY_PROJECTS_STORAGE_KEY = '@cocopay/projects/v2';
 
 export type StoredProject = {
-  suckerGroupId: string;
+  suckerGroupId?: string;
   primaryChainId: number;
   primaryProjectId: number;
   addedAt: number;
@@ -37,7 +37,11 @@ export async function addStoredProject(project: Omit<StoredProject, 'addedAt'>):
   try {
     const current = await getStoredProjects();
 
-    const exists = current.some((p) => p.suckerGroupId === project.suckerGroupId);
+    const exists = current.some(
+      (p) =>
+        p.primaryProjectId === project.primaryProjectId &&
+        p.primaryChainId === project.primaryChainId
+    );
 
     if (exists) {
       return;
@@ -56,10 +60,12 @@ export async function addStoredProject(project: Omit<StoredProject, 'addedAt'>):
   }
 }
 
-export async function removeStoredProject(suckerGroupId: string): Promise<void> {
+export async function removeStoredProject(projectId: number, chainId: number): Promise<void> {
   try {
     const current = await getStoredProjects();
-    const updated = current.filter((p) => p.suckerGroupId !== suckerGroupId);
+    const updated = current.filter(
+      (p) => !(p.primaryProjectId === projectId && p.primaryChainId === chainId)
+    );
     cachedProjects = updated;
     await AsyncStorage.setItem(COCOPAY_PROJECTS_STORAGE_KEY, JSON.stringify(updated));
   } catch {

@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { useStoreCreation } from '@/lib/contexts/store-creation-context';
 import { useOmnichainRevnetCreate } from '@/hooks/juicebox/useOmnichainRevnetCreate';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
-import { fetchProject } from '@/lib/bendystraw';
 import { refetchAfterStoreCreate } from '@/lib/query';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 import { StoreCreationProgress } from '@/components/presentational/store-creation-progress';
@@ -17,27 +16,6 @@ export type CreationStage =
   | 'confirming'
   | 'success'
   | 'error';
-
-const INDEXING_POLL_INTERVAL_MS = 3000;
-const INDEXING_TIMEOUT_MS = 90000;
-
-async function waitForIndexing(projectId: number, chainId: number): Promise<string> {
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < INDEXING_TIMEOUT_MS) {
-    try {
-      const project = await fetchProject(projectId, chainId);
-      if (project?.suckerGroupId) {
-        return project.suckerGroupId;
-      }
-    } catch {
-      // Continue polling
-    }
-    await new Promise((resolve) => setTimeout(resolve, INDEXING_POLL_INTERVAL_MS));
-  }
-
-  throw new Error('Store indexing timed out. Please try viewing your store later.');
-}
 
 export function CreateStoreStatusContainer() {
   const router = useRouter();
@@ -94,16 +72,8 @@ export function CreateStoreStatusContainer() {
       setResult(deployResult);
       setStage('confirming');
 
-      console.log('[CreateStoreStatus] Waiting for Bendystraw indexing...');
-      const indexedSuckerGroupId = await waitForIndexing(
-        Number(deployResult.projectId),
-        COCOPAY_CHAIN_ID
-      );
-      console.log('[CreateStoreStatus] Got suckerGroupId:', indexedSuckerGroupId);
-
       console.log('[CreateStoreStatus] Adding project to registry...');
       await addProject({
-        suckerGroupId: indexedSuckerGroupId,
         primaryChainId: COCOPAY_CHAIN_ID,
         primaryProjectId: Number(deployResult.projectId),
         failedChains: deployResult.failedChains.length > 0 ? deployResult.failedChains : undefined,

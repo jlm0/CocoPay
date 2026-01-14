@@ -15,6 +15,7 @@ import type { StoreDetails } from '@/types';
 interface UseStoreDetailsResult {
   store: StoreDetails | null;
   isLoading: boolean;
+  isRetrying: boolean;
   error: Error | null;
   refetch: () => void;
 }
@@ -25,6 +26,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
   const {
     project,
     isLoading: projectLoading,
+    isRetrying,
     error: projectError,
     refetch,
   } = useBendystrawProject(projectId, chainId);
@@ -115,6 +117,7 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
   return {
     store,
     isLoading,
+    isRetrying,
     error: projectError,
     refetch,
   };

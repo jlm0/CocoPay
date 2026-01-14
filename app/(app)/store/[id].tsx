@@ -14,6 +14,7 @@ import { parseStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 import { Text } from '@/components/ui/text';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function StoreDetailPage() {
   const { id, source } = useLocalSearchParams<{ id: string; source?: string }>();
@@ -36,7 +37,7 @@ export default function StoreDetailPage() {
     return { chainId: COCOPAY_CHAIN_ID, projectId: parseInt(id, 10) };
   })();
 
-  const { store, isLoading, error, refetch } = useStoreDetails(
+  const { store, isLoading, isRetrying, error, refetch } = useStoreDetails(
     parsedId.projectId,
     parsedId.chainId
   );
@@ -121,6 +122,21 @@ export default function StoreDetailPage() {
             </View>
           </View>
         </ScrollView>
+      </ScreenContainer>
+    );
+  }
+
+  if (isRetrying) {
+    return (
+      <ScreenContainer>
+        <FeatureHeader title="Store" />
+        <View className="flex-1 items-center justify-center gap-4">
+          <Spinner size="large" />
+          <Text className="text-muted-foreground">Looking for store...</Text>
+          <Text className="px-8 text-center text-sm text-muted-foreground">
+            Your store is being set up. This usually takes a few seconds.
+          </Text>
+        </View>
       </ScreenContainer>
     );
   }

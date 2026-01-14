@@ -13,7 +13,7 @@ import { queryKeys } from '@/lib/query';
 interface UseCocoPayProjectRegistryResult {
   projects: StoredProject[];
   addProject: (project: Omit<StoredProject, 'addedAt'>) => Promise<void>;
-  removeProject: (suckerGroupId: string) => Promise<void>;
+  removeProject: (projectId: number, chainId: number) => Promise<void>;
   isLoading: boolean;
   isSyncing: boolean;
   refetch: () => void;
@@ -74,8 +74,8 @@ export function useCocoPayProjectRegistry(): UseCocoPayProjectRegistryResult {
   );
 
   const removeProjectFn = useCallback(
-    async (suckerGroupId: string) => {
-      await removeStoredProject(suckerGroupId);
+    async (projectId: number, chainId: number) => {
+      await removeStoredProject(projectId, chainId);
       queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
     },
     [queryClient]
