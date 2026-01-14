@@ -64,8 +64,6 @@ export function useDiscoverStores(): UseDiscoverStoresResult {
     return projects.filter((project) => project.id.startsWith('5-'));
   }, [projects]);
 
-  console.log('[useDiscoverStores] v5 projects from Bendystraw:', v5Projects.length, v5Projects);
-
   const projectsNeedingIpfsFetch = useMemo(() => {
     return v5Projects.filter((project) => !!project.metadataUri);
   }, [v5Projects]);
@@ -102,14 +100,12 @@ export function useDiscoverStores(): UseDiscoverStoresResult {
 
     for (const project of v5Projects) {
       const ipfsMetadata = ipfsMetadataMap.get(project.projectId);
-      console.log('[useDiscoverStores] project', project.projectId, 'metadata:', ipfsMetadata);
       if (ipfsMetadata?.cocopay) {
         const store = transformToStore(project, ipfsMetadata);
         if (store) result.push(store);
       }
     }
 
-    console.log('[useDiscoverStores] final stores:', result.length, result);
     return result;
   }, [v5Projects, ipfsMetadataMap]);
 

@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { TickerInput } from './ticker-input';
 import { PercentageSlider } from './percentage-slider';
-import { StepsList } from './steps-list';
+import { HowItWorksCard } from './how-it-works-card';
 import type { ValidationErrors } from '@/hooks/useStoreCreationForm';
 
 type RewardsConfigFormProps = {
@@ -9,6 +9,7 @@ type RewardsConfigFormProps = {
   cashBack: number;
   onTickerChange: (value: string) => void;
   onCashBackChange: (value: number) => void;
+  onFieldBlur: (field: 'ticker') => void;
   errors: ValidationErrors;
   disabled?: boolean;
   className?: string;
@@ -19,33 +20,23 @@ export function RewardsConfigForm({
   cashBack,
   onTickerChange,
   onCashBackChange,
+  onFieldBlur,
   errors,
   disabled,
   className = '',
 }: RewardsConfigFormProps) {
   return (
     <View className={className}>
-      <StepsList
-        title="How Coco works"
-        steps={[
-          'Your USDC revenue starts issuing your stablecoin 1:1.',
-          'USDC revenue stays in CocoPay, you receive your coins.',
-          'Your coins can be cashed out for USDC at any time.',
-          'Use cash back to send a % of your issued coins to payers.',
-          "Your coin's issuance can be set to decrease each quarter, rewarding early and loyal customers as your coin grows.",
-        ]}
-        className="mb-6"
-      />
-
       <TickerInput
         value={ticker}
         onChangeText={onTickerChange}
-        warning={errors.ticker}
+        onBlur={() => onFieldBlur('ticker')}
+        error={errors.ticker}
         disabled={disabled}
       />
 
       <PercentageSlider
-        label="Cash back"
+        label="Cash Back"
         description="Send your stablecoin back to customers as they pay in."
         value={cashBack}
         onValueChange={onCashBackChange}
@@ -54,6 +45,8 @@ export function RewardsConfigForm({
         disabled={disabled}
         className="mt-6"
       />
+
+      <HowItWorksCard className="mt-6" />
     </View>
   );
 }

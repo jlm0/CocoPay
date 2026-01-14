@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/text';
 type WebsiteInputProps = {
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
   error?: string;
   disabled?: boolean;
   className?: string;
@@ -14,6 +15,7 @@ type WebsiteInputProps = {
 export function WebsiteInput({
   value,
   onChangeText,
+  onBlur,
   error,
   disabled,
   className = '',
@@ -22,17 +24,24 @@ export function WebsiteInput({
     <View className={className}>
       <View className="mb-2 flex-row items-center justify-between">
         <Label>Website</Label>
-        <Text variant="caption">Optional</Text>
+        <Text variant="fine">Optional</Text>
       </View>
-      <Input
-        value={value}
-        onChangeText={onChangeText}
-        placeholder="https://yourstore.com"
-        keyboardType="url"
-        autoCapitalize="none"
-        autoCorrect={false}
-        editable={!disabled}
-      />
+      <View className="flex-row items-center">
+        <View className="h-10 justify-center rounded-l-md border border-r-0 border-input bg-muted px-3">
+          <Text className="text-muted-foreground">https://</Text>
+        </View>
+        <Input
+          value={value}
+          onChangeText={onChangeText}
+          onBlur={onBlur}
+          placeholder="example.com"
+          keyboardType="url"
+          autoCapitalize="none"
+          autoCorrect={false}
+          editable={!disabled}
+          className={`flex-1 rounded-l-none ${error ? 'border-destructive' : ''}`}
+        />
+      </View>
       {error && <Text className="mt-1 text-sm text-destructive">{error}</Text>}
     </View>
   );

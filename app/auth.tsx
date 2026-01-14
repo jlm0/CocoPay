@@ -90,7 +90,7 @@ export default function AuthPage() {
               {isLoading ? (
                 <ActivityIndicator color={HEX_COLORS.background} />
               ) : (
-                <Text className="text-primary-foreground font-sans-semibold">
+                <Text className="font-sans-semibold text-primary-foreground">
                   Continue with email
                 </Text>
               )}

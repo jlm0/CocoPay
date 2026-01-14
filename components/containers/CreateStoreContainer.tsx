@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo, useState } from 'react';
 import { ScrollView, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -12,38 +12,29 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Spinner } from '@/components/ui/spinner';
 import { useStoreCreationForm } from '@/hooks/useStoreCreationForm';
-import { useOmnichainRevnetCreate } from '@/hooks/juicebox/useOmnichainRevnetCreate';
-import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
+import { useStoreCreation } from '@/lib/contexts/store-creation-context';
 import { uploadFileWithRetry } from '@/lib/pinata';
-import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
-import { refetchAfterStoreCreate } from '@/lib/query';
 
 export function CreateStoreContainer() {
   const router = useRouter();
-
   const form = useStoreCreationForm();
-  const {
-    createRevnet,
-    status: deployStatus,
-    error: deployError,
-    reset: resetDeploy,
-  } = useOmnichainRevnetCreate();
-  const { addProject } = useCocoPayProjectRegistry();
+  const { setCreationParams } = useStoreCreation();
 
-  const isLoading = deployStatus === 'uploading' || deployStatus === 'deploying';
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<Error | null>(null);
 
   const handleNext = () => {
-    resetDeploy();
+    setUploadError(null);
     form.goToNextStep();
   };
 
   const handleBack = useCallback(() => {
-    resetDeploy();
+    setUploadError(null);
     form.goToPrevStep();
-  }, [resetDeploy, form]);
+  }, [form]);
 
   const handleBackPress = useCallback(() => {
-    if (isLoading) return true;
+    if (isUploading) return true;
 
     if (form.step === 2) {
       handleBack();
@@ -51,20 +42,43 @@ export function CreateStoreContainer() {
     }
 
     return false;
-  }, [form.step, isLoading, handleBack]);
+  }, [form.step, isUploading, handleBack]);
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
     return () => subscription.remove();
   }, [handleBackPress]);
 
+  const handleWebsiteChange = useCallback(
+    (value: string) => {
+      const sanitized = form.sanitizeWebsite(value);
+      form.updateField('website', sanitized);
+    },
+    [form]
+  );
+
+  const handleStep1FieldBlur = useCallback(
+    (field: 'name' | 'description' | 'website') => {
+      form.markTouched(field);
+    },
+    [form]
+  );
+
+  const handleStep2FieldBlur = useCallback(
+    (field: 'ticker') => {
+      form.markTouched(field);
+    },
+    [form]
+  );
+
   const handleCreate = async () => {
     try {
-      resetDeploy();
+      setIsUploading(true);
+      setUploadError(null);
+
       let logoUri: string | undefined;
 
       if (form.state.logoUri) {
-        console.log('[CreateStore] Uploading logo...', { uri: form.state.logoUri });
         const fileName = form.state.logoUri.split('/').pop() ?? 'logo.jpg';
         const uploadResult = await uploadFileWithRetry(
           {
@@ -78,45 +92,28 @@ export function CreateStoreContainer() {
           }
         );
         logoUri = `ipfs://${uploadResult.cid}`;
-        console.log('[CreateStore] Logo uploaded:', logoUri);
       }
 
       const tickerSymbol = form.state.ticker.replace(/^\$/, '').toUpperCase();
-      console.log('[CreateStore] Creating omnichain revnet...', {
-        name: form.state.name.trim(),
-        ticker: tickerSymbol,
-        logoUri,
-      });
+      const websiteUrl = form.state.website ? `https://${form.state.website}` : undefined;
 
-      const result = await createRevnet({
+      setCreationParams({
         name: form.state.name.trim(),
         ticker: tickerSymbol,
         description: form.state.description.trim() || undefined,
         logoUri,
         address: form.state.address ?? undefined,
-        website: form.state.website.trim() || undefined,
+        website: websiteUrl,
         cashBackPercent: form.state.cashBack,
       });
-      console.log('[CreateStore] Revnet created:', result);
 
-      await addProject({
-        projectId: Number(result.projectId),
-        chainId: COCOPAY_CHAIN_ID,
-      });
-
-      refetchAfterStoreCreate();
-
-      const storeId = `${COCOPAY_CHAIN_ID}-${result.projectId.toString()}`;
-
-      router.replace({
-        pathname: '/(app)/create/success',
-        params: {
-          name: form.state.name.trim(),
-          storeId,
-        },
-      });
+      router.replace('/(app)/create/status');
     } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to upload logo');
+      setUploadError(error);
       console.error('[CreateStore] Error:', err);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -124,25 +121,24 @@ export function CreateStoreContainer() {
 
   const buttonText = useMemo(() => {
     if (form.step === 1) return 'Next';
-    if (deployStatus === 'uploading') return 'Uploading store info...';
-    if (deployStatus === 'deploying') return 'Creating your store...';
+    if (isUploading) return 'Uploading...';
     return 'Create';
-  }, [form.step, deployStatus]);
+  }, [form.step, isUploading]);
 
   return (
     <ScreenContainer
       horizontalPadding={false}
       bottomActionBar={
-        <BottomActionBar onBack={form.step === 2 && !isLoading ? handleBack : undefined}>
-          {deployError && (
-            <Text className="mb-3 text-center text-destructive">{deployError.message}</Text>
+        <BottomActionBar onBack={form.step === 2 && !isUploading ? handleBack : undefined}>
+          {uploadError && (
+            <Text className="mb-3 text-center text-destructive">{uploadError.message}</Text>
           )}
           <Button
             onPress={form.step === 1 ? handleNext : handleCreate}
-            disabled={!canProceed || isLoading}
+            disabled={!canProceed || isUploading}
             size="lg"
             className="h-14 flex-row items-center gap-2 rounded-xl">
-            {isLoading && <Spinner size="small" />}
+            {isUploading && <Spinner size="small" />}
             <Text>{buttonText}</Text>
           </Button>
         </BottomActionBar>
@@ -169,9 +165,10 @@ export function CreateStoreContainer() {
               onDescriptionChange={(v) => form.updateField('description', v)}
               onLogoChange={(v) => form.updateField('logoUri', v)}
               onAddressChange={(v) => form.updateField('address', v)}
-              onWebsiteChange={(v) => form.updateField('website', v)}
-              errors={form.errors}
-              disabled={isLoading}
+              onWebsiteChange={handleWebsiteChange}
+              onFieldBlur={handleStep1FieldBlur}
+              errors={form.visibleErrors}
+              disabled={isUploading}
             />
           </Animated.View>
         )}
@@ -183,8 +180,9 @@ export function CreateStoreContainer() {
               cashBack={form.state.cashBack}
               onTickerChange={(v) => form.updateField('ticker', v)}
               onCashBackChange={(v) => form.updateField('cashBack', v)}
-              errors={form.errors}
-              disabled={isLoading}
+              onFieldBlur={handleStep2FieldBlur}
+              errors={form.visibleErrors}
+              disabled={isUploading}
             />
           </Animated.View>
         )}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { ScrollView, RefreshControl, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIsRestoring } from '@tanstack/react-query';
@@ -20,6 +20,11 @@ export function TokenBalanceContainer() {
   const router = useRouter();
   const isRestoring = useIsRestoring();
   const receiveSheetRef = useRef<BottomSheetMethods>(null);
+  const hasMountedRef = useRef(false);
+
+  useEffect(() => {
+    hasMountedRef.current = true;
+  }, []);
 
   const { totalUsdc, totalReclaimable, totalUsd, usdcByChain, hasData, isLoading, error, refetch } =
     useUnifiedUsdBalance();
@@ -107,7 +112,7 @@ export function TokenBalanceContainer() {
             <Text variant="caption" className="mb-1">
               Total Balance
             </Text>
-            <HeroBalance value={totalUsd} />
+            <HeroBalance value={totalUsd} animated={hasMountedRef.current} />
           </View>
 
           <BalanceRewardsSection totalRewards={totalReclaimable} className="mb-4" />

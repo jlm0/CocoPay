@@ -57,7 +57,7 @@ export function AddressAutocomplete({
       <View className={className}>
         <View className="mb-2 flex-row items-center justify-between">
           <Label>Location</Label>
-          <Text variant="caption">Optional</Text>
+          <Text variant="fine">Optional</Text>
         </View>
         <View className="flex-row items-center justify-between rounded-md border border-input bg-transparent px-3 py-3">
           <View className="flex-1 flex-row items-center gap-2">
@@ -78,14 +78,14 @@ export function AddressAutocomplete({
     <View className={cn('relative z-50', className)}>
       <View className="mb-2 flex-row items-center justify-between">
         <Label>Location</Label>
-        <Text variant="caption">Optional</Text>
+        <Text variant="fine">Optional</Text>
       </View>
 
       <View className="relative">
         <Input
           value={query}
           onChangeText={handleTextChange}
-          placeholder="Search for address..."
+          placeholder="Search for your store address"
           onFocus={() => query.length >= 2 && setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
           editable={!disabled}

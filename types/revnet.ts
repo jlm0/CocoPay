@@ -96,6 +96,7 @@ export interface OmnichainRevnetCreationResult {
   projectId: bigint;
   results: OmnichainDeployResult[];
   storeCode: string;
+  failedChains: number[];
 }
 
 export const EXTRA_METADATA_ALLOW_SUCKERS = 1 << 2;

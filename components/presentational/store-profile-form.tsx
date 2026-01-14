@@ -18,6 +18,7 @@ type StoreProfileFormProps = {
   onLogoChange: (uri: string | null) => void;
   onAddressChange: (address: StoreAddress | null) => void;
   onWebsiteChange: (value: string) => void;
+  onFieldBlur: (field: 'name' | 'description' | 'website') => void;
   errors: ValidationErrors;
   disabled?: boolean;
   className?: string;
@@ -34,6 +35,7 @@ export function StoreProfileForm({
   onLogoChange,
   onAddressChange,
   onWebsiteChange,
+  onFieldBlur,
   errors,
   disabled,
   className = '',
@@ -48,11 +50,20 @@ export function StoreProfileForm({
         className="mb-6"
       />
 
-      <NameInput value={name} onChangeText={onNameChange} disabled={disabled} className="mb-5" />
+      <NameInput
+        value={name}
+        onChangeText={onNameChange}
+        onBlur={() => onFieldBlur('name')}
+        error={errors.name}
+        disabled={disabled}
+        className="mb-5"
+      />
 
       <DescriptionInput
         value={description}
         onChangeText={onDescriptionChange}
+        onBlur={() => onFieldBlur('description')}
+        error={errors.description}
         disabled={disabled}
         className="mb-5"
       />
@@ -68,6 +79,7 @@ export function StoreProfileForm({
       <WebsiteInput
         value={website}
         onChangeText={onWebsiteChange}
+        onBlur={() => onFieldBlur('website')}
         error={errors.website}
         disabled={disabled}
       />

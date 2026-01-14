@@ -6,11 +6,12 @@ import { shouldUseCompactNotation } from '@/lib/format';
 type HeroBalanceProps = {
   value: number;
   className?: string;
+  animated?: boolean;
 };
 
 const HERO_CHARACTER_LIMIT = 12;
 
-export function HeroBalance({ value, className = '' }: HeroBalanceProps) {
+export function HeroBalance({ value, className = '', animated = true }: HeroBalanceProps) {
   const useCompact = shouldUseCompactNotation(value, HERO_CHARACTER_LIMIT);
 
   return (
@@ -26,7 +27,7 @@ export function HeroBalance({ value, className = '' }: HeroBalanceProps) {
           textStyle={styles.hero}
           compactNotationStyle={styles.hero}
           spinningAnimationConfig={{
-            duration: 500,
+            duration: animated ? 500 : 0,
             easing: Easing.out(Easing.cubic),
           }}
         />

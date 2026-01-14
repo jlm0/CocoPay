@@ -2,17 +2,25 @@ import { View } from 'react-native';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
+import { NAME_MAX_LENGTH } from '@/hooks/useStoreCreationForm';
 
 type NameInputProps = {
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
+  error?: string;
   disabled?: boolean;
   className?: string;
 };
 
-export const NAME_MAX_LENGTH = 50;
-
-export function NameInput({ value, onChangeText, disabled, className = '' }: NameInputProps) {
+export function NameInput({
+  value,
+  onChangeText,
+  onBlur,
+  error,
+  disabled,
+  className = '',
+}: NameInputProps) {
   return (
     <View className={className}>
       <View className="mb-2 flex-row items-center justify-between">
@@ -24,10 +32,13 @@ export function NameInput({ value, onChangeText, disabled, className = '' }: Nam
       <Input
         value={value}
         onChangeText={onChangeText}
-        placeholder="Store name"
+        onBlur={onBlur}
+        placeholder="Enter your store name"
+        maxLength={NAME_MAX_LENGTH}
         editable={!disabled}
-        className="text-xl"
+        className={error ? 'border-destructive' : ''}
       />
+      {error && <Text className="mt-1 text-sm text-destructive">{error}</Text>}
     </View>
   );
 }

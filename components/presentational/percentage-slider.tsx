@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Text } from '@/components/ui/text';
@@ -24,6 +25,18 @@ export function PercentageSlider({
   disabled,
   className = '',
 }: PercentageSliderProps) {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  const handleSlidingComplete = (newValue: number) => {
+    const rounded = Math.round(newValue);
+    setLocalValue(rounded);
+    onValueChange(rounded);
+  };
+
   return (
     <View className={className}>
       <Text variant="body-emphasis" className="mb-1">
@@ -34,15 +47,15 @@ export function PercentageSlider({
       </Text>
 
       <Text variant="body-emphasis" className="mb-2 text-center">
-        {value}%
+        {Math.round(localValue)}%
       </Text>
 
       <Slider
-        value={value}
-        onValueChange={onValueChange}
+        value={localValue}
+        onValueChange={setLocalValue}
+        onSlidingComplete={handleSlidingComplete}
         minimumValue={minPercent}
         maximumValue={maxPercent}
-        step={1}
         disabled={disabled}
         minimumTrackTintColor={NATIVE_SLIDER.minimumTrackTintColor}
         maximumTrackTintColor={NATIVE_SLIDER.maximumTrackTintColor}
