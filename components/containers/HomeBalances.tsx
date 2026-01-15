@@ -29,7 +29,7 @@ export function HomeBalances({ isRefreshing }: HomeBalancesProps) {
   return (
     <View className="mb-6">
       <Text variant="caption" className="mb-1 text-muted-foreground">
-        Balance
+        Your Balance
       </Text>
       {showSkeleton ? (
         <HeroBalanceSkeleton />
