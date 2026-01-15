@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreBalance } from '@/components/presentational/store-balance';
@@ -9,14 +9,14 @@ import { StoreAboutSection } from '@/components/presentational/store-about-secti
 import { StoreActions } from '@/components/presentational/store-actions';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
+import { LoadingRetryState } from '@/components/presentational/loading-retry-state';
+import { ErrorRetryState } from '@/components/presentational/error-retry-state';
 import { useStoreDetails } from '@/hooks/useStoreDetails';
 import { useFocusRefresh } from '@/hooks/useFocusRefresh';
 import { parseStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 import { getStoreRegistryQueryKeys } from '@/lib/query';
-import { Text } from '@/components/ui/text';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Spinner } from '@/components/ui/spinner';
 
 export default function StoreDetailPage() {
   const { id, source } = useLocalSearchParams<{ id: string; source?: string }>();
@@ -136,36 +136,23 @@ export default function StoreDetailPage() {
     return (
       <ScreenContainer>
         <FeatureHeader title="Store" />
-        <View className="flex-1 items-center justify-center gap-4">
-          <Spinner size="large" />
-          <Text className="text-muted-foreground">Looking for store...</Text>
-          <Text className="px-8 text-center text-sm text-muted-foreground">
-            Your store is being set up. This usually takes a few seconds.
-          </Text>
-        </View>
+        <LoadingRetryState
+          title="Looking for store..."
+          message="Your store is being set up. This usually takes a few seconds."
+        />
       </ScreenContainer>
     );
   }
 
   if (error || !store) {
     return (
-      <ScreenContainer>
-        <FeatureHeader title="Store" />
-        <View className="flex-1 items-center justify-center gap-4">
-          <Text className="text-destructive">Store not found</Text>
-          <Text className="px-8 text-center text-sm text-muted-foreground">
-            This store may still be processing. Please try again in a moment.
-          </Text>
-          <Pressable
-            onPress={() => refetch()}
-            className="rounded-full bg-primary px-6 py-2 active:opacity-80">
-            <Text className="font-sans-semibold text-primary-foreground">Try again</Text>
-          </Pressable>
-          <Pressable onPress={() => router.back()} className="mt-2 active:opacity-80">
-            <Text className="text-sm text-muted-foreground">Go back</Text>
-          </Pressable>
-        </View>
-      </ScreenContainer>
+      <ErrorRetryState
+        title="Store not found"
+        message="This store may still be processing. Please try again in a moment."
+        onRetry={refetch}
+        onBack={() => router.back()}
+        header={<FeatureHeader title="Store" />}
+      />
     );
   }
 

@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useStoreCreation } from '@/lib/contexts/store-creation-context';
 import { useOmnichainRevnetCreate } from '@/hooks/juicebox/useOmnichainRevnetCreate';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
+import { useBendystrawProject } from '@/hooks/bendystraw';
 import { refetchAfterStoreCreate } from '@/lib/query';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 import { StoreCreationProgress } from '@/components/presentational/store-creation-progress';
@@ -14,6 +15,7 @@ export type CreationStage =
   | 'simulating'
   | 'deploying'
   | 'confirming'
+  | 'finalizing'
   | 'success'
   | 'error';
 
@@ -29,11 +31,32 @@ export function CreateStoreStatusContainer() {
   const [storeName, setStoreName] = useState<string>('Your store');
   const hasStarted = useRef(false);
 
+  const finalizingProjectId = stage === 'finalizing' && result ? Number(result.projectId) : null;
+  const {
+    project: bendystrawProject,
+    isRetrying: isBendystrawRetrying,
+  } = useBendystrawProject(finalizingProjectId, COCOPAY_CHAIN_ID);
+
   useEffect(() => {
     if (creationParams?.name) {
       setStoreName(creationParams.name);
     }
   }, [creationParams?.name]);
+
+  useEffect(() => {
+    if (stage === 'finalizing' && bendystrawProject) {
+      console.log('[CreateStoreStatus] Bendystraw project found, moving to success');
+      setStage('success');
+    }
+  }, [stage, bendystrawProject]);
+
+  useEffect(() => {
+    if (stage === 'finalizing' && !isBendystrawRetrying && !bendystrawProject && finalizingProjectId) {
+      console.log('[CreateStoreStatus] Bendystraw polling timed out');
+      setCreationError(new Error('Store is taking longer than expected to index. You can view it from home.'));
+      setStage('success');
+    }
+  }, [stage, isBendystrawRetrying, bendystrawProject, finalizingProjectId]);
 
   useEffect(() => {
     console.log('[CreateStoreStatus] Redirect check:', {
@@ -48,9 +71,9 @@ export function CreateStoreStatusContainer() {
   }, [creationParams, router, stage]);
 
   useEffect(() => {
-    const isDeploying = ['preparing', 'simulating', 'deploying', 'confirming'].includes(stage);
+    const isInProgress = ['preparing', 'simulating', 'deploying', 'confirming', 'finalizing'].includes(stage);
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isDeploying) return true;
+      if (isInProgress) return true;
       return false;
     });
     return () => subscription.remove();
@@ -81,8 +104,8 @@ export function CreateStoreStatusContainer() {
       console.log('[CreateStoreStatus] Project added to registry');
 
       refetchAfterStoreCreate();
-      setStage('success');
-      console.log('[CreateStoreStatus] Success! Clearing params...');
+      console.log('[CreateStoreStatus] Entering finalizing stage...');
+      setStage('finalizing');
       clearCreationParams();
     } catch (err) {
       console.error('[CreateStoreStatus] Error during creation:', err);
@@ -135,6 +158,7 @@ export function CreateStoreStatusContainer() {
       storeName={storeName}
       storeId={storeId}
       error={displayError ?? undefined}
+      isFinalizingRetrying={isBendystrawRetrying}
       onRetry={handleRetry}
       onViewStore={handleViewStore}
       onGoHome={handleGoHome}

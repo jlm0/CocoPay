@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { BendystrawProject } from '@/lib/bendystraw';
 import { fetchProject } from '@/lib/bendystraw';
 import { queryKeys } from '@/lib/query';
+import { getRetryConfig } from '@/lib/retry-config';
 
 interface UseBendystrawProjectResult {
   project: BendystrawProject | null;
@@ -13,9 +14,7 @@ interface UseBendystrawProjectResult {
   refetch: () => void;
 }
 
-const MAX_RETRY_DURATION_MS = 60_000;
-const INITIAL_RETRY_INTERVAL_MS = 2_000;
-const MAX_RETRY_INTERVAL_MS = 8_000;
+const retryConfig = getRetryConfig();
 
 export function useBendystrawProject(
   projectId: number | null,
@@ -51,7 +50,7 @@ export function useBendystrawProject(
     !query.data &&
     !query.error &&
     isAppActive &&
-    (retryStartTime === null || Date.now() - retryStartTime < MAX_RETRY_DURATION_MS);
+    (retryStartTime === null || Date.now() - retryStartTime < retryConfig.maxDurationMs);
 
   useEffect(() => {
     if (!shouldRetry) {
@@ -67,8 +66,8 @@ export function useBendystrawProject(
     }
 
     const interval = Math.min(
-      INITIAL_RETRY_INTERVAL_MS * Math.pow(1.5, retryCount),
-      MAX_RETRY_INTERVAL_MS
+      retryConfig.initialIntervalMs * Math.pow(retryConfig.backoffMultiplier, retryCount),
+      retryConfig.maxIntervalMs
     );
 
     timerRef.current = setTimeout(() => {

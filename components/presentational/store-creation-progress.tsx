@@ -7,6 +7,7 @@ import {
   Clock,
   CircleCheck,
   XCircle,
+  Database,
   type LucideIcon,
 } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/presentational/screen-container';
@@ -14,6 +15,7 @@ import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
+import { Spinner } from '@/components/ui/spinner';
 import type { CreationStage } from '@/components/containers/CreateStoreStatusContainer';
 
 interface StoreCreationProgressProps {
@@ -21,6 +23,7 @@ interface StoreCreationProgressProps {
   storeName: string;
   storeId?: string;
   error?: Error;
+  isFinalizingRetrying?: boolean;
   onRetry?: () => void;
   onViewStore?: () => void;
   onGoHome?: () => void;
@@ -37,6 +40,7 @@ const STEPS: StepConfig[] = [
   { id: 'simulating', label: 'Checking setup', icon: ShieldCheck },
   { id: 'deploying', label: 'Setting up payments', icon: Wallet },
   { id: 'confirming', label: 'Finishing up', icon: Clock },
+  { id: 'finalizing', label: 'Indexing store data', icon: Database },
 ];
 
 function getStepStatus(
@@ -63,11 +67,13 @@ function StepItem({
   status,
   index,
   isError,
+  showSpinner,
 }: {
   step: StepConfig;
   status: 'pending' | 'active' | 'completed';
   index: number;
   isError: boolean;
+  showSpinner?: boolean;
 }) {
   const isCompleted = status === 'completed';
   const isActive = status === 'active';
@@ -94,7 +100,7 @@ function StepItem({
       <Text className={`flex-1 text-base font-medium ${textColor}`}>{step.label}</Text>
       {isActive && !isError && (
         <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
-          <View className="h-2 w-2 rounded-full bg-primary" />
+          {showSpinner ? <Spinner size="small" /> : <View className="h-2 w-2 rounded-full bg-primary" />}
         </Animated.View>
       )}
     </Animated.View>
@@ -105,14 +111,23 @@ function ProgressView({
   stage,
   storeName,
   error,
+  isFinalizingRetrying,
 }: {
   stage: CreationStage;
   storeName: string;
   error?: Error;
+  isFinalizingRetrying?: boolean;
 }) {
   const isError = stage === 'error';
+  const isFinalizing = stage === 'finalizing';
   const currentStepIndex = STEPS.findIndex((s) => s.id === stage);
   const failedAtStep = isError && currentStepIndex >= 0 ? STEPS[currentStepIndex] : null;
+
+  const getSubtitle = () => {
+    if (isError) return 'We encountered an issue while creating your store';
+    if (isFinalizing) return 'Waiting for your store to be indexed...';
+    return `Setting up ${storeName}`;
+  };
 
   return (
     <View className="flex-1 px-6 pt-12">
@@ -121,9 +136,7 @@ function ProgressView({
           {isError ? 'Something went wrong' : 'Creating your store'}
         </Text>
         <Text variant="caption" className="mt-2 text-center">
-          {isError
-            ? 'We encountered an issue while creating your store'
-            : `Setting up ${storeName}`}
+          {getSubtitle()}
         </Text>
       </Animated.View>
 
@@ -140,6 +153,7 @@ function ProgressView({
               status={isError && step.id === failedAtStep?.id ? 'active' : stepStatus}
               index={index}
               isError={isError && step.id === failedAtStep?.id}
+              showSpinner={step.id === 'finalizing' && isFinalizingRetrying}
             />
           );
         })}
@@ -193,6 +207,7 @@ export function StoreCreationProgress({
   stage,
   storeName,
   error,
+  isFinalizingRetrying,
   onRetry,
   onViewStore,
   onGoHome,
@@ -232,7 +247,7 @@ export function StoreCreationProgress({
       {isSuccess ? (
         <SuccessView storeName={storeName} />
       ) : (
-        <ProgressView stage={stage} storeName={storeName} error={error} />
+        <ProgressView stage={stage} storeName={storeName} error={error} isFinalizingRetrying={isFinalizingRetrying} />
       )}
     </ScreenContainer>
   );
