@@ -10,11 +10,14 @@ import { buildStoreCode } from '@/lib/juicebox/transforms';
 import { JB_TOKEN_DECIMALS, USDC_DECIMALS } from '@/lib/juicebox/constants';
 import { resolveIpfsUri } from '@/lib/pinata';
 import { queryKeys } from '@/lib/query';
+import { getStoreFromRegistrySync, type RegistryStore } from '@/lib/storage';
 import type { StoreDetails } from '@/types';
 
 interface UseStoreDetailsResult {
   store: StoreDetails | null;
+  baseStore: RegistryStore | null;
   isLoading: boolean;
+  isLoadingUserData: boolean;
   isRetrying: boolean;
   error: Error | null;
   refetch: () => void;
@@ -22,6 +25,11 @@ interface UseStoreDetailsResult {
 
 export function useStoreDetails(projectId: number, chainId: number): UseStoreDetailsResult {
   const { address } = useParaAccount();
+
+  const baseStore = useMemo(
+    () => (projectId > 0 ? getStoreFromRegistrySync(projectId, chainId) : null),
+    [projectId, chainId]
+  );
 
   const {
     project,
@@ -108,15 +116,16 @@ export function useStoreDetails(projectId: number, chainId: number): UseStoreDet
     };
   }, [project, metadata, userBalance, address, cashOutQuote, loanQuote, chainId, projectId]);
 
-  const isLoading =
-    projectLoading ||
-    metadataLoading ||
-    participantLoading ||
-    (userBalance > 0n && (cashOutLoading || loanLoading));
+  const isLoadingUserData =
+    participantLoading || (userBalance > 0n && (cashOutLoading || loanLoading));
+
+  const isLoading = !baseStore && (projectLoading || metadataLoading) && !store;
 
   return {
     store,
+    baseStore,
     isLoading,
+    isLoadingUserData,
     isRetrying,
     error: projectError,
     refetch,

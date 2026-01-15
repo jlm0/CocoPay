@@ -1,5 +1,6 @@
 import { queryClient } from './client';
 import { queryKeys } from './keys';
+import { invalidateStoreRegistry } from './registry-refresh';
 
 export function invalidateAfterPay(projectId: number, chainId: number) {
   queryClient.invalidateQueries({ queryKey: queryKeys.balance.all });
@@ -9,6 +10,7 @@ export function invalidateAfterPay(projectId: number, chainId: number) {
   queryClient.invalidateQueries({
     queryKey: queryKeys.bendystraw.project(projectId, chainId),
   });
+  invalidateStoreRegistry();
 }
 
 export function invalidateAfterCashOut(projectId: number, chainId: number) {
@@ -19,6 +21,7 @@ export function invalidateAfterCashOut(projectId: number, chainId: number) {
   queryClient.invalidateQueries({
     queryKey: queryKeys.bendystraw.project(projectId, chainId),
   });
+  invalidateStoreRegistry();
 }
 
 export function invalidateAfterWithdraw() {
@@ -26,9 +29,7 @@ export function invalidateAfterWithdraw() {
 }
 
 export function refetchAfterStoreCreate() {
-  Promise.all([
-    queryClient.refetchQueries({ queryKey: queryKeys.bendystraw.all }),
-    queryClient.refetchQueries({ queryKey: queryKeys.projectMetadata.all }),
-    queryClient.refetchQueries({ queryKey: queryKeys.cocopayRegistry.all }),
-  ]);
+  queryClient.refetchQueries({ queryKey: queryKeys.bendystraw.all });
+  queryClient.refetchQueries({ queryKey: queryKeys.projectMetadata.all });
+  invalidateStoreRegistry();
 }

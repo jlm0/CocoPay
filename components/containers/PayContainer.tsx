@@ -19,9 +19,10 @@ import { useStorePay } from '@/hooks/useStorePay';
 import { useStoreInputLogic } from '@/hooks/useStoreInputLogic';
 import { useAmountInputLogic } from '@/hooks/useAmountInputLogic';
 import { useCocoPayProjectRegistry } from '@/hooks/useCocoPayProjectRegistry';
+import { useFocusRefresh } from '@/hooks/useFocusRefresh';
 import { TOKEN_DECIMALS } from '@/lib/constants';
 import { JB_TOKEN_DECIMALS } from '@/lib/juicebox/constants';
-import { invalidateAfterPay } from '@/lib/query';
+import { invalidateAfterPayment, getStoreRegistryQueryKeys } from '@/lib/query';
 import type { DeepLinkResult } from '@/hooks/useDeepLinkSource';
 
 export type PaySource = 'manual' | 'navigation' | 'qr' | 'deeplink';
@@ -99,6 +100,10 @@ function PayContainerContent({
   const router = useRouter();
   const prevStoreIdRef = useRef<string | null>(null);
 
+  useFocusRefresh({
+    queryKeys: getStoreRegistryQueryKeys(),
+  });
+
   const { totalFormatted, isLoading: balanceLoading } = useMultiChainUsdcBalance();
   const usdcBalanceNum = parseFloat(totalFormatted) || 0;
 
@@ -136,12 +141,15 @@ function PayContainerContent({
 
   const {
     store,
+    baseStore,
     isLoading: storeLoading,
     error: storeError,
   } = useStoreDetails(
     storeInput.parsedCode?.projectId ? Number(storeInput.parsedCode.projectId) : 0,
     storeInput.parsedCode?.chainId ?? 0
   );
+
+  const displayName = store?.name ?? baseStore?.name ?? null;
 
   const { addProject } = useCocoPayProjectRegistry();
 
@@ -168,6 +176,7 @@ function PayContainerContent({
     return undefined;
   })();
 
+  const hasStoreInfo = !!store || !!baseStore;
   const isValidStore = !!store && !storeError;
   const canPay = amountInput.isValidAmount && isValidStore && !isPayLoading;
 
@@ -204,7 +213,7 @@ function PayContainerContent({
         primaryProjectId: Number(storeInput.parsedCode.projectId),
       });
 
-      invalidateAfterPay(Number(storeInput.parsedCode.projectId), storeInput.parsedCode.chainId);
+      invalidateAfterPayment(Number(storeInput.parsedCode.projectId), storeInput.parsedCode.chainId);
 
       const cashBack = formatUnits(result.tokensReceived, JB_TOKEN_DECIMALS);
 
@@ -223,7 +232,7 @@ function PayContainerContent({
     }
   };
 
-  const showStoreAsDisplay = !!store && !storeInput.isEditing;
+  const showStoreAsDisplay = hasStoreInfo && !storeInput.isEditing;
   const showStoreEditButton = !isFromExternal;
   const isAmountReadonly = isFromExternal && !!initialAmount && !amountInput.isEditing;
 
@@ -258,12 +267,12 @@ function PayContainerContent({
         )}
 
         <PayStoreInfo
-          storeName={store?.name ?? null}
+          storeName={displayName}
           storeCode={storeInput.storeCode}
           onChangeStoreCode={handleStoreCodeChange}
           onEditPress={handleStoreEditPress}
           isEditing={!showStoreAsDisplay}
-          isLoading={storeLoading && !!storeInput.parsedCode}
+          isLoading={storeLoading && !!storeInput.parsedCode && !baseStore}
           error={storeCodeError}
           showEditButton={showStoreEditButton}
           disabled={isPayLoading}

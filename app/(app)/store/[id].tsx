@@ -10,8 +10,10 @@ import { StoreActions } from '@/components/presentational/store-actions';
 import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { useStoreDetails } from '@/hooks/useStoreDetails';
+import { useFocusRefresh } from '@/hooks/useFocusRefresh';
 import { parseStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
+import { getStoreRegistryQueryKeys } from '@/lib/query';
 import { Text } from '@/components/ui/text';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
@@ -41,6 +43,10 @@ export default function StoreDetailPage() {
     parsedId.projectId,
     parsedId.chainId
   );
+
+  useFocusRefresh({
+    queryKeys: getStoreRegistryQueryKeys(),
+  });
 
   const handleCashOutPress = () => {
     router.push({

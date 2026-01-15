@@ -57,6 +57,7 @@ export interface DiscoverStore {
   id: string;
   projectId: number;
   chainId: number;
+  suckerGroupId: string;
   name: string;
   tokenSymbol: string;
   description?: string;

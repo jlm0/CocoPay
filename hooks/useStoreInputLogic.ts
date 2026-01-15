@@ -29,7 +29,7 @@ export function useStoreInputLogic({
   const [storeCode, setStoreCode] = useState(initialStoreCode ?? '');
   const [isEditing, setIsEditing] = useState(!initialStoreCode);
 
-  const [debouncedStoreCode] = useDebounce(storeCode, 800);
+  const [debouncedStoreCode] = useDebounce(storeCode, 300);
 
   const parsedCode = useMemo(() => parseStoreCode(debouncedStoreCode), [debouncedStoreCode]);
 

@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { View, FlatList, RefreshControl, Pressable } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Store as StoreIcon, ChevronUp } from 'lucide-react-native';
+import { useFocusRefresh } from '@/hooks/useFocusRefresh';
 import { HomeBalances } from '@/components/containers/HomeBalances';
 import { HomeHeader } from '@/components/presentational/home-header';
 import { HomeStoreCard } from '@/components/presentational/home-store-card';
@@ -15,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 import { useCocoPayStores } from '@/hooks/useCocoPayStores';
-import { queryKeys } from '@/lib/query';
+import { queryKeys, getStoreRegistryQueryKeys } from '@/lib/query';
 import type { Store } from '@/types';
 
 const INITIAL_VISIBLE_COUNT = 4;
@@ -68,12 +69,9 @@ export default function HomePage() {
 
   const { stores, isLoading, error } = useCocoPayStores();
 
-  useFocusEffect(
-    useCallback(() => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.bendystraw.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.cocopayRegistry.all });
-    }, [queryClient])
-  );
+  useFocusRefresh({
+    queryKeys: [queryKeys.bendystraw.all, ...getStoreRegistryQueryKeys()],
+  });
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

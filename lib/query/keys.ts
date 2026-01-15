@@ -93,6 +93,11 @@ export const queryKeys = {
     stores: (chainId: number) => ['discover', 'stores', chainId] as const,
   },
 
+  storeRegistry: {
+    all: ['store-registry'] as const,
+    global: () => ['store-registry', 'global'] as const,
+  },
+
   resolveAddress: (input: string) => ['resolveAddress', input] as const,
 
   usdcAllowance: (address: string | null | undefined, spender: string | null | undefined) =>

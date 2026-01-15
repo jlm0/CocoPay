@@ -9,9 +9,11 @@ import { PortalHost } from '@rn-primitives/portal';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import GooglePlacesSdk from 'react-native-google-places-sdk';
 import { ParaProvider } from '@/providers/ParaProvider';
+import { StoreRegistryHydrator } from '@/providers/StoreRegistryProvider';
 import { useLoadFonts } from '@/hooks/useLoadFonts';
 import { queryClient, asyncStoragePersister } from '@/lib/query';
-import { initializeStoresStorage } from '@/lib/storage';
+import { initializeStoresStorage, initializeStoreRegistry } from '@/lib/storage';
+import { initializeAppLifecycle } from '@/lib/lifecycle';
 import { View } from 'react-native';
 
 const GOOGLE_PLACES_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY ?? '';
@@ -21,9 +23,12 @@ export default function RootLayout() {
 
   useEffect(() => {
     initializeStoresStorage();
+    initializeStoreRegistry();
+    const cleanupLifecycle = initializeAppLifecycle();
     if (GOOGLE_PLACES_API_KEY) {
       GooglePlacesSdk.initialize(GOOGLE_PLACES_API_KEY);
     }
+    return cleanupLifecycle;
   }, []);
 
   if (!fontsLoaded) {
@@ -36,6 +41,7 @@ export default function RootLayout() {
         <PersistQueryClientProvider
           client={queryClient}
           persistOptions={{ persister: asyncStoragePersister }}>
+          <StoreRegistryHydrator />
           <ParaProvider>
             <StatusBar style="auto" />
             <Stack screenOptions={{ headerShown: false }} />

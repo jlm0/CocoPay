@@ -28,3 +28,18 @@ export {
   initializeStoresStorage,
   type StoredStores,
 } from './stores-storage';
+
+export {
+  getStoreFromRegistrySync,
+  getStoreByCodeSync,
+  getAllRegistryStoresSync,
+  getRegistrySize,
+  setStoreRegistry,
+  addStoreToRegistry,
+  persistStoreRegistry,
+  initializeStoreRegistry,
+  clearStoreRegistry,
+  transformToRegistryStore,
+  type RegistryStore,
+  type StoreRegistry,
+} from './store-registry';

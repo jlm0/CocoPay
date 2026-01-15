@@ -34,6 +34,7 @@ function transformToStore(
     id: `${project.chainId}-${project.projectId}`,
     projectId: project.projectId,
     chainId: project.chainId,
+    suckerGroupId: project.suckerGroupId,
     name: metadata.name ?? 'Unknown Store',
     tokenSymbol: `$${cocopay.ticker}`,
     description: metadata.description,

@@ -4,6 +4,8 @@ import { DiscoverScreen } from '@/components/presentational/discover-screen';
 import { DiscoverSortContent } from '@/components/presentational/discover-sort-content';
 import { BottomSheet, type BottomSheetMethods } from '@/components/ui/bottom-sheet';
 import { useDiscoverStores } from '@/hooks/useDiscoverStores';
+import { useFocusRefresh } from '@/hooks/useFocusRefresh';
+import { getStoreRegistryQueryKeys } from '@/lib/query';
 import type { DiscoverStore, SortOption, ViewMode } from '@/types';
 
 type SelectedStore = DiscoverStore | null;
@@ -39,6 +41,10 @@ export function DiscoverContainer() {
   const sortSheetRef = useRef<BottomSheetMethods>(null);
 
   const { stores: rawStores, isLoading, error } = useDiscoverStores();
+
+  useFocusRefresh({
+    queryKeys: getStoreRegistryQueryKeys(),
+  });
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
