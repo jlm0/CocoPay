@@ -27,9 +27,5 @@ export function invalidateAfterStoreCreation(): void {
 }
 
 export function getStoreRegistryQueryKeys() {
-  return [
-    queryKeys.storeRegistry.all,
-    queryKeys.cocopayRegistry.all,
-    queryKeys.discover.all,
-  ];
+  return [queryKeys.storeRegistry.all, queryKeys.cocopayRegistry.all, queryKeys.discover.all];
 }

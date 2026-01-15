@@ -100,7 +100,11 @@ function StepItem({
       <Text className={`flex-1 text-base font-medium ${textColor}`}>{step.label}</Text>
       {isActive && !isError && (
         <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
-          {showSpinner ? <Spinner size="small" /> : <View className="h-2 w-2 rounded-full bg-primary" />}
+          {showSpinner ? (
+            <Spinner size="small" />
+          ) : (
+            <View className="h-2 w-2 rounded-full bg-primary" />
+          )}
         </Animated.View>
       )}
     </Animated.View>
@@ -247,7 +251,12 @@ export function StoreCreationProgress({
       {isSuccess ? (
         <SuccessView storeName={storeName} />
       ) : (
-        <ProgressView stage={stage} storeName={storeName} error={error} isFinalizingRetrying={isFinalizingRetrying} />
+        <ProgressView
+          stage={stage}
+          storeName={storeName}
+          error={error}
+          isFinalizingRetrying={isFinalizingRetrying}
+        />
       )}
     </ScreenContainer>
   );

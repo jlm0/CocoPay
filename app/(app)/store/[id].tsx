@@ -1,6 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import Animated, { FadeIn, FadeInUp, ZoomIn } from 'react-native-reanimated';
+import { CircleCheck, CloudUpload } from 'lucide-react-native';
 import { FeatureHeader } from '@/components/presentational/feature-header';
 import { StoreBalance } from '@/components/presentational/store-balance';
 import { StoreValueRow } from '@/components/presentational/store-value-row';
@@ -11,12 +13,19 @@ import { ScreenContainer } from '@/components/presentational/screen-container';
 import { BottomActionBar } from '@/components/presentational/bottom-action-bar';
 import { LoadingRetryState } from '@/components/presentational/loading-retry-state';
 import { ErrorRetryState } from '@/components/presentational/error-retry-state';
+import { StoreOptionsMenu } from '@/components/presentational/store-options-menu';
+import { ChainReattemptDialog } from '@/components/presentational/chain-reattempt-dialog';
 import { useStoreDetails } from '@/hooks/useStoreDetails';
 import { useFocusRefresh } from '@/hooks/useFocusRefresh';
+import { useChainReattempt } from '@/hooks/useChainReattempt';
 import { parseStoreCode } from '@/lib/juicebox/transforms';
 import { COCOPAY_CHAIN_ID } from '@/lib/juicebox/constants';
 import { getStoreRegistryQueryKeys } from '@/lib/query';
+import { getStoredProjectSync } from '@/lib/storage/cocopay-projects';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
 
 export default function StoreDetailPage() {
   const { id, source } = useLocalSearchParams<{ id: string; source?: string }>();
@@ -44,9 +53,20 @@ export default function StoreDetailPage() {
     parsedId.chainId
   );
 
+  const { reattemptChains, state: reattemptState, reset: resetReattempt } = useChainReattempt();
+
+  const [showReattemptDialog, setShowReattemptDialog] = useState(false);
+
   useFocusRefresh({
     queryKeys: getStoreRegistryQueryKeys(),
   });
+
+  const storedProject = useMemo(
+    () => getStoredProjectSync(parsedId.projectId, parsedId.chainId),
+    [parsedId.projectId, parsedId.chainId]
+  );
+
+  const failedChainCount = storedProject?.failedChains?.length ?? 0;
 
   const handleCashOutPress = () => {
     router.push({
@@ -85,6 +105,62 @@ export default function StoreDetailPage() {
       router.push(`/(app)/discover?viewMode=map&storeId=${store.id}`);
     }
   }, [source, store, router]);
+
+  const handleEditPress = useCallback(() => {
+    router.push(`/(app)/store/${id}/edit`);
+  }, [id, router]);
+
+  const handleReattemptPress = useCallback(() => {
+    setShowReattemptDialog(true);
+  }, []);
+
+  const handleReattemptCancel = useCallback(() => {
+    setShowReattemptDialog(false);
+  }, []);
+
+  const handleReattemptConfirm = useCallback(async () => {
+    setShowReattemptDialog(false);
+
+    if (
+      !storedProject?.creationParams ||
+      !storedProject?.metadataCid ||
+      !storedProject?.creationSalt
+    ) {
+      return;
+    }
+
+    if (!storedProject.failedChains || storedProject.failedChains.length === 0) {
+      return;
+    }
+
+    try {
+      await reattemptChains({
+        projectId: parsedId.projectId,
+        chainId: parsedId.chainId,
+        failedChains: storedProject.failedChains,
+        metadataCid: storedProject.metadataCid,
+        salt: storedProject.creationSalt,
+        creationParams: storedProject.creationParams,
+      });
+    } catch {
+      // Error handled in hook state
+    }
+  }, [storedProject, reattemptChains, parsedId.projectId, parsedId.chainId]);
+
+  const handleReattemptDone = useCallback(() => {
+    resetReattempt();
+    refetch();
+  }, [resetReattempt, refetch]);
+
+  const isReattemptInProgress = reattemptState.status === 'deploying';
+  const isReattemptSuccess = reattemptState.status === 'success';
+  const isReattemptError = reattemptState.status === 'error';
+
+  const canShowReattempt =
+    failedChainCount > 0 &&
+    storedProject?.creationParams &&
+    storedProject?.metadataCid &&
+    storedProject?.creationSalt;
 
   if (isLoading) {
     return (
@@ -156,6 +232,72 @@ export default function StoreDetailPage() {
     );
   }
 
+  if (isReattemptInProgress) {
+    return (
+      <ScreenContainer>
+        <View className="flex-1 items-center justify-center px-6">
+          <Animated.View entering={FadeIn.duration(300)} className="items-center">
+            <View className="mb-6 h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <Icon as={CloudUpload} size={32} className="text-primary" />
+            </View>
+            <Text variant="heading" className="mb-2 text-center">
+              Deploying to chains...
+            </Text>
+            <Text variant="caption" className="text-center">
+              {reattemptState.completedCount} of {reattemptState.totalCount} complete
+            </Text>
+          </Animated.View>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  if (isReattemptSuccess) {
+    const { successCount, remainingFailed } = reattemptState;
+    return (
+      <ScreenContainer
+        bottomActionBar={
+          <BottomActionBar showBackButton={false}>
+            <Button onPress={handleReattemptDone} size="lg" className="h-14 rounded-xl">
+              <Text>Continue</Text>
+            </Button>
+          </BottomActionBar>
+        }>
+        <View className="flex-1 items-center justify-center px-6">
+          <Animated.View entering={ZoomIn.springify().damping(12)} className="mb-6">
+            <Icon as={CircleCheck} size={80} className="text-primary" />
+          </Animated.View>
+
+          <Animated.View entering={FadeInUp.delay(200).duration(400)} className="mb-2">
+            <Text variant="title" className="text-center">
+              {remainingFailed.length === 0 ? 'All Chains Deployed' : 'Partial Success'}
+            </Text>
+          </Animated.View>
+
+          <Animated.View entering={FadeInUp.delay(300).duration(400)}>
+            <Text variant="caption" className="text-center">
+              {successCount} chain{successCount !== 1 ? 's' : ''} deployed successfully
+              {remainingFailed.length > 0 && `. ${remainingFailed.length} still pending.`}
+            </Text>
+          </Animated.View>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  if (isReattemptError) {
+    const { error: reattemptError } = reattemptState;
+    return (
+      <ErrorRetryState
+        title="Deployment failed"
+        message={reattemptError.message}
+        onRetry={handleReattemptConfirm}
+        onBack={handleReattemptDone}
+        header={<FeatureHeader title="Retry Deployment" />}
+      />
+    );
+  }
+
   const valueItems = [
     { label: store.isOwned ? 'Spend value' : 'Value at store', value: store.valueAtStore },
     { label: 'Cash out value', value: store.cashOutValue },
@@ -179,6 +321,15 @@ export default function StoreDetailPage() {
           subtitle={`#${parsedId.projectId}`}
           badge={store.isOwned ? 'Yours' : undefined}
           logoUri={store.logoUri ?? undefined}
+          rightAction={
+            store.isOwned ? (
+              <StoreOptionsMenu
+                onEditPress={handleEditPress}
+                onReattemptPress={canShowReattempt ? handleReattemptPress : undefined}
+                failedChainCount={failedChainCount}
+              />
+            ) : undefined
+          }
         />
 
         <StoreRewardBadges cashBackPercent={store.cashBackPercent} />
@@ -194,6 +345,14 @@ export default function StoreDetailPage() {
           onAddressPress={store.address?.coordinates ? handleAddressPress : undefined}
         />
       </ScrollView>
+
+      <ChainReattemptDialog
+        open={showReattemptDialog}
+        onOpenChange={setShowReattemptDialog}
+        failedChainCount={failedChainCount}
+        onConfirm={handleReattemptConfirm}
+        onCancel={handleReattemptCancel}
+      />
     </ScreenContainer>
   );
 }

@@ -5,34 +5,46 @@ import { alchemy } from '@account-kit/infra';
 import { createModularAccountV2Client } from '@account-kit/smart-contracts';
 import { LocalAccountSigner } from '@aa-sdk/core';
 import type { StoreCreationParams } from '@/types/juicebox';
-import type { OmnichainDeployResult, OmnichainRevnetCreationResult } from '@/types/revnet';
+import type { OmnichainDeployResult } from '@/types/revnet';
 import { useParaAccount } from '@/hooks/useParaAccount';
 import { ALCHEMY_API_KEY, GAS_POLICY_ID } from '@/lib/alchemy';
 import { ALCHEMY_AA_CHAINS, type SupportedChainId } from '@/lib/network';
-import {
-  OMNICHAIN_CHAINS,
-  OMNICHAIN_CHAIN_IDS,
-  type OmnichainChainId,
-} from '@/lib/juicebox/constants';
+import { OMNICHAIN_CHAINS, type OmnichainChainId } from '@/lib/juicebox/constants';
 import { getRevDeployerAddress } from '@/lib/juicebox/revnet';
-import { buildOmnichainDeployArgs, generateSalt } from '@/lib/juicebox/revnet-transforms';
-import { buildProjectMetadata, uploadMetadataToIPFS } from '@/lib/juicebox/metadata';
-import { buildStoreCode } from '@/lib/juicebox/transforms';
+import { buildOmnichainDeployArgs } from '@/lib/juicebox/revnet-transforms';
+import { updateStoredProject } from '@/lib/storage/cocopay-projects';
+import { invalidateAfterStoreCreation } from '@/lib/query/registry-refresh';
 
 const TX_CONFIRMATION_TIMEOUT_SECONDS = 120;
 const POLL_INTERVAL_MS = 2000;
 const MAX_DEPLOY_RETRIES = 2;
 
-type DeployStatus = 'idle' | 'uploading' | 'simulating' | 'deploying' | 'success' | 'error';
+export type ChainReattemptState =
+  | { status: 'idle' }
+  | { status: 'deploying'; completedCount: number; totalCount: number }
+  | { status: 'success'; successCount: number; remainingFailed: number[] }
+  | { status: 'error'; error: Error; partialSuccess: number[] };
 
-interface UseOmnichainRevnetCreateResult {
-  createRevnet: (params: StoreCreationParams) => Promise<OmnichainRevnetCreationResult>;
-  status: DeployStatus;
+interface UseChainReattemptResult {
+  reattemptChains: (params: ChainReattemptParams) => Promise<ChainReattemptResult>;
+  state: ChainReattemptState;
   chainResults: Map<OmnichainChainId, OmnichainDeployResult>;
-  error: Error | null;
   reset: () => void;
-  metadataCid: string | null;
-  salt: `0x${string}` | null;
+}
+
+interface ChainReattemptParams {
+  projectId: number;
+  chainId: number;
+  failedChains: number[];
+  metadataCid: string;
+  salt: `0x${string}`;
+  creationParams: StoreCreationParams;
+}
+
+interface ChainReattemptResult {
+  successCount: number;
+  remainingFailed: number[];
+  results: OmnichainDeployResult[];
 }
 
 async function createClientForChain(account: LocalAccount, chainId: OmnichainChainId) {
@@ -54,25 +66,19 @@ async function createClientForChain(account: LocalAccount, chainId: OmnichainCha
   });
 }
 
-export function useOmnichainRevnetCreate(): UseOmnichainRevnetCreateResult {
+export function useChainReattempt(): UseChainReattemptResult {
   const { address, account } = useParaAccount();
 
-  const [status, setStatus] = useState<DeployStatus>('idle');
-  const [error, setError] = useState<Error | null>(null);
+  const [state, setState] = useState<ChainReattemptState>({ status: 'idle' });
   const [chainResults, setChainResults] = useState<Map<OmnichainChainId, OmnichainDeployResult>>(
     new Map()
   );
-  const [metadataCid, setMetadataCid] = useState<string | null>(null);
-  const [salt, setSalt] = useState<`0x${string}` | null>(null);
 
   const abortRef = useRef(false);
 
   const reset = useCallback(() => {
-    setStatus('idle');
-    setError(null);
+    setState({ status: 'idle' });
     setChainResults(new Map());
-    setMetadataCid(null);
-    setSalt(null);
     abortRef.current = false;
   }, []);
 
@@ -191,56 +197,6 @@ export function useOmnichainRevnetCreate(): UseOmnichainRevnetCreateResult {
     [updateChainResult]
   );
 
-  const simulateOnChain = useCallback(
-    async (
-      chainId: OmnichainChainId,
-      metadataCid: string,
-      salt: `0x${string}`,
-      params: StoreCreationParams,
-      operatorAddress: Address,
-      userAccount: LocalAccount
-    ): Promise<{ chainId: OmnichainChainId; success: boolean; error?: Error }> => {
-      try {
-        const client = await createClientForChain(userAccount, chainId);
-
-        const deployArgs = buildOmnichainDeployArgs(
-          params,
-          metadataCid,
-          chainId,
-          salt,
-          operatorAddress
-        );
-
-        const data = encodeFunctionData({
-          abi: revDeployerAbi,
-          functionName: 'deployFor',
-          args: [
-            deployArgs.revnetId,
-            deployArgs.configuration,
-            deployArgs.terminalConfigurations,
-            deployArgs.buybackHookConfiguration,
-            deployArgs.suckerDeploymentConfiguration,
-          ],
-        });
-
-        const revDeployerAddress = getRevDeployerAddress(chainId);
-
-        await client.checkGasSponsorshipEligibility({
-          uo: { target: revDeployerAddress, value: 0n, data },
-        });
-
-        return { chainId, success: true };
-      } catch (err) {
-        return {
-          chainId,
-          success: false,
-          error: err instanceof Error ? err : new Error('Simulation failed'),
-        };
-      }
-    },
-    []
-  );
-
   const deployWithRetry = useCallback(
     async (
       chainId: OmnichainChainId,
@@ -287,89 +243,93 @@ export function useOmnichainRevnetCreate(): UseOmnichainRevnetCreateResult {
     [deployToChain]
   );
 
-  const createRevnet = useCallback(
-    async (params: StoreCreationParams): Promise<OmnichainRevnetCreationResult> => {
+  const reattemptChains = useCallback(
+    async (params: ChainReattemptParams): Promise<ChainReattemptResult> => {
       if (!address || !account) {
         throw new Error('Wallet not connected');
       }
 
       abortRef.current = false;
-      setError(null);
       setChainResults(new Map());
-      setStatus('uploading');
+      setState({
+        status: 'deploying',
+        completedCount: 0,
+        totalCount: params.failedChains.length,
+      });
 
       try {
-        const metadata = buildProjectMetadata(params);
-        const uploadedMetadataCid = await uploadMetadataToIPFS(metadata);
-        setMetadataCid(uploadedMetadataCid);
+        const results: OmnichainDeployResult[] = [];
+        let completedCount = 0;
 
-        const generatedSalt = generateSalt();
-        setSalt(generatedSalt);
+        for (const targetChainId of params.failedChains) {
+          if (abortRef.current) break;
 
-        setStatus('simulating');
+          const result = await deployWithRetry(
+            targetChainId as OmnichainChainId,
+            params.metadataCid,
+            params.salt,
+            params.creationParams,
+            address,
+            account
+          );
 
-        const simulationResults = await Promise.all(
-          OMNICHAIN_CHAIN_IDS.map((chainId) =>
-            simulateOnChain(chainId, uploadedMetadataCid, generatedSalt, params, address, account)
-          )
-        );
+          results.push(result);
+          completedCount++;
 
-        const failedSimulations = simulationResults.filter((r) => !r.success);
-        if (failedSimulations.length > 0) {
-          const firstError =
-            failedSimulations[0]?.error ?? new Error('Simulation failed on one or more chains');
-          setError(firstError);
-          setStatus('error');
-          throw firstError;
-        }
-
-        setStatus('deploying');
-
-        for (const chainId of OMNICHAIN_CHAIN_IDS) {
-          updateChainResult(chainId, {
-            chainId,
-            projectId: 0n,
-            txHash: '0x' as Hash,
-            status: 'pending',
+          setState({
+            status: 'deploying',
+            completedCount,
+            totalCount: params.failedChains.length,
           });
         }
 
-        const results = await Promise.all(
-          OMNICHAIN_CHAIN_IDS.map((chainId) =>
-            deployWithRetry(chainId, uploadedMetadataCid, generatedSalt, params, address, account)
-          )
-        );
+        const successfulChains = results
+          .filter((r) => r.status === 'success')
+          .map((r) => r.chainId);
+        const remainingFailed = params.failedChains.filter((c) => !successfulChains.includes(c));
 
-        const successfulResults = results.filter((r) => r.status === 'success');
-        const failedResults = results.filter((r) => r.status === 'error');
-        const failedChains = failedResults.map((r) => r.chainId);
+        await updateStoredProject(params.projectId, params.chainId, {
+          failedChains: remainingFailed.length > 0 ? remainingFailed : undefined,
+        });
 
-        if (successfulResults.length === 0) {
-          const firstError = failedResults[0]?.error ?? new Error('All deployments failed');
-          setError(firstError);
-          setStatus('error');
-          throw firstError;
+        invalidateAfterStoreCreation();
+
+        if (remainingFailed.length === params.failedChains.length) {
+          const error = new Error('All chain deployments failed');
+          setState({
+            status: 'error',
+            error,
+            partialSuccess: [],
+          });
+          throw error;
         }
 
-        const projectId = successfulResults[0].projectId;
-        const storeCode = buildStoreCode(projectId);
-
-        setStatus('success');
+        setState({
+          status: 'success',
+          successCount: successfulChains.length,
+          remainingFailed,
+        });
 
         return {
-          projectId,
+          successCount: successfulChains.length,
+          remainingFailed,
           results,
-          storeCode,
-          failedChains,
         };
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to create revnet');
-        setError(error);
-        setStatus('error');
+        const error = err instanceof Error ? err : new Error('Failed to reattempt chains');
+        const partialSuccess = Array.from(chainResults.values())
+          .filter((r) => r.status === 'success')
+          .map((r) => r.chainId);
+
+        setState({
+          status: 'error',
+          error,
+          partialSuccess,
+        });
         throw error;
       }
     },
-    [address, account, deployWithRetry, simulateOnChain, updateChainResult]
+    [address, account, deployWithRetry, chainResults]
   );
 
   useEffect(() => {
@@ -379,12 +339,9 @@ export function useOmnichainRevnetCreate(): UseOmnichainRevnetCreateResult {
   }, []);
 
   return {
-    createRevnet,
-    status,
+    reattemptChains,
+    state,
     chainResults,
-    error,
     reset,
-    metadataCid,
-    salt,
   };
 }

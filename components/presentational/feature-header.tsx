@@ -10,6 +10,7 @@ type FeatureHeaderProps = {
   subtitle?: string;
   badge?: string;
   logoUri?: string;
+  rightAction?: React.ReactNode;
   onCoconutPress?: () => void;
   className?: string;
 };
@@ -19,6 +20,7 @@ export function FeatureHeader({
   subtitle,
   badge,
   logoUri,
+  rightAction,
   onCoconutPress,
   className,
 }: FeatureHeaderProps) {
@@ -43,7 +45,9 @@ export function FeatureHeader({
             )}
           </View>
         </View>
-        {onCoconutPress ? (
+        {rightAction ? (
+          rightAction
+        ) : onCoconutPress ? (
           <Pressable onPress={onCoconutPress} hitSlop={12} className="active:opacity-70">
             <Text className="text-2xl">🥥</Text>
           </Pressable>

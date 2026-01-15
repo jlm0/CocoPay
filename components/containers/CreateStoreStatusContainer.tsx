@@ -22,7 +22,13 @@ export type CreationStage =
 export function CreateStoreStatusContainer() {
   const router = useRouter();
   const { creationParams, clearCreationParams } = useStoreCreation();
-  const { createRevnet, status: hookStatus, error: hookError } = useOmnichainRevnetCreate();
+  const {
+    createRevnet,
+    status: hookStatus,
+    error: hookError,
+    metadataCid,
+    salt,
+  } = useOmnichainRevnetCreate();
   const { addProject } = useCocoPayProjectRegistry();
 
   const [stage, setStage] = useState<CreationStage>('preparing');
@@ -32,10 +38,10 @@ export function CreateStoreStatusContainer() {
   const hasStarted = useRef(false);
 
   const finalizingProjectId = stage === 'finalizing' && result ? Number(result.projectId) : null;
-  const {
-    project: bendystrawProject,
-    isRetrying: isBendystrawRetrying,
-  } = useBendystrawProject(finalizingProjectId, COCOPAY_CHAIN_ID);
+  const { project: bendystrawProject, isRetrying: isBendystrawRetrying } = useBendystrawProject(
+    finalizingProjectId,
+    COCOPAY_CHAIN_ID
+  );
 
   useEffect(() => {
     if (creationParams?.name) {
@@ -51,9 +57,16 @@ export function CreateStoreStatusContainer() {
   }, [stage, bendystrawProject]);
 
   useEffect(() => {
-    if (stage === 'finalizing' && !isBendystrawRetrying && !bendystrawProject && finalizingProjectId) {
+    if (
+      stage === 'finalizing' &&
+      !isBendystrawRetrying &&
+      !bendystrawProject &&
+      finalizingProjectId
+    ) {
       console.log('[CreateStoreStatus] Bendystraw polling timed out');
-      setCreationError(new Error('Store is taking longer than expected to index. You can view it from home.'));
+      setCreationError(
+        new Error('Store is taking longer than expected to index. You can view it from home.')
+      );
       setStage('success');
     }
   }, [stage, isBendystrawRetrying, bendystrawProject, finalizingProjectId]);
@@ -71,7 +84,13 @@ export function CreateStoreStatusContainer() {
   }, [creationParams, router, stage]);
 
   useEffect(() => {
-    const isInProgress = ['preparing', 'simulating', 'deploying', 'confirming', 'finalizing'].includes(stage);
+    const isInProgress = [
+      'preparing',
+      'simulating',
+      'deploying',
+      'confirming',
+      'finalizing',
+    ].includes(stage);
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (isInProgress) return true;
       return false;
@@ -100,6 +119,9 @@ export function CreateStoreStatusContainer() {
         primaryChainId: COCOPAY_CHAIN_ID,
         primaryProjectId: Number(deployResult.projectId),
         failedChains: deployResult.failedChains.length > 0 ? deployResult.failedChains : undefined,
+        creationParams,
+        metadataCid: metadataCid ?? undefined,
+        creationSalt: salt ?? undefined,
       });
       console.log('[CreateStoreStatus] Project added to registry');
 
@@ -112,7 +134,7 @@ export function CreateStoreStatusContainer() {
       setCreationError(err instanceof Error ? err : new Error('Creation failed'));
       setStage('error');
     }
-  }, [creationParams, createRevnet, addProject, clearCreationParams]);
+  }, [creationParams, createRevnet, addProject, clearCreationParams, metadataCid, salt]);
 
   useEffect(() => {
     console.log('[CreateStoreStatus] Start effect:', {

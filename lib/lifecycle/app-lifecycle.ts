@@ -34,7 +34,9 @@ export function getBackgroundDurationMs(): number {
   return Date.now() - backgroundTimestamp;
 }
 
-export function wasBackgroundedLongEnough(thresholdMs: number = DEFAULT_STALE_THRESHOLD_MS): boolean {
+export function wasBackgroundedLongEnough(
+  thresholdMs: number = DEFAULT_STALE_THRESHOLD_MS
+): boolean {
   return getBackgroundDurationMs() >= thresholdMs;
 }
 

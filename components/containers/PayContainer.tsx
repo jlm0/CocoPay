@@ -213,7 +213,10 @@ function PayContainerContent({
         primaryProjectId: Number(storeInput.parsedCode.projectId),
       });
 
-      invalidateAfterPayment(Number(storeInput.parsedCode.projectId), storeInput.parsedCode.chainId);
+      invalidateAfterPayment(
+        Number(storeInput.parsedCode.projectId),
+        storeInput.parsedCode.chainId
+      );
 
       const cashBack = formatUnits(result.tokensReceived, JB_TOKEN_DECIMALS);
 
