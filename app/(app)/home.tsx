@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { View, FlatList, RefreshControl, Pressable } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { Store as StoreIcon, ChevronDown } from 'lucide-react-native';
+import { Store as StoreIcon, ChevronUp } from 'lucide-react-native';
 import { HomeBalances } from '@/components/containers/HomeBalances';
 import { HomeHeader } from '@/components/presentational/home-header';
 import { HomeStoreCard } from '@/components/presentational/home-store-card';
@@ -19,7 +19,6 @@ import { queryKeys } from '@/lib/query';
 import type { Store } from '@/types';
 
 const INITIAL_VISIBLE_COUNT = 4;
-const INCREMENT_COUNT = 4;
 
 function StoresGridSkeleton() {
   return (
@@ -64,7 +63,8 @@ export default function HomePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const storesListRef = useRef<FlatList<Store[]>>(null);
 
   const { stores, isLoading, error } = useCocoPayStores();
 
@@ -106,12 +106,17 @@ export default function HomePage() {
     router.push(`/(app)/store/${store.id}`);
   };
 
-  const handleViewMore = () => {
-    setVisibleCount((prev) => Math.min(prev + INCREMENT_COUNT, stores.length));
+  const handleToggleExpand = () => {
+    setIsExpanded((prev) => {
+      if (prev) {
+        storesListRef.current?.scrollToOffset({ offset: 0, animated: false });
+      }
+      return !prev;
+    });
   };
 
-  const visibleStores = stores.slice(0, visibleCount);
-  const hasMore = stores.length > visibleCount;
+  const visibleStores = isExpanded ? stores : stores.slice(0, INITIAL_VISIBLE_COUNT);
+  const hasMore = stores.length > INITIAL_VISIBLE_COUNT;
 
   const rows = useMemo(() => {
     const result: Store[][] = [];
@@ -122,47 +127,9 @@ export default function HomePage() {
   }, [visibleStores]);
 
   const showSkeleton = isLoading || isRefreshing;
-
-  const ListHeader = (
-    <View>
-      <HomeBalances isRefreshing={isRefreshing} />
-      <View className="gap-4">
-        <SectionHeader title="Stores" className="mb-0" />
-        <StoreActionCards onDiscoverPress={handleDiscoverPress} onCreatePress={handleCreatePress} />
-        {showSkeleton && <StoresGridSkeleton />}
-        {!showSkeleton && error && (
-          <View className="items-center justify-center px-4 py-8">
-            <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
-            <Text className="text-center text-destructive">Unable to load stores</Text>
-            <Text className="mt-1 text-center text-sm text-muted-foreground">
-              Please check your connection and try again
-            </Text>
-          </View>
-        )}
-        {!showSkeleton && !error && stores.length === 0 && (
-          <View className="items-center justify-center px-4 py-6">
-            <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
-            <Text className="text-center font-sans-medium text-foreground">No stores yet</Text>
-            <Text className="mt-1 text-center text-sm text-muted-foreground">
-              Create a store or pay at one to start earning rewards
-            </Text>
-          </View>
-        )}
-      </View>
-    </View>
-  );
-
-  const ListFooter =
-    hasMore && !showSkeleton && !error ? (
-      <Pressable
-        onPress={handleViewMore}
-        className="flex-row items-center justify-center gap-1 rounded-xl py-2 active:bg-muted">
-        <Text className="font-sans-medium text-sm text-muted-foreground">View more</Text>
-        <Icon as={ChevronDown} size={16} className="text-muted-foreground" />
-      </Pressable>
-    ) : null;
-
-  const displayRows = showSkeleton || error || stores.length === 0 ? [] : rows;
+  const showEmptyState = !showSkeleton && !error && stores.length === 0;
+  const showErrorState = !showSkeleton && error;
+  const showStores = !showSkeleton && !error && stores.length > 0;
 
   const renderRow = ({ item: row }: { item: Store[] }) => (
     <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -175,6 +142,16 @@ export default function HomePage() {
     </View>
   );
 
+  const ListFooter =
+    isExpanded && hasMore ? (
+      <Pressable
+        onPress={handleToggleExpand}
+        className="flex-row items-center justify-center gap-1 rounded-xl py-2 active:bg-muted">
+        <Text className="font-sans-medium text-sm text-muted-foreground">Show less</Text>
+        <Icon as={ChevronUp} size={16} className="text-muted-foreground" />
+      </Pressable>
+    ) : null;
+
   return (
     <ScreenContainer
       bottomActionBar={
@@ -183,23 +160,73 @@ export default function HomePage() {
         </BottomActionBar>
       }>
       <HomeHeader onSettingsPress={handleSettingsPress} className="mb-4" />
-      <FlatList
-        data={displayRows}
-        renderItem={renderRow}
-        keyExtractor={(row) => row.map((s) => s.id).join('-')}
-        ListHeaderComponent={ListHeader}
-        ListFooterComponent={ListFooter}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 12 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            tintColor="transparent"
-            colors={['transparent']}
+
+      <View>
+        <HomeBalances isRefreshing={isRefreshing} />
+        <View className="gap-4">
+          <SectionHeader
+            title="Stores"
+            className="mb-0"
+            action={
+              hasMore && !showSkeleton && !error
+                ? { label: isExpanded ? 'Show less' : 'View more', onPress: handleToggleExpand }
+                : undefined
+            }
           />
-        }
-      />
+          <StoreActionCards
+            onDiscoverPress={handleDiscoverPress}
+            onCreatePress={handleCreatePress}
+          />
+        </View>
+      </View>
+
+      {showSkeleton && (
+        <View className="mt-4">
+          <StoresGridSkeleton />
+        </View>
+      )}
+
+      {showErrorState && (
+        <View className="items-center justify-center px-4 py-8">
+          <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
+          <Text className="text-center text-destructive">Unable to load stores</Text>
+          <Text className="mt-1 text-center text-sm text-muted-foreground">
+            Please check your connection and try again
+          </Text>
+        </View>
+      )}
+
+      {showEmptyState && (
+        <View className="items-center justify-center px-4 py-6">
+          <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
+          <Text className="text-center font-sans-medium text-foreground">No stores yet</Text>
+          <Text className="mt-1 text-center text-sm text-muted-foreground">
+            Create a store or pay at one to start earning rewards
+          </Text>
+        </View>
+      )}
+
+      {showStores && (
+        <FlatList
+          ref={storesListRef}
+          data={rows}
+          renderItem={renderRow}
+          keyExtractor={(row) => row.map((s) => s.id).join('-')}
+          ListFooterComponent={ListFooter}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12, paddingTop: 16, paddingBottom: isExpanded ? 140 : 0 }}
+          style={isExpanded ? { flex: 1 } : undefined}
+          scrollEnabled={isExpanded}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor="transparent"
+              colors={['transparent']}
+            />
+          }
+        />
+      )}
     </ScreenContainer>
   );
 }
