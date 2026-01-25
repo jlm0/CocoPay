@@ -12,8 +12,8 @@ This document tracks features from Jango's spec that are not yet implemented. Ea
 - [ ] [Mainnet Gas Tax (~20 cents in USDC)](#mainnet-gas-tax-20-cents-in-usdc)
 - [ ] [External Wallet Invoice Filling](#external-wallet-invoice-filling)
 - [ ] [Unlock Bonus (Loan Refinancing)](#unlock-bonus-loan-refinancing)
-- [ ] [Allow Codes for Merchant Launch](#allow-codes-for-merchant-launch) *(Deferred)*
-- [ ] ["Reach Us" Button](#reach-us-button) *(Deferred)*
+- [ ] [Allow Codes for Merchant Launch](#allow-codes-for-merchant-launch) _(Deferred)_
+- [ ] ["Reach Us" Button](#reach-us-button) _(Deferred)_
 
 ---
 
@@ -22,9 +22,11 @@ This document tracks features from Jango's spec that are not yet implemented. Ea
 ### Status: ✓ IMPLEMENTED
 
 ### Description
+
 All CocoPay stores have a 1% reserved token split that routes directly to a CocoPay Labs multisig. The multisig accumulates store tokens from all CocoPay stores and can decide when to cash out or take loans against them.
 
 ### Jango's Spec
+
 > "Let's table COCO for now. Let's just take the %'s into a coco labs multisig... our balance sheet will be in terms of store cococoins so we'll participate in the system by having to choose when to cash out / take loans."
 
 ### Implementation Summary
@@ -38,17 +40,22 @@ All CocoPay stores have a 1% reserved token split that routes directly to a Coco
 | `lib/juicebox/revnet-transforms.ts` | Updated `buildRevnetStageConfig` |
 
 **Constants Added** (`lib/juicebox/constants.ts`):
+
 ```typescript
-export const COCOPAY_LABS_MULTISIG = process.env.EXPO_PUBLIC_COCOPAY_LABS_MULTISIG as `0x${string}` | undefined;
+export const COCOPAY_LABS_MULTISIG = process.env.EXPO_PUBLIC_COCOPAY_LABS_MULTISIG as
+  | `0x${string}`
+  | undefined;
 export const COCOPAY_LABS_SPLIT_PERCENT = 10_000_000; // 1%
 export const STORE_OWNER_SPLIT_PERCENT = 990_000_000; // 99%
 ```
 
 **Split Configuration** (`lib/juicebox/revnet-transforms.ts:56-85`):
+
 - If `COCOPAY_LABS_MULTISIG` is set: 1% to CocoPay Labs, 99% to store owner
 - If not set (fallback): 100% to store owner
 
 ### Token Flow on Payment
+
 ```
 Payment → Tokens Minted
 ├── Cashback % → Payer (e.g., 5%)
@@ -58,6 +65,7 @@ Payment → Tokens Minted
 ```
 
 ### How CocoPay Labs Participates
+
 1. Each store payment distributes 1% of reserved tokens to the multisig
 2. Multisig accumulates various store tokens (diversified portfolio)
 3. CocoPay Labs can choose to:
@@ -70,31 +78,37 @@ Payment → Tokens Minted
 ## Lazy Claiming + Pending Balance Display
 
 ### Description
+
 Optimize the payment and borrow flow by removing the claim step from payments and instead batching it with the borrow transaction. Also display pending reserved tokens in the UI so store owners see their full borrowable balance.
 
 ### Background
+
 Currently, every payment includes a `sendReservedTokensToSplitsOf` call that claims reserved tokens for the store. This adds gas cost to every payment. Instead, we can:
+
 1. Remove claiming from payment flow (faster, cheaper payments)
 2. Add claiming to the borrow flow (batch: claim + borrow)
 3. Show pending balance in UI so owners know their full borrowable amount
 
 ### Current State
+
 - Payment batches: `[approve] → [pay] → [sendReservedTokensToSplitsOf]`
 - Borrow only shows claimed token balance
 - Store owners don't see pending reserved tokens
 
 ### Current Flow (in `useStorePay.ts:96-108`)
+
 ```typescript
 result = await sendBatchedTransaction([
   { target: usdcAddress, data: approveData },
   { target: terminalAddress, data: payData },
-  { target: controllerAddress, data: claimReservedData },  // Remove this
+  { target: controllerAddress, data: claimReservedData }, // Remove this
 ]);
 ```
 
 ### Target Flow
 
 **Payment (faster):**
+
 ```typescript
 result = await sendBatchedTransaction([
   { target: usdcAddress, data: approveData },
@@ -104,6 +118,7 @@ result = await sendBatchedTransaction([
 ```
 
 **Borrow (batch claim + borrow):**
+
 ```typescript
 const claimData = encodeFunctionData({
   abi: jbControllerAbi,
@@ -132,6 +147,7 @@ result = await sendBatchedTransaction([
    - Add `sendReservedTokensToSplitsOf` before `borrowFrom`
 
 3. **New: `hooks/usePendingReservedTokens.ts`**
+
    ```typescript
    import { jbControllerAbi } from 'juice-sdk-core';
 
@@ -153,6 +169,7 @@ result = await sendBatchedTransaction([
 ### Contract Functions
 
 **Get pending reserved tokens:**
+
 ```typescript
 // JBController.pendingReservedTokenBalanceOf(projectId) → uint256
 const pending = await publicClient.readContract({
@@ -164,6 +181,7 @@ const pending = await publicClient.readContract({
 ```
 
 **Claim reserved tokens:**
+
 ```typescript
 // JBController.sendReservedTokensToSplitsOf(projectId)
 encodeFunctionData({
@@ -174,7 +192,9 @@ encodeFunctionData({
 ```
 
 ### Key Insight: Borrowing Requires Claimed Tokens
+
 From `REVLoans.sol:756-770`:
+
 ```solidity
 function _addCollateralTo(uint256 revnetId, uint256 amount) internal {
     // Burn the tokens that are tracked as collateral.
@@ -186,17 +206,20 @@ function _addCollateralTo(uint256 revnetId, uint256 amount) internal {
     });
 }
 ```
+
 **You cannot borrow against unclaimed tokens** - the loan contract burns tokens from your wallet. Tokens must be claimed first.
 
 ### UI Display
 
 **Current:**
+
 ```
 Balance: 100 $STORE
 Cash out value: $95.00
 ```
 
 **Target:**
+
 ```
 Balance: 100 $STORE (claimed)
 Pending: +50 $STORE (from recent sales)
@@ -206,12 +229,14 @@ Cash out value: $142.50
 ```
 
 ### Considerations
+
 - `pendingReservedTokenBalanceOf` returns TOTAL pending for project
 - For store owner's share: multiply by their split percent (99% with CocoPay Labs split)
 - Claim is a no-op if nothing pending (safe to always include)
 - Reduces gas cost per payment by removing unnecessary claim
 
 ### Benefits
+
 1. **Faster payments** - one less contract call
 2. **Lower gas** - claiming batched only when needed
 3. **Better UX** - store owners see full borrowable balance
@@ -222,12 +247,15 @@ Cash out value: $142.50
 ## Pay in Store Token (Token Transfer)
 
 ### Description
+
 When a user pays a store using that store's token (not USDC), it should be a direct token transfer to the store owner. The value displayed should be the cash out value without fees (since no cash out occurs).
 
 ### Jango's Spec
+
 > "If a user pays a store in its token, this is the same as the user transferring their tokens to the store owner. The value of doing so is the standard cash out value of the tokens, without accounting for fees since they do not incur. Use reclaimableSurplusOf fn of terminalStore."
 
 ### Current State
+
 - `useStorePay` only handles USDC payments via `jbMultiTerminal.pay()`
 - No token transfer flow exists
 - UI doesn't offer option to pay with store tokens
@@ -237,6 +265,7 @@ When a user pays a store using that store's token (not USDC), it should be a dir
 **New hook needed:** `hooks/useStoreTokenTransfer.ts`
 
 **Existing reference for token operations:**
+
 - `hooks/useReclaimableTokenValue.ts` - Uses `currentReclaimableSurplusOf` for value calculation
 - `hooks/juicebox/useJBProjectRead.ts` - Has `jbTokensAbi` reference
 
@@ -245,6 +274,7 @@ When a user pays a store using that store's token (not USDC), it should be a dir
 ### Contract Functions Needed
 
 **Token Transfer (from juice-sdk-core):**
+
 ```typescript
 // jbControllerAbi - transferCreditsFrom
 functionName: 'transferCreditsFrom',
@@ -257,6 +287,7 @@ args: [
 ```
 
 **Value Calculation (already implemented):**
+
 ```typescript
 // jbTerminalStoreAbi - currentReclaimableSurplusOf (hooks/useReclaimableTokenValue.ts:62-74)
 functionName: 'currentReclaimableSurplusOf',
@@ -290,12 +321,14 @@ args: [
    - Already have `useMultiChainParticipations` that tracks this
 
 ### UI Considerations
+
 - Only show token payment option if user has tokens for that store
 - Display "Pay with [tokenSymbol]" alongside "Pay with USDC"
 - Show equivalent USD value using `currentReclaimableSurplusOf`
 - Clarify: "No fees - direct transfer to store owner"
 
 ### Considerations
+
 - Simpler transaction than USDC payment (no approve step)
 - Value display should NOT include cash out tax (10%)
 - Need to find store owner address (from project or splits)
@@ -306,12 +339,15 @@ args: [
 ## Mainnet Gas Tax (~20 cents in USDC)
 
 ### Description
+
 When users pay a store in USDC on Ethereum mainnet, they must pay a small ~20 cent tax to CocoPay to cover gas costs. This should be bundled into the USDC payment transaction.
 
 ### Jango's Spec
+
 > "If a user pays a store in USDC on mainnet, they must also pay a small ~20 cent tax to cocopay to cover gas. (q: can this be in USDC and bundled into the pay tx?)"
 
 ### Current State
+
 - No mainnet-specific fee logic exists
 - All payments go directly to store with no CocoPay fee
 - Gas is sponsored via Alchemy account abstraction
@@ -321,6 +357,7 @@ When users pay a store in USDC on Ethereum mainnet, they must pay a small ~20 ce
 **Primary file:** `hooks/useStorePay.ts`
 
 **Chain detection:** `lib/network/chains.ts`
+
 ```typescript
 import { mainnet } from 'viem/chains';
 const IS_MAINNET_CHAIN = chainId === mainnet.id; // chainId === 1
@@ -329,12 +366,14 @@ const IS_MAINNET_CHAIN = chainId === mainnet.id; // chainId === 1
 ### Approach Options
 
 **Option A: Additional USDC Transfer in Batch**
+
 ```typescript
 // In useStorePay.ts - add to batch when on mainnet
 const MAINNET_GAS_FEE = parseUnits('0.20', USDC_DECIMALS); // 20 cents
 const COCOPAY_FEE_RECIPIENT = '0x...'; // CocoPay treasury
 
-if (chainId === 1) { // Ethereum mainnet
+if (chainId === 1) {
+  // Ethereum mainnet
   const feeTransferData = encodeFunctionData({
     abi: ERC20_ABI,
     functionName: 'transfer',
@@ -347,11 +386,14 @@ if (chainId === 1) { // Ethereum mainnet
 ```
 
 **Option B: Increase Payment Amount**
+
 - Add 20 cents to payment, CocoPay takes it as a split
 - Requires $COCO split implementation first
 
 ### Required Constants
+
 Add to `lib/constants.ts`:
+
 ```typescript
 export const MAINNET_GAS_FEE_USDC = parseUnits('0.20', 6); // 20 cents
 export const COCOPAY_FEE_RECIPIENT = '0x...'; // Treasury address
@@ -373,12 +415,14 @@ export const COCOPAY_FEE_RECIPIENT = '0x...'; // Treasury address
    - Show total cost including fee
 
 ### UI Considerations
+
 - Clearly display the fee before payment confirmation
 - Only show fee on Ethereum mainnet, not L2s
 - Fee should be included in total "you will pay" amount
 - Consider: fee might need adjustment based on actual gas costs
 
 ### Considerations
+
 - Fee recipient address needs to be determined
 - Could be CocoPay multisig or treasury contract
 - Answer to Jango's question: Yes, can be bundled via Alchemy batch
@@ -389,12 +433,15 @@ export const COCOPAY_FEE_RECIPIENT = '0x...'; // Treasury address
 ## External Wallet Invoice Filling
 
 ### Description
+
 Allow users to fill CocoPay invoices through external wallets (MetaMask, Rainbow, etc.). These payments will NOT be gas sponsored - users pay their own gas.
 
 ### Jango's Spec
+
 > "The app should allow people to fill CocoPay invoices through other wallets, though these won't be gas sponsored."
 
 ### Current State
+
 - All payments use Alchemy smart account (sponsored gas)
 - No WalletConnect or external wallet connection
 - Charge QR shows payment URL but only for in-app use
@@ -402,21 +449,25 @@ Allow users to fill CocoPay invoices through external wallets (MetaMask, Rainbow
 ### Implementation Approach
 
 **Option A: WalletConnect Integration**
+
 - Add WalletConnect v2 to allow external wallet connections
 - Generate payment transactions for external signing
 - Complex: requires wallet state management
 
 **Option B: Payment Link / Deep Link**
+
 - Generate a payment URL that opens external wallets
 - Use EIP-681 format for Ethereum payment requests
 - Simpler: wallet handles everything
 
 **Option C: Display Raw Transaction Data**
+
 - Show contract address, function, and parameters
 - User copies to their wallet manually
 - Simplest but worst UX
 
 ### Payment URL Format (EIP-681)
+
 ```
 ethereum:<terminal_address>/pay?
   uint256=<projectId>&
@@ -446,6 +497,7 @@ ethereum:<terminal_address>/pay?
    - WalletConnect v2 initialization
 
 ### Package Dependencies (if WalletConnect)
+
 ```json
 {
   "@walletconnect/modal-react-native": "^1.x",
@@ -454,7 +506,9 @@ ethereum:<terminal_address>/pay?
 ```
 
 ### Contract Reference
+
 External wallets need to call the same contract:
+
 ```typescript
 // JBMultiTerminal.pay()
 {
@@ -466,6 +520,7 @@ External wallets need to call the same contract:
 ```
 
 ### Considerations
+
 - User must have USDC and approve terminal first
 - No gas sponsorship - user pays their own gas
 - Need to handle approval flow in external wallet
@@ -473,6 +528,7 @@ External wallets need to call the same contract:
 - WalletConnect adds significant complexity
 
 ### Recommendation
+
 Start with **Option B (Payment Link)** for simplest implementation. Merchants can share payment links that open in user's wallet app.
 
 ---
@@ -480,14 +536,18 @@ Start with **Option B (Payment Link)** for simplest implementation. Merchants ca
 ## Unlock Bonus (Loan Refinancing)
 
 ### Description
+
 When a user's loan collateral increases in value over time, offer options to:
+
 1. Borrow more USDC without adding collateral (refinance to borrow more)
 2. Remove excess collateral while keeping the same loan amount (refinance to unlock tokens)
 
 ### Jango's Spec
+
 > "To the extent loan collateral increases in value over time, give user option to 'Unlock bonus', which gives the user either access to more USDC without cashing out more tokens (refinancing the loan to borrow more against existing collateral), or more of the token (refinancing the loan to remove collateral to the minimum necessary to sustain the existing loaned amount)."
 
 ### Current State
+
 - `BorrowContainer` only handles new loans
 - `useJBLoanBorrow` creates new loans
 - No refinance or collateral adjustment UI
@@ -496,6 +556,7 @@ When a user's loan collateral increases in value over time, offer options to:
 ### Contract Functions (from REVLoans.sol)
 
 **Reallocate Collateral (refinance):**
+
 ```typescript
 // REVLoans.sol:619 - reallocateCollateralFromLoan
 functionName: 'reallocateCollateralFromLoan',
@@ -512,6 +573,7 @@ args: [
 ```
 
 **Repay Loan (partial or full):**
+
 ```typescript
 // REVLoans.sol:667 - repayLoan
 functionName: 'repayLoan',
@@ -527,6 +589,7 @@ args: [
 ### Implementation Location
 
 **New files needed:**
+
 - `hooks/juicebox/useJBLoanRefinance.ts` - Refinancing operations
 - `hooks/useActiveLoan.ts` - Track user's active loans
 - `components/containers/RefinanceContainer.tsx` - Refinance UI
@@ -534,10 +597,12 @@ args: [
 - `app/(app)/refinance/index.tsx` - Refinance route
 
 **Existing files to modify:**
+
 - `components/presentational/borrow-success.tsx` - Link to manage loan
 - `app/(app)/store/[id].tsx` - Show "Unlock Bonus" when available
 
 ### Value Calculation Logic
+
 ```typescript
 // Check if collateral value increased
 const currentCollateralValue = await getCurrentReclaimableValue(loan.collateral);
@@ -556,6 +621,7 @@ const unlockableCollateral = loan.collateral - minimumCollateral;
 ```
 
 ### UI Flow
+
 1. User views store → sees "Unlock Bonus Available" badge
 2. Taps badge → opens refinance screen
 3. Two options presented:
@@ -564,6 +630,7 @@ const unlockableCollateral = loan.collateral - minimumCollateral;
 4. User selects amount and confirms
 
 ### Considerations
+
 - Need to track active loans per user per project
 - Loan value depends on token price (reclaimable amount)
 - Prepaid fee affects when refinancing is profitable
@@ -575,15 +642,19 @@ const unlockableCollateral = loan.collateral - minimumCollateral;
 ## Allow Codes for Merchant Launch
 
 ### Status: DEFERRED
-*User decided to defer this feature for now.*
+
+_User decided to defer this feature for now._
 
 ### Description
+
 Gate store creation behind one-time user allow codes that let merchants launch. Merchants without a code see a "Reach Us" button.
 
 ### Jango's Spec
+
 > "Let's gas sponsor store creation, though gate it behind one-time user allow codes that let merchants launch."
 
 ### Implementation Notes (for future reference)
+
 - Options: signed codes, merkle tree, on-chain registry, NFT gate
 - Signed codes are simplest (no backend required)
 - Code validation would happen in `CreateStoreContainer` before deployment
@@ -594,15 +665,19 @@ Gate store creation behind one-time user allow codes that let merchants launch. 
 ## "Reach Us" Button
 
 ### Status: DEFERRED
-*Related to allow codes feature.*
+
+_Related to allow codes feature._
 
 ### Description
+
 When a merchant doesn't have an allow code, show a "Reach Us" button so they can express interest.
 
 ### Jango's Spec
+
 > "With a 'reach us' button if a store is interested."
 
 ### Implementation Notes (for future reference)
+
 - Simple: Open email link or Discord invite
 - Alternative: In-app form that sends to backend
 - Would appear in create store flow when code is required but not provided
@@ -611,31 +686,31 @@ When a merchant doesn't have an allow code, show a "Reach Us" button so they can
 
 ## Quick Reference: Key Files
 
-| Area | File | Purpose |
-|------|------|---------|
-| Splits | `lib/juicebox/revnet-transforms.ts` | Configure store splits |
-| Constants | `lib/juicebox/constants.ts` | Add COCO project ID, fees |
-| Types | `types/revnet.ts` | JBSplit, REVStageConfig |
-| Pay Hook | `hooks/useStorePay.ts` | USDC payment execution |
-| Loan | `hooks/juicebox/useJBLoanBorrow.ts` | Borrow/cash out |
-| Loan Quote | `hooks/juicebox/useJBLoanQuote.ts` | Get borrowable amount |
-| Loan Read | `hooks/juicebox/useJBLoanRead.ts` | Read loan details |
-| Reclaimable | `hooks/useReclaimableTokenValue.ts` | Token → USD value |
-| Chain Config | `lib/network/chains.ts` | Mainnet detection |
-| Pay Container | `components/containers/PayContainer.tsx` | Payment UI orchestration |
-| Borrow Container | `components/containers/BorrowContainer.tsx` | Cash out UI |
+| Area             | File                                        | Purpose                   |
+| ---------------- | ------------------------------------------- | ------------------------- |
+| Splits           | `lib/juicebox/revnet-transforms.ts`         | Configure store splits    |
+| Constants        | `lib/juicebox/constants.ts`                 | Add COCO project ID, fees |
+| Types            | `types/revnet.ts`                           | JBSplit, REVStageConfig   |
+| Pay Hook         | `hooks/useStorePay.ts`                      | USDC payment execution    |
+| Loan             | `hooks/juicebox/useJBLoanBorrow.ts`         | Borrow/cash out           |
+| Loan Quote       | `hooks/juicebox/useJBLoanQuote.ts`          | Get borrowable amount     |
+| Loan Read        | `hooks/juicebox/useJBLoanRead.ts`           | Read loan details         |
+| Reclaimable      | `hooks/useReclaimableTokenValue.ts`         | Token → USD value         |
+| Chain Config     | `lib/network/chains.ts`                     | Mainnet detection         |
+| Pay Container    | `components/containers/PayContainer.tsx`    | Payment UI orchestration  |
+| Borrow Container | `components/containers/BorrowContainer.tsx` | Cash out UI               |
 
 ---
 
 ## Quick Reference: Contract ABIs
 
-| Contract | ABI Import | Key Functions |
-|----------|------------|---------------|
-| JBMultiTerminal | `jbMultiTerminalAbi` | `pay`, `addToBalanceOf` |
-| JBController | `jbControllerAbi` | `transferCreditsFrom`, `setSplitGroupsOf` |
-| JBTerminalStore | `jbTerminalStoreAbi` | `currentReclaimableSurplusOf` |
-| REVLoans | `revLoans1_1Abi` | `borrowFrom`, `repayLoan`, `reallocateCollateralFromLoan` |
-| ERC20 | `ERC20_ABI` (local) | `approve`, `transfer`, `transferFrom` |
+| Contract        | ABI Import           | Key Functions                                             |
+| --------------- | -------------------- | --------------------------------------------------------- |
+| JBMultiTerminal | `jbMultiTerminalAbi` | `pay`, `addToBalanceOf`                                   |
+| JBController    | `jbControllerAbi`    | `transferCreditsFrom`, `setSplitGroupsOf`                 |
+| JBTerminalStore | `jbTerminalStoreAbi` | `currentReclaimableSurplusOf`                             |
+| REVLoans        | `revLoans1_1Abi`     | `borrowFrom`, `repayLoan`, `reallocateCollateralFromLoan` |
+| ERC20           | `ERC20_ABI` (local)  | `approve`, `transfer`, `transferFrom`                     |
 
 ---
 
