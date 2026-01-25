@@ -92,7 +92,7 @@ export function buildRevnetStageConfig(
     initialIssuance: DEFAULT_INITIAL_ISSUANCE,
     issuanceCutFrequency: ISSUANCE_CUT_FREQUENCY,
     issuanceCutPercent,
-    cashOutTaxRate: 10,
+    cashOutTaxRate: 1000,
     extraMetadata: ALLOW_SUCKERS_FLAG,
   };
 }
