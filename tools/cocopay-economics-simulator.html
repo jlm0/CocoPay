@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cocopay Economics Simulator</title>
+
+  <!-- FOUC Prevention: Apply dark mode before paint -->
+  <script>
+    document.documentElement.classList.toggle(
+      'dark',
+      localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) &&
+         window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  </script>
+
+  <!-- Tailwind CSS via CDN (JIT compiler - cannot use SRI) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            coco: {
+              primary: '#8b5cf6',
+              secondary: '#a78bfa'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js (pinned version with SRI) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+          integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
+          crossorigin="anonymous"></script>
+
+  <!-- seedrandom for reproducible Monte Carlo (pinned with SRI) -->
+  <script src="https://cdn.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js"
+          integrity="sha384-bFS5CG904xYIgxBcrDF4KFNXuM7KeSGsSvS/QTaDqMTEdbaaxjg2Y2TSU3Ygs7wG"
+          crossorigin="anonymous"></script>
+
+  <!-- Alpine.js (deferred, pinned with SRI) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
+          integrity="sha384-Rpe/8orFUm5Q1GplYBHxbuA8Az8O8C5sAoOsdbRWkqPjKFaxPgGZipj4zeHL7lxX"
+          crossorigin="anonymous"></script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .dark input[type="range"] { background: #374151; }
+    .dark input[type="range"]::-webkit-slider-thumb { background: #8b5cf6; }
+    input[type="range"] { background: #e5e7eb; }
+    input[type="range"]::-webkit-slider-thumb { background: #8b5cf6; }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<div x-data="simulator()" x-init="initialize()" x-cloak>
+  <!-- Header -->
+  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🥥</span>
+        <h1 class="text-xl font-bold">Cocopay Economics Simulator</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button @click="exportCSV()" class="px-3 py-1.5 text-sm bg-green-500 hover:bg-green-600 text-white rounded" :disabled="!results">
+          CSV
+        </button>
+        <button @click="exportJSON()" class="px-3 py-1.5 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded" :disabled="!results">
+          JSON
+        </button>
+        <button @click="toggleTheme()" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+          <span x-show="theme === 'light'">🌙</span>
+          <span x-show="theme === 'dark'">☀️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto p-4">
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Sidebar: Parameters -->
+      <aside class="w-full lg:w-80 flex-shrink-0">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-6">
+
+          <!-- Network Config -->
+          <div>
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>🏪</span> Network Configuration
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">How many stores are in the Cocopay network and their monthly revenue levels.</p>
+            <div class="space-y-4">
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Total Stores</span>
+                  <span class="font-mono" x-text="config.totalStores"></span>
+                </label>
+                <input type="range" x-model.number="config.totalStores" @input="debouncedRun()" min="10" max="1000" step="10" class="w-full">
+              </div>
+
+              <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Store Size Distribution</div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">What % of stores fall into each revenue tier, and their avg monthly revenue.</p>
+              <div class="grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <div class="mb-1">Small (<span x-text="config.storeDistribution.small.percent"></span>%)</div>
+                  <input type="range" x-model.number="config.storeDistribution.small.percent" @input="normalizeDistribution('small'); debouncedRun()" min="0" max="100" class="w-full">
+                  <input type="number" x-model.number="config.storeDistribution.small.revenueK" @input="debouncedRun()" class="w-full mt-1 px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" min="1">
+                  <div class="text-gray-500">$K/mo</div>
+                </div>
+                <div>
+                  <div class="mb-1">Medium (<span x-text="config.storeDistribution.medium.percent"></span>%)</div>
+                  <input type="range" x-model.number="config.storeDistribution.medium.percent" @input="normalizeDistribution('medium'); debouncedRun()" min="0" max="100" class="w-full">
+                  <input type="number" x-model.number="config.storeDistribution.medium.revenueK" @input="debouncedRun()" class="w-full mt-1 px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" min="1">
+                  <div class="text-gray-500">$K/mo</div>
+                </div>
+                <div>
+                  <div class="mb-1">Large (<span x-text="config.storeDistribution.large.percent"></span>%)</div>
+                  <input type="range" x-model.number="config.storeDistribution.large.percent" @input="normalizeDistribution('large'); debouncedRun()" min="0" max="100" class="w-full">
+                  <input type="number" x-model.number="config.storeDistribution.large.revenueK" @input="debouncedRun()" class="w-full mt-1 px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" min="1">
+                  <div class="text-gray-500">$K/mo</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Economics -->
+          <div>
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>💰</span> Token Economics
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">How tokens are minted and what it costs to exit.</p>
+            <div class="space-y-4">
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Cashback %</span>
+                  <span class="font-mono" x-text="config.cashbackPercent + '%'"></span>
+                </label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">% of each payment minted as tokens to the customer. Rest goes to store owner (99%) and Cocopay (1%).</p>
+                <input type="range" x-model.number="config.cashbackPercent" @input="debouncedRun()" min="0" max="20" class="w-full">
+              </div>
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Cash Out Tax (Exit Tax)</span>
+                  <span class="font-mono" x-text="(config.cashOutTaxBps / 100) + '%'"></span>
+                </label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Revnet exit tax when burning tokens for USDC. This stays in treasury, boosting remaining token value.</p>
+                <input type="range" x-model.number="config.cashOutTaxBps" @input="debouncedRun()" min="0" max="5000" step="100" class="w-full">
+              </div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                <strong>Total Cash Out Fee:</strong> <span x-text="((1 - (1 - config.cashOutTaxBps/10000) * 0.975 * 0.975) * 100).toFixed(2) + '%'"></span>
+                <br><span class="text-gray-400">(Exit tax + 2.5% Revnet + 2.5% JB DAO)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exit Behavior -->
+          <div>
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>🚪</span> Token Holder Behavior
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">What do token holders do with their tokens each month? These must sum to 100%.</p>
+            <div class="space-y-3">
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Cash Out</span>
+                  <span class="font-mono text-red-500" x-text="config.exitBehavior.cashOutPercent + '%'"></span>
+                </label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Burn tokens → get USDC. Highest fee path (~14% at 10% tax).</p>
+                <input type="range" x-model.number="config.exitBehavior.cashOutPercent" @input="normalizeExitBehavior('cashOutPercent'); debouncedRun()" min="0" max="100" class="w-full">
+              </div>
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Loan</span>
+                  <span class="font-mono text-yellow-500" x-text="config.exitBehavior.loanPercent + '%'"></span>
+                </label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Borrow USDC against tokens. ~6% fee (2.5% JB + 2.5% source + 1% REV).</p>
+                <input type="range" x-model.number="config.exitBehavior.loanPercent" @input="normalizeExitBehavior('loanPercent'); debouncedRun()" min="0" max="100" class="w-full">
+              </div>
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Hold</span>
+                  <span class="font-mono text-blue-500" x-text="config.exitBehavior.holdPercent + '%'"></span>
+                </label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Keep tokens in wallet. No fees, but no liquidity.</p>
+                <input type="range" x-model.number="config.exitBehavior.holdPercent" @input="normalizeExitBehavior('holdPercent'); debouncedRun()" min="0" max="100" class="w-full">
+              </div>
+            </div>
+          </div>
+
+          <!-- Community Commerce -->
+          <div>
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>🔄</span> Community Commerce
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">The key to viability: tokens spent at OTHER stores in the network instead of exiting.</p>
+            <div>
+              <label class="flex justify-between text-sm mb-1">
+                <span>Network Spend Rate</span>
+                <span class="font-mono text-green-500" x-text="config.communityCommerceRate + '%'"></span>
+              </label>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">% of potential exits redirected to purchases at other Cocopay stores. <strong>0% fee</strong> (just token transfer).</p>
+              <input type="range" x-model.number="config.communityCommerceRate" @input="debouncedRun()" min="0" max="100" class="w-full">
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 p-2 bg-gray-100 dark:bg-gray-700 rounded mt-3">
+              <strong>Why this matters:</strong> High community commerce = lower effective fees. At 50%+ network spend, Cocopay can compete with Stripe's 3.2%.
+            </div>
+          </div>
+
+          <!-- Simulation -->
+          <div>
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>⚙️</span> Simulation Settings
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Monte Carlo runs many random simulations to show P10/P50/P90 confidence bands.</p>
+            <div class="space-y-4">
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Duration</span>
+                  <span class="font-mono" x-text="config.durationMonths + ' months'"></span>
+                </label>
+                <input type="range" x-model.number="config.durationMonths" @input="debouncedRun()" min="12" max="60" step="6" class="w-full">
+              </div>
+              <div>
+                <label class="flex justify-between text-sm mb-1">
+                  <span>Iterations</span>
+                  <span class="font-mono" x-text="config.iterations"></span>
+                </label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">More iterations = smoother confidence bands, slower simulation.</p>
+                <input type="range" x-model.number="config.iterations" @input="debouncedRun()" min="50" max="500" step="50" class="w-full">
+              </div>
+            </div>
+          </div>
+
+          <!-- Presets -->
+          <div>
+            <h3 class="font-semibold mb-3">Scenario Presets</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Quick-load common behavior scenarios.</p>
+            <div class="grid grid-cols-1 gap-2">
+              <button @click="setPreset('allCashOut')" :class="activePreset === 'allCashOut' ? 'bg-red-500 text-white' : 'bg-gray-200 dark:bg-gray-700'" class="px-3 py-2 rounded text-sm text-left">
+                <strong>Worst Case</strong>
+                <span class="text-xs opacity-75 block">100% cash out, 0% community</span>
+              </button>
+              <button @click="setPreset('mixedRealistic')" :class="activePreset === 'mixedRealistic' ? 'bg-yellow-500 text-white' : 'bg-gray-200 dark:bg-gray-700'" class="px-3 py-2 rounded text-sm text-left">
+                <strong>Early Adopters</strong>
+                <span class="text-xs opacity-75 block">70% cash out, 10% community</span>
+              </button>
+              <button @click="setPreset('communityTarget')" :class="activePreset === 'communityTarget' ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'" class="px-3 py-2 rounded text-sm text-left">
+                <strong>Viable Network</strong>
+                <span class="text-xs opacity-75 block">30% cash out, 50% community</span>
+              </button>
+              <button @click="setPreset('allHold')" :class="activePreset === 'allHold' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'" class="px-3 py-2 rounded text-sm text-left">
+                <strong>Diamond Hands</strong>
+                <span class="text-xs opacity-75 block">100% hold, no exits</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Run Button -->
+          <button @click="runSimulation()" :disabled="status === 'running'" class="w-full py-3 bg-coco-primary hover:bg-coco-secondary text-white rounded-lg font-semibold disabled:opacity-50">
+            <span x-show="status !== 'running'">📊 Run Simulation</span>
+            <span x-show="status === 'running'">Running... <span x-text="Math.round(progress * 100)"></span>%</span>
+          </button>
+
+          <!-- Progress Bar -->
+          <div x-show="status === 'running'" class="h-2 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
+            <div class="h-full bg-coco-primary transition-all" :style="`width: ${progress * 100}%`"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content: Results -->
+      <main class="flex-1 space-y-6">
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Total Network Volume</div>
+            <div class="text-2xl font-bold" x-text="results ? formatCompact(results.summary.totalVolume.p50) : '—'"></div>
+            <div class="text-xs text-gray-400" x-text="results ? 'P10-P90: ' + formatCompact(results.summary.totalVolume.p10) + ' - ' + formatCompact(results.summary.totalVolume.p90) : ''"></div>
+            <div class="text-xs text-gray-500 mt-1">Total payments processed</div>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Cocopay Revenue (<span x-text="config.durationMonths"></span>mo)</div>
+            <div class="text-2xl font-bold" :class="results && results.summary.cocopayRevenue.p50 > 0 ? 'text-green-500' : ''" x-text="results ? formatCompact(results.summary.cocopayRevenue.p50) : '—'"></div>
+            <div class="text-xs text-gray-400" x-text="results ? 'P10-P90: ' + formatCompact(results.summary.cocopayRevenue.p10) + ' - ' + formatCompact(results.summary.cocopayRevenue.p90) : ''"></div>
+            <div class="text-xs text-gray-500 mt-1">Net if cashed out (after ~14% fees)</div>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500 dark:text-gray-400">vs Stripe (3.2%)</div>
+            <div class="text-2xl font-bold" :class="results && results.comparison.difference < 0 ? 'text-green-500' : 'text-red-500'" x-text="results ? (results.comparison.difference > 0 ? '+' : '') + results.comparison.difference.toFixed(1) + '%' : '—'"></div>
+            <div class="text-xs text-gray-400" x-text="results ? (results.comparison.difference > 0 ? 'More expensive' : 'Cheaper') + ' than Stripe' : ''"></div>
+            <div class="text-xs text-gray-500 mt-1">Effective fee comparison</div>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Network Retention</div>
+            <div class="text-2xl font-bold" :class="results && results.summary.communityViability.p50 > 50 ? 'text-green-500' : results && results.summary.communityViability.p50 > 20 ? 'text-yellow-500' : 'text-red-500'" x-text="results ? results.summary.communityViability.p50.toFixed(0) + '%' : '—'"></div>
+            <div class="text-xs text-gray-400" x-text="results ? (results.summary.communityViability.p50 > 50 ? 'Strong' : results.summary.communityViability.p50 > 20 ? 'Marginal' : 'Weak') : ''"></div>
+            <div class="text-xs text-gray-500 mt-1">Tokens staying in network</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Treasury Over Time -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <h3 class="font-semibold mb-1">Treasury Balance</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Total USDC held in all store Revnets. Shaded area = P10-P90 confidence band.</p>
+            <div class="relative h-64">
+              <canvas id="treasuryChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Token Backing -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <h3 class="font-semibold mb-1">Token Backing Value</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">USDC value per token. Rises when exit tax is paid (tokens burned, USDC stays).</p>
+            <div class="relative h-64">
+              <canvas id="backingChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Fee Comparison -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <h3 class="font-semibold mb-1">Exit Strategy Fees</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Fee % for each way to get value from tokens. Community commerce = 0% (no exit).</p>
+            <div class="relative h-64">
+              <canvas id="feeChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Token Distribution -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <h3 class="font-semibold mb-1">Token Distribution</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">How tokens from a $100 payment are split. Customer gets cashback %, rest to store/Cocopay.</p>
+            <div class="relative h-64">
+              <canvas id="tokenChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formula Section (Collapsible) -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <button @click="showFormulas = !showFormulas" class="w-full p-4 flex items-center justify-between">
+            <span class="font-semibold">📐 Fee Formulas</span>
+            <span x-text="showFormulas ? '▲' : '▼'"></span>
+          </button>
+          <div x-show="showFormulas" x-transition class="px-4 pb-4 text-sm font-mono bg-gray-50 dark:bg-gray-900">
+            <div class="space-y-2">
+              <p><strong>Cash Out Fee:</strong> 1 - (1 - tax) × 0.975 × 0.975</p>
+              <p><strong>At 10% tax:</strong> 1 - 0.90 × 0.975 × 0.975 = 14.44%</p>
+              <p><strong>Loan Fee:</strong> 2.5% (JB) + 2.5% (Source) + 1% (REV) = 6%</p>
+              <p><strong>Community Commerce:</strong> 0% (token transfer, no exit)</p>
+              <p><strong>Stripe:</strong> 3.2% (baseline comparison)</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ CONSTANTS ============
+
+const FEES = {
+  REVNET_FEE_BPS: 250,
+  JBDAO_FEE_BPS: 250,
+  LOAN_JB_FEE_BPS: 250,
+  LOAN_SOURCE_FEE_BPS: 250,
+  LOAN_REV_FEE_BPS: 100,
+  STRIPE_FEE_BPS: 320,
+  COCOPAY_SPLIT_BPS: 100,
+  STORE_OWNER_SPLIT_BPS: 9900
+};
+
+const PRESETS = {
+  allCashOut: {
+    exitBehavior: { cashOutPercent: 100, loanPercent: 0, holdPercent: 0 },
+    communityCommerceRate: 0
+  },
+  mixedRealistic: {
+    exitBehavior: { cashOutPercent: 70, loanPercent: 20, holdPercent: 10 },
+    communityCommerceRate: 10
+  },
+  communityTarget: {
+    exitBehavior: { cashOutPercent: 30, loanPercent: 20, holdPercent: 50 },
+    communityCommerceRate: 50
+  },
+  allHold: {
+    exitBehavior: { cashOutPercent: 0, loanPercent: 0, holdPercent: 100 },
+    communityCommerceRate: 0
+  }
+};
+
+// ============ UTILITIES ============
+
+function formatCurrency(cents) {
+  return '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatCompact(cents) {
+  const dollars = cents / 100;
+  if (dollars >= 1000000) return '$' + (dollars / 1000000).toFixed(1) + 'M';
+  if (dollars >= 1000) return '$' + (dollars / 1000).toFixed(1) + 'K';
+  return '$' + dollars.toFixed(0);
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function debounce(fn, delay) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// ============ STATISTICS ============
+
+function mean(arr) {
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+function percentile(arr, p) {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const i = (p / 100) * (sorted.length - 1);
+  const lower = Math.floor(i);
+  const upper = Math.ceil(i);
+  if (lower === upper) return sorted[lower];
+  return sorted[lower] * (1 - (i - lower)) + sorted[upper] * (i - lower);
+}
+
+function calculatePercentiles(values) {
+  return {
+    min: Math.min(...values),
+    p10: percentile(values, 10),
+    p25: percentile(values, 25),
+    p50: percentile(values, 50),
+    p75: percentile(values, 75),
+    p90: percentile(values, 90),
+    max: Math.max(...values),
+    mean: mean(values)
+  };
+}
+
+// ============ FEE CALCULATIONS ============
+// Note: The actual protocol applies Revnet fee to TOKENS being burned, then JB fee to USDC output.
+// This simulation uses an equivalent multiplicative model on USDC values, which produces
+// the same net result (e.g., $85.56 for $100 at 10% tax). This simplification is valid
+// because both approaches yield identical final amounts for simulation purposes.
+
+function calculateCashOutNet(grossCents, taxBps) {
+  const afterTax = Math.floor(grossCents * (10000 - taxBps) / 10000);
+  const taxRetained = grossCents - afterTax;
+  const afterRevnet = Math.floor(afterTax * (10000 - FEES.REVNET_FEE_BPS) / 10000);
+  const afterJB = Math.floor(afterRevnet * (10000 - FEES.JBDAO_FEE_BPS) / 10000);
+  const protocolFees = afterTax - afterJB;
+  return { netCents: afterJB, taxRetainedCents: taxRetained, protocolFeesCents: protocolFees };
+}
+
+function calculateLoanNet(grossCents) {
+  const totalFeeBps = FEES.LOAN_JB_FEE_BPS + FEES.LOAN_SOURCE_FEE_BPS + FEES.LOAN_REV_FEE_BPS;
+  const netCents = Math.floor(grossCents * (10000 - totalFeeBps) / 10000);
+  return { netCents, totalFeesCents: grossCents - netCents };
+}
+
+function calculateCashOutFeePercent(taxBps) {
+  const net = calculateCashOutNet(10000, taxBps).netCents;
+  return (10000 - net) / 100;
+}
+
+function calculateLoanFeePercent() {
+  return (FEES.LOAN_JB_FEE_BPS + FEES.LOAN_SOURCE_FEE_BPS + FEES.LOAN_REV_FEE_BPS) / 100;
+}
+
+// ============ SIMULATION ENGINE ============
+
+function createRNG(seed) {
+  if (typeof Math.seedrandom !== 'function') {
+    return Math.random;
+  }
+  return new Math.seedrandom(seed);
+}
+
+function initializeState() {
+  return {
+    month: 0,
+    treasuryBalance: 0,
+    tokenSupply: 0,
+    customerTokens: 0,
+    storeOwnerTokens: 0,
+    cocopayTokens: 0,
+    totalDeposits: 0,
+    totalCashOuts: 0,
+    totalLoans: 0,
+    totalCommunity: 0,
+    totalProtocolFees: 0,
+    totalTaxRetained: 0
+  };
+}
+
+function calculateMonthlyRevenue(config, rng) {
+  const variance = 1 + (rng() - 0.5) * 0.2;
+  const smallStores = Math.round(config.totalStores * config.storeDistribution.small.percent / 100);
+  const mediumStores = Math.round(config.totalStores * config.storeDistribution.medium.percent / 100);
+  const largeStores = config.totalStores - smallStores - mediumStores;
+
+  const revenue = (
+    smallStores * config.storeDistribution.small.revenueK * 1000 +
+    mediumStores * config.storeDistribution.medium.revenueK * 1000 +
+    largeStores * config.storeDistribution.large.revenueK * 1000
+  ) * variance;
+
+  return Math.round(revenue * 100);
+}
+
+function simulateMonth(state, config, rng) {
+  const revenueCents = calculateMonthlyRevenue(config, rng);
+
+  const customerTokens = Math.round(revenueCents * config.cashbackPercent / 100);
+  const storeShare = revenueCents - customerTokens;
+  const cocopayTokens = Math.round(storeShare * FEES.COCOPAY_SPLIT_BPS / 10000);
+  const storeOwnerTokens = storeShare - cocopayTokens;
+
+  state.treasuryBalance += revenueCents;
+  state.totalDeposits += revenueCents;
+  state.tokenSupply += customerTokens + storeOwnerTokens + cocopayTokens;
+  state.customerTokens += customerTokens;
+  state.storeOwnerTokens += storeOwnerTokens;
+  state.cocopayTokens += cocopayTokens;
+
+  const exitableTokens = Math.round(state.tokenSupply * 0.1);
+  const communityTokens = Math.round(exitableTokens * config.communityCommerceRate / 100);
+  const remainingExitTokens = exitableTokens - communityTokens;
+
+  const cashOutTokens = Math.round(remainingExitTokens * config.exitBehavior.cashOutPercent / 100);
+  const loanTokens = Math.round(remainingExitTokens * config.exitBehavior.loanPercent / 100);
+
+  if (cashOutTokens > 0 && state.tokenSupply > 0) {
+    const cashOutValue = Math.round(cashOutTokens * state.treasuryBalance / state.tokenSupply);
+    const { netCents, taxRetainedCents, protocolFeesCents } = calculateCashOutNet(cashOutValue, config.cashOutTaxBps);
+    state.treasuryBalance -= (cashOutValue - taxRetainedCents);
+    state.tokenSupply -= cashOutTokens;
+    state.totalCashOuts += cashOutValue;
+    state.totalTaxRetained += taxRetainedCents;
+    state.totalProtocolFees += protocolFeesCents;
+  }
+
+  if (loanTokens > 0 && state.tokenSupply > 0) {
+    const loanValue = Math.round(loanTokens * state.treasuryBalance / state.tokenSupply);
+    const { totalFeesCents } = calculateLoanNet(loanValue);
+    state.treasuryBalance -= loanValue;
+    state.tokenSupply -= loanTokens;
+    state.totalLoans += loanValue;
+    state.totalProtocolFees += totalFeesCents;
+  }
+
+  state.totalCommunity += communityTokens;
+  state.month++;
+
+  return {
+    month: state.month,
+    treasuryBalance: state.treasuryBalance,
+    tokenSupply: state.tokenSupply,
+    backingPerToken: state.tokenSupply > 0 ? state.treasuryBalance / state.tokenSupply : 100,
+    cocopayTokens: state.cocopayTokens
+  };
+}
+
+function runIteration(config, seed) {
+  const rng = createRNG(seed);
+  const state = initializeState();
+  const snapshots = [];
+
+  for (let m = 0; m < config.durationMonths; m++) {
+    const snapshot = simulateMonth(state, config, rng);
+    snapshots.push(snapshot);
+  }
+
+  const cocopayValue = state.cocopayTokens * (state.tokenSupply > 0 ? state.treasuryBalance / state.tokenSupply : 100);
+  const { netCents } = calculateCashOutNet(Math.round(cocopayValue), config.cashOutTaxBps);
+
+  return {
+    snapshots,
+    summary: {
+      totalVolume: state.totalDeposits,
+      finalTreasury: state.treasuryBalance,
+      finalBacking: state.tokenSupply > 0 ? state.treasuryBalance / state.tokenSupply : 100,
+      cocopayTokens: state.cocopayTokens,
+      cocopayRevenue: netCents,
+      totalCashOuts: state.totalCashOuts,
+      totalLoans: state.totalLoans,
+      totalCommunity: state.totalCommunity
+    }
+  };
+}
+
+async function runMonteCarloSimulation(config, onProgress) {
+  const iterations = [];
+
+  for (let i = 0; i < config.iterations; i++) {
+    const seed = `cocopay-${i}-${Date.now()}`;
+    iterations.push(runIteration(config, seed));
+
+    if (i % 10 === 0) {
+      onProgress(i / config.iterations);
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+  onProgress(1);
+
+  const timeSeries = [];
+  for (let m = 0; m < config.durationMonths; m++) {
+    const treasuryValues = iterations.map(it => it.snapshots[m].treasuryBalance);
+    const backingValues = iterations.map(it => it.snapshots[m].backingPerToken);
+
+    timeSeries.push({
+      month: m + 1,
+      treasury: calculatePercentiles(treasuryValues),
+      backing: calculatePercentiles(backingValues)
+    });
+  }
+
+  const exitTotal = config.exitBehavior.cashOutPercent + config.exitBehavior.loanPercent;
+  const cashOutWeight = exitTotal > 0 ? config.exitBehavior.cashOutPercent / exitTotal : 0;
+  const loanWeight = exitTotal > 0 ? config.exitBehavior.loanPercent / exitTotal : 0;
+  const communityWeight = config.communityCommerceRate / 100;
+
+  const cashOutFee = calculateCashOutFeePercent(config.cashOutTaxBps);
+  const loanFee = calculateLoanFeePercent();
+
+  const effectiveExitFee = (1 - communityWeight) * (cashOutWeight * cashOutFee + loanWeight * loanFee);
+  const stripeFee = FEES.STRIPE_FEE_BPS / 100;
+
+  return {
+    config,
+    timeSeries,
+    summary: {
+      totalVolume: calculatePercentiles(iterations.map(it => it.summary.totalVolume)),
+      cocopayRevenue: calculatePercentiles(iterations.map(it => it.summary.cocopayRevenue)),
+      finalTreasury: calculatePercentiles(iterations.map(it => it.summary.finalTreasury)),
+      finalBacking: calculatePercentiles(iterations.map(it => it.summary.finalBacking)),
+      // Community viability is a derived metric based on configuration, not simulation variance
+      // It represents the % of tokens that stay in network (community commerce + hold)
+      communityViability: {
+        p10: config.communityCommerceRate + config.exitBehavior.holdPercent * 0.5,
+        p50: config.communityCommerceRate + config.exitBehavior.holdPercent * 0.5,
+        p90: config.communityCommerceRate + config.exitBehavior.holdPercent * 0.5,
+        mean: config.communityCommerceRate + config.exitBehavior.holdPercent * 0.5
+      }
+    },
+    comparison: {
+      cocopayFeeRate: effectiveExitFee,
+      stripeFeeRate: stripeFee,
+      difference: effectiveExitFee - stripeFee,
+      // When 100% hold, no exits means break-even at any community rate (no fees to compare)
+      breakEvenCommunityRate: (cashOutWeight === 0 && loanWeight === 0)
+        ? 0
+        : Math.max(0, 100 * (1 - stripeFee / (cashOutWeight * cashOutFee + loanWeight * loanFee)))
+    }
+  };
+}
+
+// ============ CHART FUNCTIONS ============
+
+function getChartColors(isDark) {
+  return {
+    primary: isDark ? '#a78bfa' : '#8b5cf6',
+    secondary: isDark ? '#60a5fa' : '#3b82f6',
+    success: isDark ? '#34d399' : '#10b981',
+    warning: isDark ? '#fbbf24' : '#f59e0b',
+    danger: isDark ? '#f87171' : '#ef4444',
+    text: isDark ? '#f9fafb' : '#111827',
+    grid: isDark ? '#374151' : '#e5e7eb',
+    band: isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.2)'
+  };
+}
+
+function createTreasuryChart(canvasId, isDark) {
+  const colors = getChartColors(isDark);
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        { label: 'P90', data: [], borderColor: colors.primary, borderDash: [5, 5], fill: false, pointRadius: 0 },
+        { label: 'P50 (Median)', data: [], borderColor: colors.primary, borderWidth: 2, fill: '+1', backgroundColor: colors.band, pointRadius: 0 },
+        { label: 'P10', data: [], borderColor: colors.primary, borderDash: [5, 5], fill: false, pointRadius: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: { display: true, text: 'Month', color: colors.text }, ticks: { color: colors.text }, grid: { color: colors.grid } },
+        y: { title: { display: true, text: 'Treasury ($)', color: colors.text }, ticks: { color: colors.text, callback: v => formatCompact(v) }, grid: { color: colors.grid } }
+      }
+    }
+  });
+}
+
+function createBackingChart(canvasId, isDark) {
+  const colors = getChartColors(isDark);
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        { label: 'P90', data: [], borderColor: colors.secondary, borderDash: [5, 5], fill: false, pointRadius: 0 },
+        { label: 'P50', data: [], borderColor: colors.secondary, borderWidth: 2, fill: '+1', backgroundColor: 'rgba(96, 165, 250, 0.2)', pointRadius: 0 },
+        { label: 'P10', data: [], borderColor: colors.secondary, borderDash: [5, 5], fill: false, pointRadius: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: { display: true, text: 'Month', color: colors.text }, ticks: { color: colors.text }, grid: { color: colors.grid } },
+        y: { title: { display: true, text: '$/Token', color: colors.text }, ticks: { color: colors.text, callback: v => '$' + (v / 100).toFixed(2) }, grid: { color: colors.grid } }
+      }
+    }
+  });
+}
+
+function createFeeChart(canvasId, isDark) {
+  const colors = getChartColors(isDark);
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Cash Out', 'Loan', 'Community', 'Stripe'],
+      datasets: [{
+        data: [0, 0, 0, 0],
+        backgroundColor: [colors.danger, colors.warning, colors.success, colors.secondary]
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: { display: true, text: 'Fee %', color: colors.text }, ticks: { color: colors.text }, grid: { color: colors.grid }, max: 20 },
+        y: { ticks: { color: colors.text }, grid: { color: colors.grid } }
+      }
+    }
+  });
+}
+
+function createTokenChart(canvasId, isDark) {
+  const colors = getChartColors(isDark);
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Customer', 'Store Owner', 'Cocopay'],
+      datasets: [{
+        data: [0, 0, 0],
+        backgroundColor: [colors.secondary, colors.success, colors.primary]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: colors.text } }
+      }
+    }
+  });
+}
+
+function updateCharts(charts, results, config, isDark) {
+  const colors = getChartColors(isDark);
+
+  if (charts.treasury && results) {
+    const labels = results.timeSeries.map(t => t.month);
+    charts.treasury.data.labels = labels;
+    charts.treasury.data.datasets[0].data = results.timeSeries.map(t => t.treasury.p90);
+    charts.treasury.data.datasets[1].data = results.timeSeries.map(t => t.treasury.p50);
+    charts.treasury.data.datasets[2].data = results.timeSeries.map(t => t.treasury.p10);
+    charts.treasury.update();
+  }
+
+  if (charts.backing && results) {
+    const labels = results.timeSeries.map(t => t.month);
+    charts.backing.data.labels = labels;
+    charts.backing.data.datasets[0].data = results.timeSeries.map(t => t.backing.p90);
+    charts.backing.data.datasets[1].data = results.timeSeries.map(t => t.backing.p50);
+    charts.backing.data.datasets[2].data = results.timeSeries.map(t => t.backing.p10);
+    charts.backing.update();
+  }
+
+  if (charts.fees) {
+    const cashOutFee = calculateCashOutFeePercent(config.cashOutTaxBps);
+    const loanFee = calculateLoanFeePercent();
+    charts.fees.data.datasets[0].data = [cashOutFee, loanFee, 0, FEES.STRIPE_FEE_BPS / 100];
+    charts.fees.update();
+  }
+
+  if (charts.tokens) {
+    const customer = config.cashbackPercent;
+    const storeShare = 100 - customer;
+    const cocopay = storeShare * FEES.COCOPAY_SPLIT_BPS / 10000;
+    const storeOwner = storeShare - cocopay;
+    charts.tokens.data.datasets[0].data = [customer, storeOwner, cocopay];
+    charts.tokens.update();
+  }
+}
+
+// ============ EXPORT FUNCTIONS ============
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function generateCSV(results, config) {
+  const headers = ['Month', 'Treasury_P10', 'Treasury_P50', 'Treasury_P90', 'Backing_P10', 'Backing_P50', 'Backing_P90'];
+  const rows = results.timeSeries.map(t => [
+    t.month,
+    (t.treasury.p10 / 100).toFixed(2),
+    (t.treasury.p50 / 100).toFixed(2),
+    (t.treasury.p90 / 100).toFixed(2),
+    (t.backing.p10 / 100).toFixed(4),
+    (t.backing.p50 / 100).toFixed(4),
+    (t.backing.p90 / 100).toFixed(4)
+  ]);
+  return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+}
+
+// ============ ALPINE COMPONENT ============
+
+// Store charts outside Alpine's reactive system to avoid Proxy conflicts with Chart.js
+const chartInstances = { treasury: null, backing: null, fees: null, tokens: null };
+
+function simulator() {
+  return {
+    status: 'idle',
+    progress: 0,
+    theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+    activePreset: 'custom',
+    showFormulas: false,
+    results: null,
+
+    config: {
+      totalStores: 100,
+      storeDistribution: {
+        small: { percent: 50, revenueK: 5 },
+        medium: { percent: 30, revenueK: 20 },
+        large: { percent: 20, revenueK: 100 }
+      },
+      cashbackPercent: 10,
+      cashOutTaxBps: 1000,
+      exitBehavior: { cashOutPercent: 70, loanPercent: 20, holdPercent: 10 },
+      communityCommerceRate: 10,
+      durationMonths: 24,
+      iterations: 200
+    },
+
+    initialize() {
+      // Delay chart creation until after browser repaint (x-cloak removal)
+      requestAnimationFrame(() => {
+        const isDark = this.theme === 'dark';
+        chartInstances.treasury = createTreasuryChart('treasuryChart', isDark);
+        chartInstances.backing = createBackingChart('backingChart', isDark);
+        chartInstances.fees = createFeeChart('feeChart', isDark);
+        chartInstances.tokens = createTokenChart('tokenChart', isDark);
+        this.runSimulation();
+      });
+    },
+
+    debouncedRun: debounce(function() {
+      this.activePreset = 'custom';
+      this.runSimulation();
+    }, 300),
+
+    normalizeDistribution(changed) {
+      const d = this.config.storeDistribution;
+      const total = d.small.percent + d.medium.percent + d.large.percent;
+      if (total !== 100) {
+        const others = ['small', 'medium', 'large'].filter(k => k !== changed);
+        const otherTotal = others.reduce((sum, k) => sum + d[k].percent, 0);
+        const target = 100 - d[changed].percent;
+        if (otherTotal > 0) {
+          // Calculate first value with rounding, second as remainder to ensure sum = 100
+          const first = Math.round(d[others[0]].percent / otherTotal * target);
+          d[others[0]].percent = first;
+          d[others[1]].percent = target - first;
+        }
+      }
+    },
+
+    normalizeExitBehavior(changed) {
+      const e = this.config.exitBehavior;
+      const total = e.cashOutPercent + e.loanPercent + e.holdPercent;
+      if (total !== 100) {
+        const keys = ['cashOutPercent', 'loanPercent', 'holdPercent'];
+        const others = keys.filter(k => k !== changed);
+        const otherTotal = others.reduce((sum, k) => sum + e[k], 0);
+        const target = 100 - e[changed];
+        if (otherTotal > 0) {
+          others.forEach(k => {
+            e[k] = Math.round(e[k] / otherTotal * target);
+          });
+        } else {
+          others[0] && (e[others[0]] = target);
+        }
+      }
+    },
+
+    setPreset(name) {
+      const preset = PRESETS[name];
+      if (preset) {
+        this.config.exitBehavior = { ...preset.exitBehavior };
+        this.config.communityCommerceRate = preset.communityCommerceRate;
+        this.activePreset = name;
+        this.runSimulation();
+      }
+    },
+
+    async runSimulation() {
+      this.status = 'running';
+      this.progress = 0;
+
+      try {
+        const rawConfig = JSON.parse(JSON.stringify(this.config));
+        const results = await runMonteCarloSimulation(rawConfig, p => this.progress = p);
+        this.results = results;
+        updateCharts(chartInstances, results, rawConfig, this.theme === 'dark');
+      } catch (e) {
+        console.error('Simulation error:', e);
+      }
+
+      this.status = 'complete';
+    },
+
+    toggleTheme() {
+      this.theme = this.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.classList.toggle('dark', this.theme === 'dark');
+      localStorage.setItem('theme', this.theme);
+
+      Object.values(chartInstances).forEach(chart => {
+        if (chart) chart.destroy();
+      });
+      chartInstances.treasury = createTreasuryChart('treasuryChart', this.theme === 'dark');
+      chartInstances.backing = createBackingChart('backingChart', this.theme === 'dark');
+      chartInstances.fees = createFeeChart('feeChart', this.theme === 'dark');
+      chartInstances.tokens = createTokenChart('tokenChart', this.theme === 'dark');
+
+      if (this.results) {
+        const rawConfig = JSON.parse(JSON.stringify(this.config));
+        const rawResults = JSON.parse(JSON.stringify(this.results));
+        updateCharts(chartInstances, rawResults, rawConfig, this.theme === 'dark');
+      }
+    },
+
+    exportCSV() {
+      if (!this.results) return;
+      const csv = generateCSV(this.results, this.config);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      downloadBlob(blob, 'cocopay-simulation.csv');
+    },
+
+    exportJSON() {
+      if (!this.results) return;
+      const data = {
+        exportedAt: new Date().toISOString(),
+        config: this.config,
+        summary: this.results.summary,
+        comparison: this.results.comparison,
+        timeSeries: this.results.timeSeries
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, 'cocopay-simulation.json');
+    },
+
+    formatCompact
+  };
+}
+</script>
+
+</body>
+</html>
