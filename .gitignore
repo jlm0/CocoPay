@@ -1,47 +1,20 @@
+# Dependencies
 node_modules/
-.expo/
-dist/
-npm-debug.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-web-build/
-# expo router
-expo-env.d.ts
-
-
-
-ios
-android
-
-# macOS
-.DS_Store
-
-# Temporary files created by Metro to check the health of the file watcher
-.metro-health-check*
-
-CLAUDE.md
-docs/ECONOMIC_MODEL.md
-docs/BUSINESS_VIABILITY_ASSESSMENT.md
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
 
 # Environment
 .env
 .env.local
 
-# EAS local build artifacts
-build/
-*.ipa
-*.aab
-*.apk
+# macOS
+.DS_Store
+
+# Security
+*.pem
+
+# Merge artifacts
+*.orig.*
+
+# Project-specific
+CLAUDE.md
+docs/ECONOMIC_MODEL.md
+docs/BUSINESS_VIABILITY_ASSESSMENT.md
