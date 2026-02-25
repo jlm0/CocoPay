@@ -15,7 +15,7 @@ const footerLinks = [
 ];
 
 export function FooterCTA() {
-  const { ref, isVisible } = useScrollAnimation(0.2);
+  const { ref, isVisible } = useScrollAnimation(0.2, "0px 0px -100px 0px");
 
   return (
     <section id="download" className="footer-cta">
@@ -34,7 +34,7 @@ export function FooterCTA() {
         >
           <span className="word-stack line-item">STOP</span>
           <span className="word-stack outline line-item">WAITING</span>
-          <span className="word-stack text-[var(--pink)] glitch-intense line-item">START</span>
+          <span className="word-stack text-pink glitch-intense line-item">START</span>
           <span className="word-stack line-item">
             <span className="coconut-spin">🥥</span>PAYING
           </span>

@@ -10,7 +10,7 @@ const stats = [
 ];
 
 export function SocialProof() {
-  const { ref, isVisible } = useScrollAnimation();
+  const { ref, isVisible } = useScrollAnimation(0.2, "0px 0px -100px 0px");
 
   return (
     <section id="community" className="social-proof">

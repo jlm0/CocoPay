@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 const quote = "Finally an app that gets how we actually spend money together. No more awkward venmo requests.";
 
 export function Testimonial() {
-  const { ref, isVisible } = useScrollAnimation(0.2);
+  const { ref, isVisible } = useScrollAnimation(0.2, "0px 0px -100px 0px");
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function Testimonial() {
   }, []);
 
   return (
-    <div className="bg-[var(--black)] py-16 px-8 text-center">
+    <div className="testimonial-strip">
       <p
         ref={ref}
         className={`testimonial-text quote-typewriter ${animate ? "animate" : ""}`}

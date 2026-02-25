@@ -12,12 +12,6 @@
   --font-mono: 'Space Mono', monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -88,6 +82,11 @@ body {
 @keyframes rotateSlow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
 }
 
 @keyframes noise {
@@ -407,6 +406,12 @@ body::before {
 }
 
 /* TESTIMONIAL */
+.testimonial-strip {
+  background: var(--black);
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
 .testimonial-text {
   font-family: var(--font-brutal);
   font-size: clamp(1.5rem, 5vw, 4rem);

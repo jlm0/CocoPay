@@ -26,7 +26,7 @@ const steps = [
 ];
 
 export function HowItWorks() {
-  const { ref, isVisible } = useScrollAnimation();
+  const { ref, isVisible } = useScrollAnimation(0.2, "0px 0px -100px 0px");
 
   return (
     <section id="how-it-works" className="how-it-works">

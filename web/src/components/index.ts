@@ -11,3 +11,4 @@ export { HowItWorks } from "./HowItWorks";
 export { SocialProof } from "./SocialProof";
 export { Testimonial } from "./Testimonial";
 export { FooterCTA } from "./FooterCTA";
+export { ScrollGlitch } from "./ScrollGlitch";

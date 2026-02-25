@@ -3,6 +3,7 @@ import { Anton, Bebas_Neue, Black_Ops_One, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { CursorFollower } from "@/components/CursorFollower";
 import { CoconutSpawner } from "@/components/CoconutSpawner";
+import { ScrollGlitch } from "@/components/ScrollGlitch";
 
 const anton = Anton({
   weight: "400",
@@ -45,6 +46,7 @@ export default function RootLayout({
       >
         <CursorFollower />
         <CoconutSpawner />
+        <ScrollGlitch />
         {children}
       </body>
     </html>

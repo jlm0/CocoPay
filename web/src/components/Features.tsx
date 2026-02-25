@@ -26,7 +26,7 @@ const features = [
 ];
 
 export function Features() {
-  const { ref, isVisible } = useScrollAnimation();
+  const { ref, isVisible } = useScrollAnimation(0.2, "0px 0px -100px 0px");
 
   return (
     <section id="features" className="features">
@@ -37,9 +37,10 @@ export function Features() {
           className={`features-title split-reveal ${isVisible ? "animate" : ""}`}
         >
           <span className="split-left">BUILT FOR</span>
-          <span className="break features-title-break text-[var(--green)] split-right hover-tilt">
+          <span className="break features-title-break text-green split-right hover-tilt">
             YOUR COMMUNITY
           </span>
+
         </h2>
       </div>
 
