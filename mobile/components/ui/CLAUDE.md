@@ -1,0 +1,8 @@
+- Base primitives from React Native Reusables
+- Style all primitives to match the CocoPay brutalist design system (docs/DESIGN_SYSTEM.md)
+- 0px border-radius on all components — no rounded corners
+- Hard-offset brutal shadows, 2px solid borders, 5-color palette only
+- Fonts: font-display (Anton), font-brutal (Bebas Neue), font-ops (Black Ops One), font-mono (Space Mono)
+- Minimum touch target: 44px height/width
+- Add new primitives: `npx @react-native-reusables/cli add {component}`
+- Docs: https://reactnativereusables.com/
