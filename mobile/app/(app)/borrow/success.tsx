@@ -25,7 +25,7 @@ export default function BorrowSuccessPage() {
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar showBackButton={false}>
-          <Button onPress={handleDone} size="lg" className="h-14 flex-1 rounded-xl">
+          <Button onPress={handleDone} size="lg" className="h-14 flex-1">
             <Text>Done</Text>
           </Button>
         </BottomActionBar>

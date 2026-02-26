@@ -27,7 +27,7 @@ export function WebsiteInput({
         <Text variant="fine">Optional</Text>
       </View>
       <View className="flex-row items-center">
-        <View className="h-10 justify-center rounded-l-md border border-r-0 border-input bg-muted px-3">
+        <View className="h-10 justify-center border border-r-0 border-input bg-muted px-3">
           <Text className="text-muted-foreground">https://</Text>
         </View>
         <Input
@@ -39,7 +39,7 @@ export function WebsiteInput({
           autoCapitalize="none"
           autoCorrect={false}
           editable={!disabled}
-          className={`flex-1 rounded-l-none ${error ? 'border-destructive' : ''}`}
+          className={`flex-1 ${error ? 'border-destructive' : ''}`}
         />
       </View>
       {error && <Text className="mt-1 text-sm text-destructive">{error}</Text>}

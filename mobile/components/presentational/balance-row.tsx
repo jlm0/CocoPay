@@ -56,7 +56,7 @@ export function BalanceRow({
           className="flex-row items-center gap-0.5 active:opacity-70">
           <Text variant="caption">on</Text>
           <View className="flex-row items-center gap-1">
-            <View className="size-2 rounded-full" style={{ backgroundColor: chainColor }} />
+            <View className="size-2" style={{ backgroundColor: chainColor }} />
             <Text variant="caption" className="font-mono">
               {chainName}
             </Text>
@@ -70,7 +70,7 @@ export function BalanceRow({
       <Text variant="caption">·</Text>
 
       <Pressable onPress={onMaxPress} disabled={disabled} className="active:opacity-70">
-        <Text variant="caption" className="font-brutal text-primary">
+        <Text variant="caption" className="font-brutal uppercase text-primary">
           Max
         </Text>
       </Pressable>

@@ -147,11 +147,7 @@ export function WithdrawContainer() {
       <ScreenContainer
         bottomActionBar={
           <BottomActionBar disabled={usdcWithdraw.isLoading}>
-            <Button
-              onPress={handleWithdraw}
-              disabled={!canWithdraw}
-              size="lg"
-              className="h-14 rounded-xl">
+            <Button onPress={handleWithdraw} disabled={!canWithdraw} size="lg" className="h-14">
               <Text>{usdcWithdraw.isLoading ? 'Withdrawing...' : 'Withdraw'}</Text>
             </Button>
           </BottomActionBar>
@@ -174,7 +170,7 @@ export function WithdrawContainer() {
           <View className="items-center pb-3 pt-6">
             {/* Input row with $ prefix and Max button */}
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="font-ops text-5xl text-muted-foreground/50">$</Text>
+              <Text className="text-muted-foreground/50 font-ops text-5xl">$</Text>
               <Input
                 value={amount}
                 onChangeText={handleAmountChange}
@@ -192,8 +188,8 @@ export function WithdrawContainer() {
               <Pressable
                 onPress={handleMaxPress}
                 disabled={usdcWithdraw.isLoading}
-                className="rounded-lg bg-secondary px-3 py-2 active:bg-secondary/70">
-                <Text variant="caption" className="font-brutal text-secondary-foreground">
+                className="active:bg-secondary/70 bg-secondary px-3 py-2">
+                <Text variant="caption" className="font-brutal uppercase text-secondary-foreground">
                   Max
                 </Text>
               </Pressable>
@@ -234,10 +230,10 @@ export function WithdrawContainer() {
               onPress={handleAdvancedPress}
               disabled={usdcWithdraw.isLoading}
               className={cn(
-                'mt-6 self-center rounded-full border border-amber-200 bg-amber-50 px-4 py-2 active:bg-amber-100',
+                'bg-info/10 active:bg-info/20 mt-6 self-center border-2 border-info px-4 py-2',
                 usdcWithdraw.isLoading && 'opacity-50'
               )}>
-              <Text variant="caption" className="font-mono text-amber-800">
+              <Text variant="caption" className="font-mono text-info">
                 Or split across networks
               </Text>
             </Pressable>

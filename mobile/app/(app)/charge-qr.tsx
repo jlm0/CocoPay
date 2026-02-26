@@ -26,7 +26,7 @@ export default function ChargeQRPage() {
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button onPress={handleShare} size="lg" className="h-14 rounded-xl">
+          <Button onPress={handleShare} size="lg" className="h-14">
             <Text>Share link</Text>
           </Button>
         </BottomActionBar>

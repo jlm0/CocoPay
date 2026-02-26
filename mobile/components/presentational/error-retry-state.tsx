@@ -30,7 +30,7 @@ export function ErrorRetryState({
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar showBackButton={false}>
-          <Button onPress={onRetry} size="lg" className="h-14 rounded-xl">
+          <Button onPress={onRetry} size="lg" className="h-14">
             <Text>{retryLabel}</Text>
           </Button>
           <Button variant="ghost" onPress={onBack} className="h-12">
@@ -44,7 +44,7 @@ export function ErrorRetryState({
           <Icon as={XCircle} size={64} className="text-destructive" />
         </Animated.View>
         <Animated.View entering={FadeInUp.delay(150).duration(300)}>
-          <Text className="text-center text-lg font-semibold text-destructive">{title}</Text>
+          <Text className="text-center font-brutal text-lg uppercase text-destructive">{title}</Text>
         </Animated.View>
         <Animated.View entering={FadeInUp.delay(250).duration(300)}>
           <Text className="text-center text-sm text-muted-foreground">{message}</Text>

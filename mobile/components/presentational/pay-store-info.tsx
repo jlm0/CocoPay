@@ -37,8 +37,8 @@ export function PayStoreInfo({
   if (isLoading) {
     return (
       <View className={cn('items-center gap-1', className)}>
-        <Skeleton className="h-8 w-40 rounded" />
-        <Skeleton className="h-4 w-20 rounded" />
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-4 w-20" />
       </View>
     );
   }

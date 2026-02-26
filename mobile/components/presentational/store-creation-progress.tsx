@@ -94,17 +94,13 @@ function StepItem({
     <Animated.View
       entering={FadeInDown.delay(index * 100).duration(300)}
       className="flex-row items-center gap-4 py-3">
-      <View className="h-10 w-10 items-center justify-center rounded-full bg-muted">
+      <View className="h-10 w-10 items-center justify-center bg-muted">
         <Icon as={StepIcon} size={20} className={iconColor} />
       </View>
-      <Text className={`flex-1 text-base font-medium ${textColor}`}>{step.label}</Text>
+      <Text className={`flex-1 text-base font-mono ${textColor}`}>{step.label}</Text>
       {isActive && !isError && (
         <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
-          {showSpinner ? (
-            <Spinner size="small" />
-          ) : (
-            <View className="h-2 w-2 rounded-full bg-primary" />
-          )}
+          {showSpinner ? <Spinner size="small" /> : <View className="h-2 w-2 bg-primary" />}
         </Animated.View>
       )}
     </Animated.View>
@@ -144,7 +140,7 @@ function ProgressView({
         </Text>
       </Animated.View>
 
-      <View className="rounded-2xl bg-card p-4">
+      <View className="bg-card p-4">
         {STEPS.map((step, index) => {
           const stepStatus = getStepStatus(step.id, stage);
           const showStep = !isError || index <= (failedAtStep ? STEPS.indexOf(failedAtStep) : -1);
@@ -193,9 +189,7 @@ function SuccessView({ storeName }: { storeName: string }) {
         </Text>
       </Animated.View>
 
-      <Animated.View
-        entering={FadeInDown.delay(400).duration(400)}
-        className="w-full rounded-2xl bg-muted p-6">
+      <Animated.View entering={FadeInDown.delay(400).duration(400)} className="w-full bg-muted p-6">
         <Text variant="label" className="mb-1 text-center">
           Store Name
         </Text>
@@ -227,7 +221,7 @@ export function StoreCreationProgress({
           <BottomActionBar showBackButton={false}>
             {isSuccess && (
               <>
-                <Button onPress={onViewStore} size="lg" className="h-14 rounded-xl">
+                <Button onPress={onViewStore} size="lg" className="h-14">
                   <Text>View Store</Text>
                 </Button>
                 <Button variant="ghost" onPress={onGoHome} className="h-12">
@@ -237,7 +231,7 @@ export function StoreCreationProgress({
             )}
             {isError && (
               <>
-                <Button onPress={onRetry} size="lg" className="h-14 rounded-xl">
+                <Button onPress={onRetry} size="lg" className="h-14">
                   <Text>Try Again</Text>
                 </Button>
                 <Button variant="ghost" onPress={onGoHome} className="h-12">

@@ -57,7 +57,7 @@ export function RecipientInput({
           autoCapitalize="none"
           autoCorrect={false}
           editable={!disabled}
-          className={cn('h-12 pr-12', error && 'border-destructive', isValid && 'border-green-500')}
+          className={cn('h-12 pr-12', error && 'border-destructive', isValid && 'border-primary')}
         />
         <View className="absolute right-3 top-1/2 -translate-y-1/2">
           {isResolving ? (
@@ -88,7 +88,7 @@ export function RecipientInput({
       )}
       {showResolved && (
         <View className="mt-1.5 flex-row items-center gap-1">
-          <Text variant="small" className="text-green-600">
+          <Text variant="small" className="text-primary">
             Resolves to {truncateAddress(resolvedAddress)}
           </Text>
         </View>

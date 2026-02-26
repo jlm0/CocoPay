@@ -125,7 +125,6 @@ export function DiscoverMapView({ stores, onMarkerPress, focusedStoreId }: Disco
 const styles = StyleSheet.create({
   mapContainer: {
     flex: 1,
-    borderRadius: 16,
     overflow: 'hidden',
   },
   map: {

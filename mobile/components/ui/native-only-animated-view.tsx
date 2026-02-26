@@ -7,7 +7,7 @@ import Animated from 'react-native-reanimated';
  * @returns The animated view if the platform is native, otherwise the children.
  * @example
  * <NativeOnlyAnimatedView entering={FadeIn} exiting={FadeOut}>
- *   <Text>I am only animated on native</Text>
+ * <Text>I am only animated on native</Text>
  * </NativeOnlyAnimatedView>
  */
 function NativeOnlyAnimatedView(

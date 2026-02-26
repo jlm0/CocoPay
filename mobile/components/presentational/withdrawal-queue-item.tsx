@@ -33,14 +33,14 @@ export function WithdrawalQueueItem({
   return (
     <View
       className={cn(
-        'flex-row items-center justify-between rounded-xl border border-border bg-card p-3',
+        'flex-row items-center justify-between border border-border bg-card p-3',
         className
       )}>
       <View className="flex-row items-center gap-3">
         <View
-          className="size-8 items-center justify-center rounded-full"
+          className="size-8 items-center justify-center"
           style={{ backgroundColor: chainColorMuted }}>
-          <View className="size-3 rounded-full" style={{ backgroundColor: chainColor }} />
+          <View className="size-3" style={{ backgroundColor: chainColor }} />
         </View>
         <Text className="font-mono">{chainName}</Text>
       </View>
@@ -50,7 +50,7 @@ export function WithdrawalQueueItem({
           onPress={onRemove}
           disabled={disabled}
           className={cn(
-            'size-7 items-center justify-center rounded-full bg-muted active:bg-muted/70',
+            'active:bg-muted/70 size-7 items-center justify-center bg-muted',
             disabled && 'opacity-50'
           )}>
           <Icon as={X} size={14} className="text-muted-foreground" />

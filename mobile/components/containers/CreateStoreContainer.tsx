@@ -137,7 +137,7 @@ export function CreateStoreContainer() {
             onPress={form.step === 1 ? handleNext : handleCreate}
             disabled={!canProceed || isUploading}
             size="lg"
-            className="h-14 flex-row items-center gap-2 rounded-xl">
+            className="h-14 flex-row items-center gap-2">
             {isUploading && <Spinner size="small" />}
             <Text>{buttonText}</Text>
           </Button>

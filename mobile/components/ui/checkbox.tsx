@@ -21,9 +21,9 @@ function Checkbox({
   return (
     <CheckboxPrimitive.Root
       className={cn(
-        'size-4 shrink-0 rounded-[4px] border border-input shadow-sm shadow-black/5 dark:bg-input/30',
+        'dark:bg-input/30 size-4 shrink-0 border-2 border-input shadow-brutal-sm',
         Platform.select({
-          web: 'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive peer cursor-default outline-none transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed',
+          web: 'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive focus-visible:ring-ring/50 peer cursor-default outline-none transition-shadow focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed',
           native: 'overflow-hidden',
         }),
         props.checked && cn('border-primary', checkedClassName),

@@ -209,12 +209,12 @@ export function EditStoreContainer({ projectId, chainId }: EditStoreContainerPro
           contentContainerClassName="gap-6 pb-64">
           <FeatureHeader title="Edit store" />
           <View className="items-center py-4">
-            <Skeleton className="mb-6 size-24 rounded-full" />
+            <Skeleton className="mb-6 size-24" />
           </View>
-          <Skeleton className="h-14 rounded-lg" />
-          <Skeleton className="h-24 rounded-lg" />
-          <Skeleton className="h-14 rounded-lg" />
-          <Skeleton className="h-14 rounded-lg" />
+          <Skeleton className="h-14" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-14" />
+          <Skeleton className="h-14" />
         </ScrollView>
       </ScreenContainer>
     );
@@ -238,7 +238,7 @@ export function EditStoreContainer({ projectId, chainId }: EditStoreContainerPro
       <ScreenContainer
         bottomActionBar={
           <BottomActionBar showBackButton={false}>
-            <Button onPress={handleViewStore} size="lg" className="h-14 rounded-xl">
+            <Button onPress={handleViewStore} size="lg" className="h-14">
               <Text>Back to Store</Text>
             </Button>
           </BottomActionBar>
@@ -269,7 +269,7 @@ export function EditStoreContainer({ projectId, chainId }: EditStoreContainerPro
       <ScreenContainer>
         <View className="flex-1 items-center justify-center px-6">
           <Animated.View entering={FadeIn.duration(300)} className="items-center">
-            <View className="mb-6 h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <View className="mb-6 h-16 w-16 items-center justify-center bg-muted">
               <Icon as={CloudUpload} size={32} className="text-primary" />
             </View>
             <Text variant="heading" className="mb-2 text-center">
@@ -292,11 +292,7 @@ export function EditStoreContainer({ projectId, chainId }: EditStoreContainerPro
           {hasUpdateError && (
             <Text className="mb-3 text-center text-destructive">{updateState.error.message}</Text>
           )}
-          <Button
-            onPress={handleSave}
-            disabled={!canSave || isUpdating}
-            size="lg"
-            className="h-14 rounded-xl">
+          <Button onPress={handleSave} disabled={!canSave || isUpdating} size="lg" className="h-14">
             <Text>Save Changes</Text>
           </Button>
         </BottomActionBar>

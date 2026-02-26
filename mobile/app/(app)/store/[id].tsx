@@ -173,34 +173,34 @@ export default function StoreDetailPage() {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-6 pb-64">
           <View className="gap-2">
             <View className="flex-row items-center gap-3">
-              <Skeleton className="size-12 rounded-full" />
-              <Skeleton className="h-8 w-32 rounded-lg" />
+              <Skeleton className="size-12" />
+              <Skeleton className="h-8 w-32" />
             </View>
-            <Skeleton className="h-4 w-28 rounded" />
+            <Skeleton className="h-4 w-28" />
           </View>
 
           <View className="flex-row gap-2">
-            <Skeleton className="h-6 w-24 rounded-full" />
-            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-6 w-20" />
           </View>
 
           <View className="gap-1">
-            <Skeleton className="h-4 w-24 rounded" />
-            <Skeleton className="h-12 w-48 rounded-lg" />
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-12 w-48" />
           </View>
 
           <View className="flex-row justify-between">
             <View className="flex-1 gap-1">
-              <Skeleton className="h-3 w-20 rounded" />
-              <Skeleton className="h-5 w-16 rounded" />
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-5 w-16" />
             </View>
             <View className="flex-1 gap-1">
-              <Skeleton className="h-3 w-20 rounded" />
-              <Skeleton className="h-5 w-16 rounded" />
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-5 w-16" />
             </View>
             <View className="flex-1 gap-1">
-              <Skeleton className="h-3 w-20 rounded" />
-              <Skeleton className="h-5 w-16 rounded" />
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-5 w-16" />
             </View>
           </View>
         </ScrollView>
@@ -237,7 +237,7 @@ export default function StoreDetailPage() {
       <ScreenContainer>
         <View className="flex-1 items-center justify-center px-6">
           <Animated.View entering={FadeIn.duration(300)} className="items-center">
-            <View className="mb-6 h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <View className="mb-6 h-16 w-16 items-center justify-center bg-muted">
               <Icon as={CloudUpload} size={32} className="text-primary" />
             </View>
             <Text variant="heading" className="mb-2 text-center">
@@ -258,7 +258,7 @@ export default function StoreDetailPage() {
       <ScreenContainer
         bottomActionBar={
           <BottomActionBar showBackButton={false}>
-            <Button onPress={handleReattemptDone} size="lg" className="h-14 rounded-xl">
+            <Button onPress={handleReattemptDone} size="lg" className="h-14">
               <Text>Continue</Text>
             </Button>
           </BottomActionBar>

@@ -1985,10 +1985,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo-google-fonts/plus-jakarta-sans@npm:^0.4.2":
+"@expo-google-fonts/anton@npm:^0.4.2":
   version: 0.4.2
-  resolution: "@expo-google-fonts/plus-jakarta-sans@npm:0.4.2"
-  checksum: 10c0/a2c90e344dd974c6f332b3285173ac28b0de5e37517d5ea959117578ae02550720ab233417d7da42637db7ebbfded86648814198795ca35bd2b49fc164084bb7
+  resolution: "@expo-google-fonts/anton@npm:0.4.2"
+  checksum: 10c0/7667b64aba170bf84d2d491c3560d352491eb0c4b220350951a254f234f6f990d97e8866e717af5dce7b973b986d1f5d085f5cea302103aaef8959b364ae5624
+  languageName: node
+  linkType: hard
+
+"@expo-google-fonts/bebas-neue@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@expo-google-fonts/bebas-neue@npm:0.4.1"
+  checksum: 10c0/41c3b75382c44fb0625dd9aa4e9bab3643128b0106844aea03170ad1453057ace3864bd28695bc75db03866279dd457e356adc44c3c244913303bd2874d95931
+  languageName: node
+  linkType: hard
+
+"@expo-google-fonts/black-ops-one@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@expo-google-fonts/black-ops-one@npm:0.4.1"
+  checksum: 10c0/4a8dd6c14d52dd763015e23d6b46c0f84ef5a9baba5ac6d6ef366b16921a3d982d9950e80075b0ad0cf38c38c7f647cc786b996cda6f83a231abf1a521e41c40
+  languageName: node
+  linkType: hard
+
+"@expo-google-fonts/space-mono@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@expo-google-fonts/space-mono@npm:0.4.2"
+  checksum: 10c0/3cf853f2a15ad2e61bc6f369b62d351fe9fbf99f7c558df86915642357c69fa6cbb9cdd5d0311a3b73906bd0a9c92d9bd87d834a987775dbbd7aee6e8c328701
   languageName: node
   linkType: hard
 
@@ -8305,7 +8326,10 @@ __metadata:
     "@account-kit/smart-contracts": "npm:^4.82.0"
     "@babel/core": "npm:^7.20.0"
     "@craftzdog/react-native-buffer": "npm:^6.1.1"
-    "@expo-google-fonts/plus-jakarta-sans": "npm:^0.4.2"
+    "@expo-google-fonts/anton": "npm:^0.4.2"
+    "@expo-google-fonts/bebas-neue": "npm:^0.4.1"
+    "@expo-google-fonts/black-ops-one": "npm:^0.4.1"
+    "@expo-google-fonts/space-mono": "npm:^0.4.2"
     "@expo/vector-icons": "npm:^15.0.2"
     "@getpara/react-native-wallet": "npm:^2.4.0"
     "@getpara/viem-v2-integration": "npm:^2.4.0"

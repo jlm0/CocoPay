@@ -17,7 +17,7 @@ function TabsList({
   return (
     <TabsPrimitive.List
       className={cn(
-        'flex h-9 flex-row items-center justify-center rounded-lg bg-muted p-[3px]',
+        'flex h-11 flex-row items-center justify-center border-2 border-foreground bg-muted p-[3px]',
         Platform.select({ web: 'inline-flex w-fit', native: 'mr-auto' }),
         className
       )}
@@ -34,17 +34,18 @@ function TabsTrigger({
   return (
     <TextClassContext.Provider
       value={cn(
-        'text-foreground dark:text-muted-foreground text-sm font-medium',
+        'text-foreground dark:text-muted-foreground text-sm font-brutal uppercase',
         value === props.value && 'dark:text-foreground'
       )}>
       <TabsPrimitive.Trigger
         className={cn(
-          'flex h-[calc(100%-1px)] flex-row items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 shadow-none shadow-black/5',
+          'flex h-[calc(100%-1px)] flex-row items-center justify-center gap-1.5 border border-transparent px-2 py-1',
           Platform.select({
-            web: 'inline-flex cursor-default whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
+            web: 'focus-visible:ring-ring/50 inline-flex cursor-default whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
           }),
           props.disabled && 'opacity-50',
-          props.value === value && 'bg-background dark:border-foreground/10 dark:bg-input/30',
+          props.value === value &&
+            'dark:border-foreground/10 dark:bg-input/30 bg-background shadow-brutal-sm',
           className
         )}
         {...props}

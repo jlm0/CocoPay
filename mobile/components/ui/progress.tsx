@@ -20,7 +20,10 @@ function Progress({
   }) {
   return (
     <ProgressPrimitive.Root
-      className={cn('relative h-2 w-full overflow-hidden rounded-full bg-primary/20', className)}
+      className={cn(
+        'bg-primary/20 relative h-2 w-full overflow-hidden border-2 border-foreground',
+        className
+      )}
       {...props}>
       <Indicator value={value} className={indicatorClassName} />
     </ProgressPrimitive.Root>
@@ -72,7 +75,7 @@ function NativeIndicator({ value, className }: IndicatorProps) {
 
   return (
     <ProgressPrimitive.Indicator asChild>
-      <Animated.View style={indicator} className={cn('h-full bg-foreground', className)} />
+      <Animated.View style={indicator} className={cn('h-full bg-primary', className)} />
     </ProgressPrimitive.Indicator>
   );
 }

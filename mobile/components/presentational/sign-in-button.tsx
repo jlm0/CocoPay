@@ -5,6 +5,7 @@ import { Button, type ButtonProps } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 import { Skeleton } from '@/components/ui/skeleton';
+import { HEX_COLORS } from '@/lib/theme';
 
 type Provider = 'apple' | 'google';
 
@@ -51,14 +52,14 @@ export function SignInButton({
     <Button
       disabled={isDisabled}
       size="lg"
-      className={`h-14 flex-row items-center justify-center rounded-[28px] shadow-md ${config.buttonClassName} ${className || ''}`}
+      className={`h-14 flex-row items-center justify-center shadow-brutal-sm-black ${config.buttonClassName} ${className || ''}`}
       {...buttonProps}>
       {isLoading ? (
-        <Skeleton className="h-6 w-40 rounded-md" />
+        <Skeleton className="h-6 w-40" />
       ) : (
         <>
           {activeProvider === 'apple' ? (
-            <Ionicons name="logo-apple" size={24} color="#ffffff" />
+            <Ionicons name="logo-apple" size={24} color={HEX_COLORS.white} />
           ) : (
             <Icon as={Chrome} size={24} className={config.iconClassName} />
           )}

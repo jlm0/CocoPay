@@ -1,3 +1,4 @@
+// Chain brand colors are an approved exception to the 5-color palette rule
 import {
   sepolia,
   baseSepolia,

@@ -54,7 +54,7 @@ export function ChainOptionCard({
 
   return (
     <View
-      className={cn('overflow-hidden rounded-xl border border-border bg-card', className)}
+      className={cn('overflow-hidden border border-border bg-card', className)}
       style={{ borderLeftColor: chainColor, borderLeftWidth: 3 }}>
       <Pressable
         onPress={onPress}
@@ -63,11 +63,11 @@ export function ChainOptionCard({
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
             <View
-              className="size-10 items-center justify-center rounded-full"
+              className="size-10 items-center justify-center"
               style={{ backgroundColor: chainColorMuted }}>
-              <View className="size-4 rounded-full" style={{ backgroundColor: chainColor }} />
+              <View className="size-4" style={{ backgroundColor: chainColor }} />
             </View>
-            <Text className="font-brutal">{chainName}</Text>
+            <Text className="font-brutal uppercase">{chainName}</Text>
           </View>
           <View className="flex-row items-center gap-2">
             <Text variant="caption">${formattedBalance}</Text>
@@ -88,7 +88,7 @@ export function ChainOptionCard({
           <View className="flex-row items-center justify-between">
             <Text variant="caption">${formattedBalance} available</Text>
             <Pressable onPress={onMaxPress} disabled={disabled} className="active:opacity-70">
-              <Text variant="caption" className="font-brutal text-primary">
+              <Text variant="caption" className="font-brutal uppercase text-primary">
                 Max
               </Text>
             </Pressable>

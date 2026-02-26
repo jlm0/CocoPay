@@ -22,7 +22,7 @@ export function TokenBalanceCard({
     <Pressable
       onPress={onPress}
       disabled={!onPress}
-      className={`rounded-xl p-3 active:bg-muted ${className}`}>
+      className={` p-3 active:bg-muted ${className}`}>
       <CurrencyDisplay label={token} value={usdValue} maxCharacters={maxCharacters} />
     </Pressable>
   );

@@ -10,7 +10,10 @@ function Avatar({
 }: AvatarPrimitive.RootProps & React.RefAttributes<AvatarPrimitive.RootRef>) {
   return (
     <AvatarPrimitive.Root
-      className={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}
+      className={cn(
+        'relative flex size-8 shrink-0 overflow-hidden border-2 border-foreground',
+        className
+      )}
       {...props}
     />
   );
@@ -29,10 +32,7 @@ function AvatarFallback({
 }: AvatarPrimitive.FallbackProps & React.RefAttributes<AvatarPrimitive.FallbackRef>) {
   return (
     <AvatarPrimitive.Fallback
-      className={cn(
-        'flex size-full flex-row items-center justify-center rounded-full bg-muted',
-        className
-      )}
+      className={cn('flex size-full flex-row items-center justify-center bg-muted', className)}
       {...props}
     />
   );
@@ -54,12 +54,15 @@ function CachedAvatar({ source, fallback, fallbackClassName, className, alt }: C
 
   return (
     <View
-      className={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}
+      className={cn(
+        'relative flex size-8 shrink-0 overflow-hidden border-2 border-foreground',
+        className
+      )}
       accessibilityLabel={alt}>
       {showFallback && (
         <View
           className={cn(
-            'absolute inset-0 flex flex-row items-center justify-center rounded-full bg-muted',
+            'absolute inset-0 flex flex-row items-center justify-center bg-muted',
             isLoading && !hasError && 'animate-pulse',
             fallbackClassName
           )}>

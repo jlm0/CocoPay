@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Text as RNText } from 'react-native';
+import { View, StyleSheet, Text as RNText, useColorScheme } from 'react-native';
 import { AnimatedRollingNumber } from 'react-native-animated-rolling-numbers';
 import { Easing } from 'react-native-reanimated';
 import { Text } from '@/components/ui/text';
 import { shouldUseCompactNotation, CHARACTER_LIMITS } from '@/lib/format';
+import { COLORS } from '@/lib/theme';
 
 const ANIMATION_DELAY_MS = 350;
 
@@ -24,6 +25,7 @@ export function BalanceDisplay({
   animationDelay = ANIMATION_DELAY_MS,
   className = '',
 }: BalanceDisplayProps) {
+  const colorScheme = useColorScheme();
   const [displayAmount, setDisplayAmount] = useState(0);
   const [displayUsdValue, setDisplayUsdValue] = useState(0);
 
@@ -37,21 +39,23 @@ export function BalanceDisplay({
   }, [amount, usdValue, animationDelay]);
 
   const useCompact = usdValue !== undefined && shouldUseCompactNotation(usdValue, maxCharacters);
+  const displayStyle = { ...styles.display, color: COLORS[colorScheme ?? 'dark'].foreground };
+  const bodyStyle = { ...styles.body, color: COLORS[colorScheme ?? 'dark'].mutedForeground };
 
   return (
     <View className={className}>
       <Text variant="caption">Balance</Text>
       {usdValue !== undefined && (
         <View style={styles.usdContainer}>
-          <RNText style={styles.display}>$</RNText>
+          <RNText style={displayStyle}>$</RNText>
           <AnimatedRollingNumber
             value={displayUsdValue}
             useGrouping
             toFixed={2}
             enableCompactNotation={useCompact}
             compactToFixed={2}
-            textStyle={styles.display}
-            compactNotationStyle={styles.display}
+            textStyle={displayStyle}
+            compactNotationStyle={displayStyle}
             spinningAnimationConfig={{
               duration: 500,
               easing: Easing.out(Easing.cubic),
@@ -64,13 +68,13 @@ export function BalanceDisplay({
           value={displayAmount}
           useGrouping
           toFixed={6}
-          textStyle={styles.body}
+          textStyle={bodyStyle}
           spinningAnimationConfig={{
             duration: 500,
             easing: Easing.out(Easing.cubic),
           }}
         />
-        <RNText style={styles.body}> {tokenSymbol}</RNText>
+        <RNText style={bodyStyle}> {tokenSymbol}</RNText>
       </View>
     </View>
   );
@@ -90,13 +94,11 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 36 * -0.025,
-    color: '#0A0A0A',
   },
   body: {
     fontSize: 16,
     lineHeight: 24,
     fontFamily: 'SpaceMono_400Regular',
     letterSpacing: 0,
-    color: 'rgba(250, 250, 250, 0.5)',
   },
 });

@@ -201,7 +201,7 @@ export function WithdrawByNetworkContainer() {
         )}
 
         {multiChainWithdraw.progress.status === 'partial' && (
-          <Text variant="small" className="mt-4 text-center text-amber-600">
+          <Text variant="small" className="mt-4 text-center text-info">
             Some withdrawals failed. Check your transaction history.
           </Text>
         )}

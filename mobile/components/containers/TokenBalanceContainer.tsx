@@ -82,15 +82,11 @@ export function TokenBalanceContainer() {
       <ScreenContainer
         bottomActionBar={
           <BottomActionBar>
-            <Button
-              variant="secondary"
-              onPress={handleReceive}
-              size="lg"
-              className="h-14 rounded-xl">
+            <Button variant="secondary" onPress={handleReceive} size="lg" className="h-14">
               <Text>Receive</Text>
             </Button>
 
-            <Button onPress={handleWithdraw} size="lg" className="h-14 rounded-xl">
+            <Button onPress={handleWithdraw} size="lg" className="h-14">
               <Text>Withdraw</Text>
             </Button>
           </BottomActionBar>

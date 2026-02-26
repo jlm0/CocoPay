@@ -86,13 +86,11 @@ export default function AuthPage() {
               onPress={handleContinue}
               disabled={!isValidEmail || isLoading}
               size="lg"
-              className="h-14 rounded-2xl">
+              className="h-14">
               {isLoading ? (
                 <ActivityIndicator color={HEX_COLORS.background} />
               ) : (
-                <Text className="font-brutal text-primary-foreground">
-                  Continue with email
-                </Text>
+                <Text className="font-brutal uppercase text-primary-foreground">Continue with email</Text>
               )}
             </Button>
           </View>

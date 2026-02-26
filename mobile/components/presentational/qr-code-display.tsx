@@ -27,8 +27,8 @@ export function QRCodeDisplay({
         <Text variant="caption">{storeCode}</Text>
       </View>
 
-      <View className="mb-6 rounded-2xl bg-white p-4">
-        <QRCode value={value} size={size} backgroundColor="white" color="black" />
+      <View className="mb-6 bg-white p-4">
+        <QRCode value={value} size={size} backgroundColor="#FAFAFA" color="#0A0A0A" />
       </View>
 
       <Text className="mb-2 text-center font-ops text-5xl">${amount}</Text>

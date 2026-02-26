@@ -13,24 +13,24 @@ export function StoreActionCards({ onDiscoverPress, onCreatePress }: StoreAction
     <View className="flex-row gap-3">
       <Pressable
         onPress={onDiscoverPress}
-        className="flex-1 flex-row items-center gap-3 rounded-2xl bg-primary/10 p-4 active:bg-primary/20">
-        <View className="size-10 items-center justify-center rounded-full bg-primary/15">
+        className="bg-primary/10 active:bg-primary/20 flex-1 flex-row items-center gap-3 p-4">
+        <View className="bg-primary/15 size-10 items-center justify-center">
           <Icon as={Compass} size={20} className="text-primary" />
         </View>
         <View className="flex-1">
-          <Text className="font-brutal text-foreground">Discover</Text>
+          <Text className="font-brutal uppercase text-foreground">Discover</Text>
           <Text className="text-xs text-muted-foreground">Find new stores</Text>
         </View>
       </Pressable>
 
       <Pressable
         onPress={onCreatePress}
-        className="flex-1 flex-row items-center gap-3 rounded-2xl bg-accent-warm/10 p-4 active:bg-accent-warm/20">
-        <View className="size-10 items-center justify-center rounded-full bg-accent-warm/15">
-          <Icon as={Plus} size={20} className="text-accent-warm" />
+        className="bg-destructive/10 active:bg-destructive/20 flex-1 flex-row items-center gap-3 p-4">
+        <View className="bg-destructive/15 size-10 items-center justify-center">
+          <Icon as={Plus} size={20} className="text-destructive" />
         </View>
         <View className="flex-1">
-          <Text className="font-brutal text-foreground">Create</Text>
+          <Text className="font-brutal uppercase text-foreground">Create</Text>
           <Text className="text-xs text-muted-foreground">Start your store</Text>
         </View>
       </Pressable>

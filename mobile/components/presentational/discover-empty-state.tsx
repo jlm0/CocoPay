@@ -32,7 +32,7 @@ export function DiscoverEmptyState({ type, searchQuery }: DiscoverEmptyStateProp
   return (
     <View className="flex-1 items-center justify-center px-8 py-16">
       <Icon as={config.icon} size={48} className="mb-4 text-muted-foreground" />
-      <Text className="mb-2 text-center font-brutal text-lg">{config.title}</Text>
+      <Text className="mb-2 text-center font-brutal text-lg uppercase">{config.title}</Text>
       <Text className="text-center text-muted-foreground">
         {type === 'no-results' && searchQuery
           ? `No stores matching "${searchQuery}"`

@@ -61,7 +61,7 @@ function DialogContent({
       <DialogOverlay>
         <DialogPrimitive.Content
           className={cn(
-            'z-50 mx-auto flex w-full max-w-[calc(100%-2rem)] flex-col gap-4 rounded-lg border border-border bg-background p-6 shadow-lg shadow-black/5 sm:max-w-lg',
+            'z-50 mx-auto flex w-full max-w-[calc(100%-2rem)] flex-col gap-4 border-2 border-foreground bg-background p-6 shadow-brutal-lg sm:max-w-lg',
             Platform.select({
               web: 'duration-200 animate-in fade-in-0 zoom-in-95',
             }),
@@ -71,7 +71,7 @@ function DialogContent({
           <>{children}</>
           <DialogPrimitive.Close
             className={cn(
-              'absolute right-4 top-4 rounded opacity-70 active:opacity-100',
+              'absolute right-4 top-4 opacity-70 active:opacity-100',
               Platform.select({
                 web: 'ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-accent',
               })
@@ -110,7 +110,7 @@ function DialogTitle({
 }: DialogPrimitive.TitleProps & React.RefAttributes<DialogPrimitive.TitleRef>) {
   return (
     <DialogPrimitive.Title
-      className={cn('font-sans-semibold text-lg leading-none text-foreground', className)}
+      className={cn('font-brutal text-lg uppercase leading-none text-foreground', className)}
       {...props}
     />
   );
@@ -122,7 +122,7 @@ function DialogDescription({
 }: DialogPrimitive.DescriptionProps & React.RefAttributes<DialogPrimitive.DescriptionRef>) {
   return (
     <DialogPrimitive.Description
-      className={cn('text-sm text-muted-foreground', className)}
+      className={cn('font-mono text-sm text-muted-foreground', className)}
       {...props}
     />
   );

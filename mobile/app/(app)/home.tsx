@@ -26,32 +26,32 @@ function StoresGridSkeleton() {
     <View className="gap-3">
       <View className="flex-row gap-3">
         {[0, 1].map((i) => (
-          <View key={i} className="flex-1 rounded-2xl border border-border bg-card p-3">
+          <View key={i} className="flex-1 border border-border bg-card p-3">
             <View className="flex-row items-center gap-2.5">
-              <Skeleton className="size-10 rounded-full" />
+              <Skeleton className="size-10" />
               <View className="flex-1 gap-1.5">
-                <Skeleton className="h-4 w-20 rounded" />
-                <Skeleton className="h-5 w-14 rounded" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-5 w-14" />
               </View>
             </View>
             <View className="mt-3">
-              <Skeleton className="h-7 w-16 rounded" />
+              <Skeleton className="h-7 w-16" />
             </View>
           </View>
         ))}
       </View>
       <View className="flex-row gap-3">
         {[2, 3].map((i) => (
-          <View key={i} className="flex-1 rounded-2xl border border-border bg-card p-3">
+          <View key={i} className="flex-1 border border-border bg-card p-3">
             <View className="flex-row items-center gap-2.5">
-              <Skeleton className="size-10 rounded-full" />
+              <Skeleton className="size-10" />
               <View className="flex-1 gap-1.5">
-                <Skeleton className="h-4 w-20 rounded" />
-                <Skeleton className="h-5 w-14 rounded" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-5 w-14" />
               </View>
             </View>
             <View className="mt-3">
-              <Skeleton className="h-7 w-16 rounded" />
+              <Skeleton className="h-7 w-16" />
             </View>
           </View>
         ))}
@@ -144,7 +144,7 @@ export default function HomePage() {
     isExpanded && hasMore ? (
       <Pressable
         onPress={handleToggleExpand}
-        className="flex-row items-center justify-center gap-1 rounded-xl py-2 active:bg-muted">
+        className="flex-row items-center justify-center gap-1 py-2 active:bg-muted">
         <Text className="font-mono text-sm text-muted-foreground">Show less</Text>
         <Icon as={ChevronUp} size={16} className="text-muted-foreground" />
       </Pressable>

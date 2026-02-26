@@ -47,19 +47,19 @@ export function PayContainer({
       <ScreenContainer
         bottomActionBar={
           <BottomActionBar>
-            <Button variant="secondary" disabled size="lg" className="h-14 rounded-xl">
+            <Button variant="secondary" disabled size="lg" className="h-14">
               <Text>Scan QR</Text>
             </Button>
-            <Button disabled size="lg" className="h-14 rounded-xl">
+            <Button disabled size="lg" className="h-14">
               <Text>Pay</Text>
             </Button>
           </BottomActionBar>
         }>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-64">
           <FeatureHeader title="Pay" className="mb-6" />
-          <Skeleton className="mb-4 h-20 w-full rounded-xl" />
+          <Skeleton className="mb-4 h-20 w-full" />
           <View className="items-center">
-            <Skeleton className="h-16 w-48 rounded-lg" />
+            <Skeleton className="h-16 w-48" />
           </View>
         </ScrollView>
       </ScreenContainer>
@@ -247,12 +247,12 @@ function PayContainerContent({
             variant="secondary"
             onPress={handleScanQR}
             size="lg"
-            className="h-14 rounded-xl"
+            className="h-14"
             disabled={isPayLoading}>
             <Text>Scan QR</Text>
           </Button>
 
-          <Button onPress={handlePay} disabled={!canPay} size="lg" className="h-14 rounded-xl">
+          <Button onPress={handlePay} disabled={!canPay} size="lg" className="h-14">
             {isPayLoading && <Spinner size="small" />}
             <Text>{payButtonText}</Text>
           </Button>
@@ -262,7 +262,7 @@ function PayContainerContent({
         <FeatureHeader title="Pay" className="mb-6" />
 
         {deepLinkError && (
-          <View className="mx-4 mb-4 rounded-lg bg-destructive/10 p-3">
+          <View className="bg-destructive/10 mx-4 mb-4 p-3">
             <Text variant="small" className="text-center text-destructive">
               {deepLinkError}. Please enter payment details manually.
             </Text>

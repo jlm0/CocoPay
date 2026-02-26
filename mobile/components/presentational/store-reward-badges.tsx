@@ -15,7 +15,7 @@ export function StoreRewardBadges({ cashBackPercent, className }: StoreRewardBad
 
   return (
     <View className={cn('flex-row gap-2', className)}>
-      <Badge variant="secondary" className="rounded-full">
+      <Badge variant="secondary" className="">
         <Text>{cashBackPercent}% cashback</Text>
       </Badge>
     </View>

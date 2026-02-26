@@ -12,7 +12,7 @@ type HomeBalancesProps = {
 };
 
 function HeroBalanceSkeleton() {
-  return <Skeleton className="h-14 w-48 rounded" />;
+  return <Skeleton className="h-14 w-48" />;
 }
 
 export function HomeBalances({ isRefreshing }: HomeBalancesProps) {

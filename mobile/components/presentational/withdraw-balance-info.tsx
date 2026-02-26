@@ -54,7 +54,7 @@ export function WithdrawBalanceInfo({
           onPress={onChainPress}
           disabled={disabled}
           className="flex-row items-center gap-1.5 active:opacity-70">
-          <View className="size-2 rounded-full" style={{ backgroundColor: chainColor }} />
+          <View className="size-2" style={{ backgroundColor: chainColor }} />
           <Text variant="caption" className="font-mono">
             {chainName}
           </Text>
@@ -62,7 +62,7 @@ export function WithdrawBalanceInfo({
         </Pressable>
       ) : chainId ? (
         <View className="flex-row items-center gap-1.5">
-          <View className="size-2 rounded-full" style={{ backgroundColor: chainColor }} />
+          <View className="size-2" style={{ backgroundColor: chainColor }} />
           <Text variant="caption" className="font-mono">
             {chainName}
           </Text>

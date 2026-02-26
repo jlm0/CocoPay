@@ -57,7 +57,7 @@ export function HowItWorksCard({ className }: HowItWorksCardProps) {
   }));
 
   return (
-    <View className={cn('rounded-xl border border-border bg-card', className)}>
+    <View className={cn('border border-border bg-card', className)}>
       <Pressable
         onPress={toggleExpand}
         className="flex-row items-center justify-between p-4 active:opacity-70">
@@ -76,7 +76,7 @@ export function HowItWorksCard({ className }: HowItWorksCardProps) {
         <View className="gap-4 px-4 pb-4">
           {CONCEPTS.map((concept, index) => (
             <View key={index} className="flex-row gap-3">
-              <View className="h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+              <View className="bg-primary/10 h-9 w-9 items-center justify-center">
                 <Icon as={concept.icon} size={18} className="text-primary" />
               </View>
               <View className="flex-1">

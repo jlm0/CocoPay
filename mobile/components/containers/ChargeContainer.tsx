@@ -75,15 +75,11 @@ export function ChargeContainer({
             onPress={handleShare}
             disabled={!canGenerate}
             size="lg"
-            className="h-14 rounded-xl">
+            className="h-14">
             <Text>Share link</Text>
           </Button>
 
-          <Button
-            onPress={handleGenerateQR}
-            disabled={!canGenerate}
-            size="lg"
-            className="h-14 rounded-xl">
+          <Button onPress={handleGenerateQR} disabled={!canGenerate} size="lg" className="h-14">
             <Text>Generate QR</Text>
           </Button>
         </BottomActionBar>

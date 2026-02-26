@@ -20,7 +20,7 @@ export function BalanceWalletSection({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <View className={cn('rounded-lg border border-border bg-card p-4', className)}>
+    <View className={cn('border border-border bg-card p-4', className)}>
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Icon as={Wallet} size={16} className="text-muted-foreground" />
@@ -45,7 +45,7 @@ export function BalanceWalletSection({
       </Pressable>
 
       {isExpanded && (
-        <View className="mt-3 rounded-md bg-muted/50 p-3">
+        <View className="bg-muted/50 mt-3 p-3">
           {chainBalances.map((chain) => (
             <View key={chain.chainId} className="flex-row justify-between py-1.5">
               <Text variant="body" className="text-muted-foreground">

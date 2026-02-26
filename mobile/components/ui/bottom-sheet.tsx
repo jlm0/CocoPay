@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useMemo } from 'react';
-import { View } from 'react-native';
+import { useColorScheme, View } from 'react-native';
 import GorhomBottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -19,6 +19,8 @@ type BottomSheetProps = {
 
 const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
   ({ children, snapPoints, enableDynamicSizing = true, onClose, className }, ref) => {
+    const colorScheme = useColorScheme();
+    const theme = COLORS[colorScheme ?? 'dark'];
     const defaultSnapPoints = useMemo(() => snapPoints ?? ['25%'], [snapPoints]);
 
     const renderBackdrop = useCallback(
@@ -37,8 +39,13 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
         enablePanDownToClose
         backdropComponent={renderBackdrop}
         onClose={onClose}
-        backgroundStyle={{ backgroundColor: COLORS.light.card }}
-        handleIndicatorStyle={{ backgroundColor: COLORS.light.border }}>
+        backgroundStyle={{
+          backgroundColor: theme.card,
+          borderRadius: 0,
+          borderTopWidth: 2,
+          borderTopColor: theme.foreground,
+        }}
+        handleIndicatorStyle={{ backgroundColor: theme.border }}>
         <BottomSheetView>
           <View className={cn('px-6 pb-8', className)}>{children}</View>
         </BottomSheetView>

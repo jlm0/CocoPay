@@ -177,11 +177,7 @@ function BorrowContainerContent({
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button
-            onPress={handleBorrow}
-            disabled={!canBorrow}
-            size="lg"
-            className="h-14 rounded-xl">
+          <Button onPress={handleBorrow} disabled={!canBorrow} size="lg" className="h-14">
             <Text>{isLoading ? 'Borrowing...' : 'Cash out'}</Text>
           </Button>
         </BottomActionBar>

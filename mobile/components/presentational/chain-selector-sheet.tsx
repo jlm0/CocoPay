@@ -41,17 +41,17 @@ export const ChainSelectorSheet = forwardRef<BottomSheetMethods, ChainSelectorSh
                 key={chainBalance.chainId}
                 onPress={() => onSelect(chainBalance.chainId)}
                 className={cn(
-                  'flex-row items-center justify-between rounded-xl border border-border p-4 active:opacity-70',
-                  isSelected && 'border-primary bg-primary/5'
+                  'flex-row items-center justify-between border border-border p-4 active:opacity-70',
+                  isSelected && 'bg-primary/5 border-primary'
                 )}>
                 <View className="flex-row items-center gap-3">
                   <View
-                    className="size-10 items-center justify-center rounded-full"
+                    className="size-10 items-center justify-center"
                     style={{ backgroundColor: chainColorMuted }}>
-                    <View className="size-4 rounded-full" style={{ backgroundColor: chainColor }} />
+                    <View className="size-4" style={{ backgroundColor: chainColor }} />
                   </View>
                   <View>
-                    <Text className="font-brutal">{chainName}</Text>
+                    <Text className="font-brutal uppercase">{chainName}</Text>
                     <Text variant="caption">${formattedBalance} available</Text>
                   </View>
                 </View>

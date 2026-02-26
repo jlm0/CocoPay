@@ -42,20 +42,18 @@ export function TokenAmountInput({
 
   return (
     <View className={className}>
-      <Label className="mb-2 font-brutal">{label}</Label>
+      <Label className="mb-2 font-brutal uppercase">{label}</Label>
       <View className="flex-row items-center gap-2">
         <Input
           value={value}
           onChangeText={handleChangeText}
           keyboardType="decimal-pad"
           placeholder="0"
-          className={`flex-1 font-brutal text-2xl ${error ? 'border-destructive' : ''}`}
+          className={`flex-1 font-brutal text-2xl uppercase ${error ? 'border-destructive' : ''}`}
         />
         {onMaxPress && (
-          <Pressable
-            onPress={onMaxPress}
-            className="rounded-lg bg-secondary px-3 py-2 active:bg-secondary/60">
-            <Text variant="caption" className="font-brutal text-secondary-foreground">
+          <Pressable onPress={onMaxPress} className="active:bg-secondary/60 bg-secondary px-3 py-2">
+            <Text variant="caption" className="font-brutal uppercase text-secondary-foreground">
               Max
             </Text>
           </Pressable>

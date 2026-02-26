@@ -28,7 +28,7 @@ function DropdownMenuSubTrigger({
   return (
     <DropdownMenuPrimitive.SubTrigger
       className={cn(
-        'native:py-2 flex flex-row items-center gap-2 rounded-sm px-2 py-1.5 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
+        'native:py-2 flex flex-row items-center gap-2 px-2 py-1.5 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
         className
       )}
       {...props}>
@@ -46,7 +46,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenuPrimitive.SubContent
       className={cn(
-        'z-50 mt-1 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-md shadow-foreground/5',
+        'z-50 mt-1 min-w-[8rem] overflow-hidden border-2 border-foreground bg-popover p-1 shadow-brutal-md',
         className
       )}
       {...props}
@@ -75,7 +75,7 @@ function DropdownMenuContent({
         <NativeOnlyAnimatedView entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)}>
           <DropdownMenuPrimitive.Content
             className={cn(
-              'z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-md shadow-foreground/5',
+              'z-50 min-w-[8rem] overflow-hidden border-2 border-foreground bg-popover p-1 shadow-brutal-md',
               Platform.select({
                 web: 'animate-in fade-in-0 zoom-in-95',
               }),
@@ -100,7 +100,7 @@ function DropdownMenuItem({
   return (
     <DropdownMenuPrimitive.Item
       className={cn(
-        'native:py-2 group relative flex flex-row items-center gap-2 rounded-sm px-2 py-1.5 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
+        'native:py-2 min-h-11 group relative flex flex-row items-center gap-2 px-2 py-1.5 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
         props.disabled && 'opacity-50 web:pointer-events-none',
         className
       )}
@@ -119,7 +119,7 @@ function DropdownMenuCheckboxItem({
   return (
     <DropdownMenuPrimitive.CheckboxItem
       className={cn(
-        'native:py-2 group relative flex flex-row items-center rounded-sm py-1.5 pl-8 pr-2 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
+        'native:py-2 min-h-11 group relative flex flex-row items-center py-1.5 pl-8 pr-2 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
         props.disabled && 'opacity-50 web:pointer-events-none',
         className
       )}
@@ -143,14 +143,14 @@ function DropdownMenuRadioItem({
   return (
     <DropdownMenuPrimitive.RadioItem
       className={cn(
-        'native:py-2 group relative flex flex-row items-center rounded-sm py-1.5 pl-8 pr-2 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
+        'native:py-2 min-h-11 group relative flex flex-row items-center py-1.5 pl-8 pr-2 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent',
         props.disabled && 'opacity-50 web:pointer-events-none',
         className
       )}
       {...props}>
       <View className="absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <View className="size-2 rounded-full bg-foreground" />
+          <View className="size-2 bg-foreground" />
         </DropdownMenuPrimitive.ItemIndicator>
       </View>
       <>{children}</>
@@ -164,10 +164,7 @@ function DropdownMenuLabel({
 }: DropdownMenuPrimitive.LabelProps & React.RefAttributes<DropdownMenuPrimitive.LabelRef>) {
   return (
     <DropdownMenuPrimitive.Label
-      className={cn(
-        'native:py-1.5 px-2 py-1.5 font-sans-semibold text-sm text-foreground',
-        className
-      )}
+      className={cn('native:py-1.5 px-2 py-1.5 font-brutal uppercase text-sm text-foreground', className)}
       {...props}
     />
   );

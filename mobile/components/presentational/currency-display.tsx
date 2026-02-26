@@ -1,8 +1,9 @@
-import { View, StyleSheet, Text as RNText } from 'react-native';
+import { View, StyleSheet, Text as RNText, useColorScheme } from 'react-native';
 import { AnimatedRollingNumber } from 'react-native-animated-rolling-numbers';
 import { Easing } from 'react-native-reanimated';
 import { Text } from '@/components/ui/text';
 import { shouldUseCompactNotation, CHARACTER_LIMITS } from '@/lib/format';
+import { COLORS } from '@/lib/theme';
 
 type CurrencyDisplayProps = {
   label: string;
@@ -19,7 +20,9 @@ export function CurrencyDisplay({
   maxCharacters = CHARACTER_LIMITS.HOME_BALANCE,
   className = '',
 }: CurrencyDisplayProps) {
-  const textStyle = size === 'large' ? styles.displayLarge : styles.displayValue;
+  const colorScheme = useColorScheme();
+  const baseStyle = size === 'large' ? styles.displayLarge : styles.displayValue;
+  const textStyle = { ...baseStyle, color: COLORS[colorScheme ?? 'dark'].foreground };
   const useCompact = shouldUseCompactNotation(value, maxCharacters);
 
   return (
@@ -55,13 +58,11 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 36 * -0.025,
-    color: '#0A0A0A',
   },
   displayValue: {
     fontSize: 30,
     lineHeight: 36,
     fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 30 * -0.025,
-    color: '#0A0A0A',
   },
 });

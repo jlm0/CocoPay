@@ -35,10 +35,10 @@ export function BorrowSuccess({
         USDC received
       </Text>
 
-      <View className="mt-8 w-full rounded-xl bg-muted/50 p-4">
+      <View className="bg-muted/50 mt-8 w-full p-4">
         <Text className="text-center text-sm text-muted-foreground">
           You used{' '}
-          <Text className="font-brutal text-foreground">
+          <Text className="font-brutal uppercase text-foreground">
             {tokenAmount} {tokenSymbol}
           </Text>{' '}
           from {storeName} as collateral
@@ -48,7 +48,7 @@ export function BorrowSuccess({
         </Text>
       </View>
 
-      <View className="mt-4 w-full rounded-xl border border-border p-4">
+      <View className="mt-4 w-full border border-border p-4">
         <Text className="text-center text-sm text-muted-foreground">
           Repay anytime to get your tokens back
         </Text>

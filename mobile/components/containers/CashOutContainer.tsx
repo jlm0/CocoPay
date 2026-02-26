@@ -159,11 +159,7 @@ function CashOutContainerContent({
     <ScreenContainer
       bottomActionBar={
         <BottomActionBar>
-          <Button
-            onPress={handleCashOut}
-            disabled={!canCashOut}
-            size="lg"
-            className="h-14 rounded-xl">
+          <Button onPress={handleCashOut} disabled={!canCashOut} size="lg" className="h-14">
             <Text>{isLoading ? 'Cashing out...' : 'Cash out'}</Text>
           </Button>
         </BottomActionBar>

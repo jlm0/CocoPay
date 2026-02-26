@@ -1,6 +1,7 @@
 # CocoPay Design System
 
-A unified design language for web and mobile. Both platforms share the same visual identity: **Neo-Brutalist Typographic Maximalism** — loud, confident, unapologetically fun, and a deliberate rejection of corporate fintech aesthetics.
+A unified design language for web and mobile. Both platforms share the same visual identity: **Neo-Brutalist Typographic
+Maximalism** — loud, confident, unapologetically fun, and a deliberate rejection of corporate fintech aesthetics.
 
 ---
 
@@ -8,13 +9,13 @@ A unified design language for web and mobile. Both platforms share the same visu
 
 Five colors. No exceptions.
 
-| Token   | Hex       | HSL                | Role                                    |
-|---------|-----------|--------------------|-----------------------------------------|
-| `black` | `#0A0A0A` | 0 0% 4%            | Primary surface (dark), primary text (light) |
-| `white` | `#FAFAFA` | 0 0% 98%           | Primary text (dark), primary surface (light) |
-| `pink`  | `#FF2E63` | 345 100% 59%       | Destructive, accent, energy, urgency    |
-| `green` | `#BAFF29` | 82 100% 58%        | Primary action, CTA, success, money     |
-| `blue`  | `#00D4FF` | 191 100% 50%       | Info, secondary accent, numbering       |
+| Token   | Hex       | HSL          | Role                                         |
+| ------- | --------- | ------------ | -------------------------------------------- |
+| `black` | `#0A0A0A` | 0 0% 4%      | Primary surface (dark), primary text (light) |
+| `white` | `#FAFAFA` | 0 0% 98%     | Primary text (dark), primary surface (light) |
+| `pink`  | `#FF2E63` | 345 100% 59% | Destructive, accent, energy, urgency         |
+| `green` | `#BAFF29` | 82 100% 58%  | Primary action, CTA, success, money          |
+| `blue`  | `#00D4FF` | 191 100% 50% | Info, secondary accent, numbering            |
 
 ### Semantic Token Mapping
 
@@ -22,59 +23,59 @@ Semantic tokens map the 5 palette colors to UI roles. Both platforms use the sam
 
 #### Dark Mode
 
-| Token                    | Value               | Source   |
-|--------------------------|---------------------|----------|
-| `background`             | `#0A0A0A`           | black    |
-| `foreground`             | `#FAFAFA`           | white    |
-| `primary`                | `#BAFF29`           | green    |
-| `primary-foreground`     | `#0A0A0A`           | black    |
-| `destructive`            | `#FF2E63`           | pink     |
-| `destructive-foreground` | `#0A0A0A`           | black    |
-| `info`                   | `#00D4FF`           | blue     |
-| `info-foreground`        | `#0A0A0A`           | black    |
-| `card`                   | `#111111`           | black +  |
-| `card-foreground`        | `#FAFAFA`           | white    |
-| `surface`                | `#161616`           | black +  |
-| `surface-foreground`     | `#FAFAFA`           | white    |
-| `muted`                  | `#1A1A1A`           | black +  |
+| Token                    | Value                   | Source    |
+| ------------------------ | ----------------------- | --------- |
+| `background`             | `#0A0A0A`               | black     |
+| `foreground`             | `#FAFAFA`               | white     |
+| `primary`                | `#BAFF29`               | green     |
+| `primary-foreground`     | `#0A0A0A`               | black     |
+| `destructive`            | `#FF2E63`               | pink      |
+| `destructive-foreground` | `#0A0A0A`               | black     |
+| `info`                   | `#00D4FF`               | blue      |
+| `info-foreground`        | `#0A0A0A`               | black     |
+| `card`                   | `#111111`               | black +   |
+| `card-foreground`        | `#FAFAFA`               | white     |
+| `surface`                | `#161616`               | black +   |
+| `surface-foreground`     | `#FAFAFA`               | white     |
+| `muted`                  | `#1A1A1A`               | black +   |
 | `muted-foreground`       | `rgba(250,250,250,0.5)` | white 50% |
 | `border`                 | `rgba(250,250,250,0.1)` | white 10% |
 | `input`                  | `rgba(250,250,250,0.1)` | white 10% |
-| `ring`                   | `#BAFF29`           | green    |
+| `ring`                   | `#BAFF29`               | green     |
 
 #### Light Mode
 
-| Token                    | Value               | Source   |
-|--------------------------|---------------------|----------|
-| `background`             | `#FAFAFA`           | white    |
-| `foreground`             | `#0A0A0A`           | black    |
-| `primary`                | `#BAFF29`           | green    |
-| `primary-foreground`     | `#0A0A0A`           | black    |
-| `destructive`            | `#FF2E63`           | pink     |
-| `destructive-foreground` | `#FAFAFA`           | white    |
-| `info`                   | `#00D4FF`           | blue     |
-| `info-foreground`        | `#0A0A0A`           | black    |
-| `card`                   | `#F0F0F0`           | white -  |
-| `card-foreground`        | `#0A0A0A`           | black    |
-| `surface`                | `#E8E8E8`           | white -  |
-| `surface-foreground`     | `#0A0A0A`           | black    |
-| `muted`                  | `#E0E0E0`           | white -  |
-| `muted-foreground`       | `rgba(10,10,10,0.5)` | black 50% |
+| Token                    | Value                 | Source    |
+| ------------------------ | --------------------- | --------- |
+| `background`             | `#FAFAFA`             | white     |
+| `foreground`             | `#0A0A0A`             | black     |
+| `primary`                | `#BAFF29`             | green     |
+| `primary-foreground`     | `#0A0A0A`             | black     |
+| `destructive`            | `#FF2E63`             | pink      |
+| `destructive-foreground` | `#FAFAFA`             | white     |
+| `info`                   | `#00D4FF`             | blue      |
+| `info-foreground`        | `#0A0A0A`             | black     |
+| `card`                   | `#F0F0F0`             | white -   |
+| `card-foreground`        | `#0A0A0A`             | black     |
+| `surface`                | `#E8E8E8`             | white -   |
+| `surface-foreground`     | `#0A0A0A`             | black     |
+| `muted`                  | `#E0E0E0`             | white -   |
+| `muted-foreground`       | `rgba(10,10,10,0.5)`  | black 50% |
 | `border`                 | `rgba(10,10,10,0.15)` | black 15% |
 | `input`                  | `rgba(10,10,10,0.15)` | black 15% |
-| `ring`                   | `#BAFF29`           | green    |
+| `ring`                   | `#BAFF29`             | green     |
 
 ### Foreground-on-Color Reference
 
 When a palette color is used as a background, use this foreground:
 
-| Background | Foreground | Example                      |
-|------------|------------|------------------------------|
-| `black`    | `white`    | Default dark sections        |
-| `white`    | `black`    | Default light sections       |
-| `green`    | `black`    | CTA buttons, success states  |
-| `pink`     | `black`    | Marquee strips, alerts       |
-| `blue`     | `black`    | Info badges, chaos strips    |
+| Background | Foreground | Example                     |
+| ---------- | ---------- | --------------------------- |
+| `black`    | `white`    | Default dark sections       |
+| `white`    | `black`    | Default light sections      |
+| `green`    | `black`    | CTA buttons, success states |
+| `pink`     | `black`    | Marquee strips, alerts      |
+| `blue`     | `black`    | Info badges, chaos strips   |
 
 ### Color Rules
 
@@ -89,16 +90,17 @@ When a palette color is used as a background, use this foreground:
 
 Four font families. Each has a defined role. Hierarchy is expressed through typeface switching, not weight variation.
 
-| Role      | Family          | Weight  | Usage                                      |
-|-----------|-----------------|---------|--------------------------------------------|
-| Display   | Anton           | 400     | Hero headlines, section titles, screen headers |
-| Brutal    | Bebas Neue      | 400     | Sub-headlines, CTAs, card titles, tab labels |
-| Ops       | Black Ops One   | 400     | Numbering, step indicators, stats, amounts |
-| Mono      | Space Mono      | 400/700 | Body text, labels, nav, metadata, inputs   |
+| Role    | Family        | Weight  | Usage                                          |
+| ------- | ------------- | ------- | ---------------------------------------------- |
+| Display | Anton         | 400     | Hero headlines, section titles, screen headers |
+| Brutal  | Bebas Neue    | 400     | Sub-headlines, CTAs, card titles, tab labels   |
+| Ops     | Black Ops One | 400     | Numbering, step indicators, stats, amounts     |
+| Mono    | Space Mono    | 400/700 | Body text, labels, nav, metadata, inputs       |
 
 ### Font Loading
 
 **Web** (Next.js Google Fonts):
+
 ```
 Anton         → --font-display
 Bebas Neue    → --font-brutal
@@ -107,6 +109,7 @@ Space Mono    → --font-mono
 ```
 
 **Mobile** (expo-google-fonts):
+
 ```
 @expo-google-fonts/anton           → Anton_400Regular
 @expo-google-fonts/bebas-neue      → BebasNeue_400Regular
@@ -129,31 +132,31 @@ font-mono     → Space Mono
 
 #### Web (responsive, clamp-based)
 
-| Token         | Size                            | Font    | Usage               |
-|---------------|---------------------------------|---------|---------------------|
-| `headline-xl` | `clamp(4rem, 16vw, 14rem)`     | Display | Hero main headline  |
-| `headline-lg` | `clamp(3rem, 10vw, 10rem)`     | Display | Section titles      |
-| `headline-md` | `clamp(2rem, 5vw, 4rem)`       | Brutal  | Sub-section headers |
-| `headline-sm` | `clamp(1.5rem, 3vw, 2.5rem)`   | Brutal  | Card titles         |
-| `stat`        | `clamp(4rem, 15vw, 10rem)`     | Ops     | Stats, counters     |
-| `step-number` | `clamp(3rem, 8vw, 6rem)`       | Ops     | Step indicators     |
-| `body`        | `0.9rem`                        | Mono    | Body copy           |
-| `label`       | `0.75rem`                       | Mono    | Labels, metadata    |
-| `tiny`        | `clamp(0.6rem, 1.5vw, 1rem)`   | Mono    | Fine print          |
+| Token         | Size                         | Font    | Usage               |
+| ------------- | ---------------------------- | ------- | ------------------- |
+| `headline-xl` | `clamp(4rem, 16vw, 14rem)`   | Display | Hero main headline  |
+| `headline-lg` | `clamp(3rem, 10vw, 10rem)`   | Display | Section titles      |
+| `headline-md` | `clamp(2rem, 5vw, 4rem)`     | Brutal  | Sub-section headers |
+| `headline-sm` | `clamp(1.5rem, 3vw, 2.5rem)` | Brutal  | Card titles         |
+| `stat`        | `clamp(4rem, 15vw, 10rem)`   | Ops     | Stats, counters     |
+| `step-number` | `clamp(3rem, 8vw, 6rem)`     | Ops     | Step indicators     |
+| `body`        | `0.9rem`                     | Mono    | Body copy           |
+| `label`       | `0.75rem`                    | Mono    | Labels, metadata    |
+| `tiny`        | `clamp(0.6rem, 1.5vw, 1rem)` | Mono    | Fine print          |
 
 #### Mobile (fixed sizes, pt-based)
 
-| Token         | Size   | Font    | Usage                         |
-|---------------|--------|---------|-------------------------------|
-| `headline-xl` | 48px   | Display | Screen hero headlines         |
-| `headline-lg` | 36px   | Display | Section titles                |
-| `headline-md` | 28px   | Brutal  | Sub-section headers           |
-| `headline-sm` | 22px   | Brutal  | Card titles, list headers     |
-| `stat`        | 48px   | Ops     | Balance amounts, counters     |
-| `step-number` | 36px   | Ops     | Step indicators, numbering    |
-| `body`        | 14px   | Mono    | Body copy                     |
-| `label`       | 12px   | Mono    | Labels, metadata, timestamps  |
-| `tiny`        | 10px   | Mono    | Fine print, legal, captions   |
+| Token         | Size | Font    | Usage                        |
+| ------------- | ---- | ------- | ---------------------------- |
+| `headline-xl` | 48px | Display | Screen hero headlines        |
+| `headline-lg` | 36px | Display | Section titles               |
+| `headline-md` | 28px | Brutal  | Sub-section headers          |
+| `headline-sm` | 22px | Brutal  | Card titles, list headers    |
+| `stat`        | 48px | Ops     | Balance amounts, counters    |
+| `step-number` | 36px | Ops     | Step indicators, numbering   |
+| `body`        | 14px | Mono    | Body copy                    |
+| `label`       | 12px | Mono    | Labels, metadata, timestamps |
+| `tiny`        | 10px | Mono    | Fine print, legal, captions  |
 
 ### Typography Rules
 
@@ -172,7 +175,7 @@ font-mono     → Space Mono
 ### Named Tokens
 
 | Token  | Value | Tailwind | Usage                              |
-|--------|-------|----------|------------------------------------|
+| ------ | ----- | -------- | ---------------------------------- |
 | `xs`   | 4px   | `1`      | Tight gaps, icon-to-label          |
 | `sm`   | 8px   | `2`      | Compact element spacing            |
 | `md`   | 12px  | `3`      | Default list/grid gap              |
@@ -185,6 +188,7 @@ font-mono     → Space Mono
 ### Section Padding
 
 **Web** (responsive with clamp):
+
 ```
 Hero:           min-height: 100vh, padding: 2rem
 Sections:       clamp(4rem, 10vw, 10rem) vertical, 2rem horizontal
@@ -193,6 +197,7 @@ Stats grid:     gap: 3rem
 ```
 
 **Mobile** (fixed, safe-area-aware):
+
 ```
 Screen:         paddingHorizontal: 24px (lg), safe area insets top/bottom
 Section gap:    16px (base) between major sections
@@ -203,13 +208,13 @@ Card gap:       12px (md) between card content elements
 
 ### Gap Patterns
 
-| Context             | Web     | Mobile  | Tailwind |
-|---------------------|---------|---------|----------|
-| Icon + label        | 0.5rem  | 4px     | `gap-1`  |
-| Inline elements     | 0.75rem | 8px     | `gap-2`  |
-| List items          | 1rem    | 12px    | `gap-3`  |
-| Cards in grid       | 2rem    | 16px    | `gap-4`  |
-| Sections            | 3rem    | 24px    | `gap-6`  |
+| Context         | Web     | Mobile | Tailwind |
+| --------------- | ------- | ------ | -------- |
+| Icon + label    | 0.5rem  | 4px    | `gap-1`  |
+| Inline elements | 0.75rem | 8px    | `gap-2`  |
+| List items      | 1rem    | 12px   | `gap-3`  |
+| Cards in grid   | 2rem    | 16px   | `gap-4`  |
+| Sections        | 3rem    | 24px   | `gap-6`  |
 
 ### Touch Targets (Mobile Only)
 
@@ -227,6 +232,7 @@ Card gap:       12px (md) between card content elements
 **Zero. Everywhere.** No rounded corners, no `border-radius`, no `rounded-*` utilities. Everything is sharp rectangles.
 
 Tailwind config:
+
 ```
 borderRadius: {
   none: '0px',
@@ -243,32 +249,35 @@ borderRadius: {
 
 ### Border Weights
 
-| Token     | Width | Usage                                  |
-|-----------|-------|----------------------------------------|
-| `thin`    | 1px   | Dividers, subtle separators            |
-| `default` | 2px   | Card borders, input borders            |
-| `thick`   | 3px   | CTA underlines, emphasis borders       |
+| Token     | Width | Usage                            |
+| --------- | ----- | -------------------------------- |
+| `thin`    | 1px   | Dividers, subtle separators      |
+| `default` | 2px   | Card borders, input borders      |
+| `thick`   | 3px   | CTA underlines, emphasis borders |
 
-Border color defaults to `foreground` (white in dark mode, black in light mode). Accent borders use palette colors directly.
+Border color defaults to `foreground` (white in dark mode, black in light mode). Accent borders use palette colors
+directly.
 
 ### Shadows (Brutal)
 
 Hard-offset, zero blur, single palette color. Shadows cast down-right.
 
-| Token         | Value                | Usage                          |
-|---------------|----------------------|--------------------------------|
-| `brutal-sm`   | `2px 2px 0`         | Subtle depth on small elements |
-| `brutal-md`   | `4px 4px 0`         | Default card/button shadow     |
-| `brutal-lg`   | `6px 6px 0`         | Hover state growth             |
-| `brutal-xl`   | `8px 8px 0`         | Active/pressed emphasis        |
+| Token       | Value       | Usage                          |
+| ----------- | ----------- | ------------------------------ |
+| `brutal-sm` | `2px 2px 0` | Subtle depth on small elements |
+| `brutal-md` | `4px 4px 0` | Default card/button shadow     |
+| `brutal-lg` | `6px 6px 0` | Hover state growth             |
+| `brutal-xl` | `8px 8px 0` | Active/pressed emphasis        |
 
 Shadow colors:
+
 - Default: `pink` on dark backgrounds
 - On green/pink/blue backgrounds: `black`
 - Hover state: shadow grows (sm → md, md → lg)
 - Press state (mobile): shadow shrinks (md → sm) with translate to simulate push
 
 Tailwind utilities:
+
 ```
 shadow-brutal-sm: 2px 2px 0 var(--pink)
 shadow-brutal-md: 4px 4px 0 var(--pink)
@@ -284,11 +293,11 @@ shadow-brutal-xl: 8px 8px 0 var(--pink)
 
 Three levels of surface depth, defined for both modes:
 
-| Level      | Dark Mode  | Light Mode | Usage                      |
-|------------|------------|------------|----------------------------|
-| Background | `#0A0A0A`  | `#FAFAFA`  | Screen/page background     |
-| Card       | `#111111`  | `#F0F0F0`  | Cards, containers, modals  |
-| Surface    | `#161616`  | `#E8E8E8`  | Elevated elements, inputs  |
+| Level      | Dark Mode | Light Mode | Usage                     |
+| ---------- | --------- | ---------- | ------------------------- |
+| Background | `#0A0A0A` | `#FAFAFA`  | Screen/page background    |
+| Card       | `#111111` | `#F0F0F0`  | Cards, containers, modals |
+| Surface    | `#161616` | `#E8E8E8`  | Elevated elements, inputs |
 
 ### Section Color Blocking
 
@@ -302,17 +311,18 @@ Sections alternate between dark and accent-colored blocks to create rhythm:
 [Black section]  → white text, green CTA
 ```
 
-On mobile, this same rhythm applies to full-screen sections and scrollable content areas. Cards within colored sections use the section's foreground color for borders.
+On mobile, this same rhythm applies to full-screen sections and scrollable content areas. Cards within colored sections
+use the section's foreground color for borders.
 
 ### Text-on-Background Matrix
 
 | Background | Primary Text | Secondary Text       | Accent Text |
-|------------|-------------|----------------------|-------------|
-| Black      | White       | White at 50% opacity | Green/Pink  |
-| White      | Black       | Black at 50% opacity | Pink/Blue   |
-| Green      | Black       | Black at 70% opacity | Pink        |
-| Pink       | Black       | Black at 70% opacity | White       |
-| Blue       | Black       | Black at 70% opacity | Pink        |
+| ---------- | ------------ | -------------------- | ----------- |
+| Black      | White        | White at 50% opacity | Green/Pink  |
+| White      | Black        | Black at 50% opacity | Pink/Blue   |
+| Green      | Black        | Black at 70% opacity | Pink        |
+| Pink       | Black        | Black at 70% opacity | White       |
+| Blue       | Black        | Black at 70% opacity | Pink        |
 
 ---
 
@@ -320,45 +330,45 @@ On mobile, this same rhythm applies to full-screen sections and scrollable conte
 
 ### Shared (Web + Mobile)
 
-| Pattern         | Behavior                                         |
-|-----------------|--------------------------------------------------|
-| Section enter   | Elements fade up from below, staggered (300ms offset per element) |
-| Stat counter    | Numbers roll up with easeOut cubic               |
-| Screen mount    | Content reveals with choreographed fade-up        |
+| Pattern       | Behavior                                                          |
+| ------------- | ----------------------------------------------------------------- |
+| Section enter | Elements fade up from below, staggered (300ms offset per element) |
+| Stat counter  | Numbers roll up with easeOut cubic                                |
+| Screen mount  | Content reveals with choreographed fade-up                        |
 
 ### Web Only
 
-| Pattern              | Behavior                                    | Feeling           |
-|----------------------|---------------------------------------------|--------------------|
-| Card hover           | Background slides up, colors invert, shadow grows | Confident, physical |
-| Button hover         | Pink sweep from left, shadow expansion      | Energetic          |
-| Text hover (scramble)| Characters randomize then resolve            | Hackerly, playful  |
-| Click anywhere       | Coconut emoji spawns with physics            | Surprising         |
-| Fast scroll          | Glitch effect re-triggers on headlines       | Reactive, alive    |
-| Quote reveal         | Character-by-character typewriter            | Suspenseful        |
-| Cursor               | Mix-blend-mode difference circle follower    | Branded            |
+| Pattern               | Behavior                                          | Feeling             |
+| --------------------- | ------------------------------------------------- | ------------------- |
+| Card hover            | Background slides up, colors invert, shadow grows | Confident, physical |
+| Button hover          | Pink sweep from left, shadow expansion            | Energetic           |
+| Text hover (scramble) | Characters randomize then resolve                 | Hackerly, playful   |
+| Click anywhere        | Coconut emoji spawns with physics                 | Surprising          |
+| Fast scroll           | Glitch effect re-triggers on headlines            | Reactive, alive     |
+| Quote reveal          | Character-by-character typewriter                 | Suspenseful         |
+| Cursor                | Mix-blend-mode difference circle follower         | Branded             |
 
 ### Mobile Only
 
-| Pattern              | Behavior                                    | Feeling            |
-|----------------------|---------------------------------------------|--------------------|
-| Button press         | Scale to 0.95, shadow shrinks (md → sm), translate +2px down | Physical, tactile |
-| Card press           | Colors invert, shadow shrinks              | Confident           |
-| Long press           | Haptic impact (medium), scale 0.97         | Weighted            |
-| Success action       | Haptic success, green flash overlay        | Rewarding           |
-| Error action         | Haptic error, pink flash overlay           | Clear feedback      |
-| Pull to refresh      | Coconut emoji drops from top               | Playful             |
-| List item swipe      | Reveal action with pink/green background   | Decisive            |
+| Pattern         | Behavior                                                     | Feeling           |
+| --------------- | ------------------------------------------------------------ | ----------------- |
+| Button press    | Scale to 0.95, shadow shrinks (md → sm), translate +2px down | Physical, tactile |
+| Card press      | Colors invert, shadow shrinks                                | Confident         |
+| Long press      | Haptic impact (medium), scale 0.97                           | Weighted          |
+| Success action  | Haptic success, green flash overlay                          | Rewarding         |
+| Error action    | Haptic error, pink flash overlay                             | Clear feedback    |
+| Pull to refresh | Coconut emoji drops from top                                 | Playful           |
+| List item swipe | Reveal action with pink/green background                     | Decisive          |
 
 ### Animation Timing
 
-| Token      | Duration | Easing                                 | Usage                   |
-|------------|----------|----------------------------------------|-------------------------|
-| `instant`  | 100ms    | `ease-out`                             | Press feedback           |
-| `fast`     | 200ms    | `cubic-bezier(0.16, 1, 0.3, 1)`       | Hover states, toggles    |
-| `normal`   | 300ms    | `cubic-bezier(0.16, 1, 0.3, 1)`       | Reveals, transitions     |
-| `slow`     | 600ms    | `cubic-bezier(0.16, 1, 0.3, 1)`       | Section entrances        |
-| `dramatic` | 1000ms   | `cubic-bezier(0.175, 0.885, 0.32, 1.275)` | Hero animations      |
+| Token      | Duration | Easing                                    | Usage                 |
+| ---------- | -------- | ----------------------------------------- | --------------------- |
+| `instant`  | 100ms    | `ease-out`                                | Press feedback        |
+| `fast`     | 200ms    | `cubic-bezier(0.16, 1, 0.3, 1)`           | Hover states, toggles |
+| `normal`   | 300ms    | `cubic-bezier(0.16, 1, 0.3, 1)`           | Reveals, transitions  |
+| `slow`     | 600ms    | `cubic-bezier(0.16, 1, 0.3, 1)`           | Section entrances     |
+| `dramatic` | 1000ms   | `cubic-bezier(0.175, 0.885, 0.32, 1.275)` | Hero animations       |
 
 ---
 
@@ -468,13 +478,13 @@ boxShadow: {
 └─────────────────────┘
 ```
 
-| Variant     | Background | Border     | Shadow         | Text    |
-|-------------|------------|------------|----------------|---------|
-| Primary     | `green`    | `black` 2px | `brutal-md-black` | `black` |
-| Destructive | `pink`     | `black` 2px | `brutal-md-black` | `black` |
-| Secondary   | `black`    | `white` 2px | `brutal-md`    | `white` |
-| Ghost       | transparent | none      | none           | `foreground` |
-| Outline     | transparent | `foreground` 2px | none    | `foreground` |
+| Variant     | Background  | Border           | Shadow            | Text         |
+| ----------- | ----------- | ---------------- | ----------------- | ------------ |
+| Primary     | `green`     | `black` 2px      | `brutal-md-black` | `black`      |
+| Destructive | `pink`      | `black` 2px      | `brutal-md-black` | `black`      |
+| Secondary   | `black`     | `white` 2px      | `brutal-md`       | `white`      |
+| Ghost       | transparent | none             | none              | `foreground` |
+| Outline     | transparent | `foreground` 2px | none              | `foreground` |
 
 Button heights: 44px default (mobile), 48px large, 36px compact.
 

@@ -40,7 +40,7 @@ export function BottomActionBar({
   return (
     <View className={cn('absolute bottom-0 left-0 right-0', className)}>
       <LinearGradient
-        colors={['rgba(255,255,255,0)', HEX_COLORS.background]}
+        colors={['rgba(10, 10, 10, 0)', HEX_COLORS.background]}
         style={{ height: GRADIENT_HEIGHT }}
         pointerEvents="none"
       />

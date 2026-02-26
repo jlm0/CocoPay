@@ -18,7 +18,7 @@ export function PayBalanceDisplay({ balance, isLoading, className = '' }: PayBal
   if (isLoading) {
     return (
       <View className={cn('items-center', className)}>
-        <Skeleton className="h-5 w-32 rounded" />
+        <Skeleton className="h-5 w-32" />
       </View>
     );
   }

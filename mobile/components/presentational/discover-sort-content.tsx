@@ -24,8 +24,8 @@ export function DiscoverSortContent({ value, onValueChange }: DiscoverSortConten
         <Pressable
           key={option.value}
           onPress={() => onValueChange(option.value)}
-          className="flex-row items-center justify-between rounded-lg px-3 py-3 active:bg-muted">
-          <Text className={value === option.value ? 'font-brutal' : ''}>{option.label}</Text>
+          className="flex-row items-center justify-between px-3 py-3 active:bg-muted">
+          <Text className={value === option.value ? 'font-brutal uppercase' : ''}>{option.label}</Text>
           {value === option.value && <Icon as={Check} size={20} className="text-primary" />}
         </Pressable>
       ))}

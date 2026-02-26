@@ -65,13 +65,13 @@ export function HeroTokenInput({
           )}
           style={{ width: Math.max(64, value.length * 28 + 16) }}
         />
-        <Text className="ml-2 font-brutal text-xl text-muted-foreground">{tokenSymbol}</Text>
+        <Text className="ml-2 font-brutal text-xl uppercase text-muted-foreground">{tokenSymbol}</Text>
       </View>
 
       {showBalance && (
         <View className="mt-4 flex-row items-center gap-3">
           {isLoading ? (
-            <Skeleton className="h-5 w-32 rounded" />
+            <Skeleton className="h-5 w-32" />
           ) : (
             <Text variant="caption">
               Balance: {formatBalance(balance ?? 0)} {tokenSymbol}
@@ -83,10 +83,10 @@ export function HeroTokenInput({
               onPress={onMaxPress}
               disabled={disabled}
               className={cn(
-                'rounded-lg bg-secondary px-3 py-1.5 active:bg-secondary/60',
+                'active:bg-secondary/60 bg-secondary px-3 py-1.5',
                 disabled && 'opacity-50'
               )}>
-              <Text variant="caption" className="font-brutal text-secondary-foreground">
+              <Text variant="caption" className="font-brutal uppercase text-secondary-foreground">
                 Max
               </Text>
             </Pressable>
@@ -103,7 +103,7 @@ export function HeroTokenInput({
       {(estimate || estimateLoading) && (
         <View className="mt-4">
           {estimateLoading ? (
-            <Skeleton className="h-5 w-40 rounded" />
+            <Skeleton className="h-5 w-40" />
           ) : (
             <Text variant="body" className="text-center text-muted-foreground">
               {estimate}

@@ -41,7 +41,7 @@ export function WithdrawalQueueBar({
         onPress={onWithdraw}
         disabled={disabled || !hasQueue}
         size="lg"
-        className={cn('h-14 rounded-xl', hasQueue ? 'flex-1' : 'w-full')}>
+        className={cn('h-14', hasQueue ? 'flex-1' : 'w-full')}>
         <Text>{isLoading ? 'Withdrawing...' : hasQueue ? 'Withdraw All' : 'Add withdrawals'}</Text>
       </Button>
     </View>
