@@ -40,7 +40,7 @@ export function FeatureHeader({
             <Text variant="title">{title}</Text>
             {badge && (
               <View className="rounded bg-primary/10 px-1.5 py-0.5">
-                <Text className="font-sans-semibold text-xs text-primary">{badge}</Text>
+                <Text className="font-brutal text-xs text-primary">{badge}</Text>
               </View>
             )}
           </View>

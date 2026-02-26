@@ -60,12 +60,12 @@ export function HeroTokenInput({
           textAlignVertical="center"
           editable={!disabled}
           className={cn(
-            'h-16 min-w-16 border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl leading-tight shadow-none',
+            'h-16 min-w-16 border-0 bg-transparent px-0 py-0 text-center font-ops text-5xl leading-tight shadow-none',
             !hasValue && 'text-muted-foreground/30'
           )}
           style={{ width: Math.max(64, value.length * 28 + 16) }}
         />
-        <Text className="ml-2 font-sans-semibold text-xl text-muted-foreground">{tokenSymbol}</Text>
+        <Text className="ml-2 font-brutal text-xl text-muted-foreground">{tokenSymbol}</Text>
       </View>
 
       {showBalance && (
@@ -86,7 +86,7 @@ export function HeroTokenInput({
                 'rounded-lg bg-secondary px-3 py-1.5 active:bg-secondary/60',
                 disabled && 'opacity-50'
               )}>
-              <Text variant="caption" className="font-sans-semibold text-secondary-foreground">
+              <Text variant="caption" className="font-brutal text-secondary-foreground">
                 Max
               </Text>
             </Pressable>

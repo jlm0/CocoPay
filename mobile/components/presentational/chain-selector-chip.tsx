@@ -34,7 +34,7 @@ export function ChainSelectorChip({
       )}
       style={{ backgroundColor: chainColorMuted }}>
       <View className="size-3 rounded-full" style={{ backgroundColor: chainColor }} />
-      <Text className="font-sans-medium">{chainName}</Text>
+      <Text className="font-mono">{chainName}</Text>
       <Icon as={ChevronDown} size={16} className="text-muted-foreground" />
     </Pressable>
   );

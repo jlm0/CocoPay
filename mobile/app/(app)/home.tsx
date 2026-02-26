@@ -145,7 +145,7 @@ export default function HomePage() {
       <Pressable
         onPress={handleToggleExpand}
         className="flex-row items-center justify-center gap-1 rounded-xl py-2 active:bg-muted">
-        <Text className="font-sans-medium text-sm text-muted-foreground">Show less</Text>
+        <Text className="font-mono text-sm text-muted-foreground">Show less</Text>
         <Icon as={ChevronUp} size={16} className="text-muted-foreground" />
       </Pressable>
     ) : null;
@@ -197,7 +197,7 @@ export default function HomePage() {
       {showEmptyState && (
         <View className="items-center justify-center px-4 py-6">
           <Icon as={StoreIcon} className="mb-3 text-muted-foreground" size={32} />
-          <Text className="text-center font-sans-medium text-foreground">No stores yet</Text>
+          <Text className="text-center font-mono text-foreground">No stores yet</Text>
           <Text className="mt-1 text-center text-sm text-muted-foreground">
             Create a store or pay at one to start earning rewards
           </Text>

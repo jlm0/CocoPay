@@ -174,7 +174,7 @@ export function WithdrawContainer() {
           <View className="items-center pb-3 pt-6">
             {/* Input row with $ prefix and Max button */}
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="font-sans-bold text-5xl text-muted-foreground/50">$</Text>
+              <Text className="font-ops text-5xl text-muted-foreground/50">$</Text>
               <Input
                 value={amount}
                 onChangeText={handleAmountChange}
@@ -183,7 +183,7 @@ export function WithdrawContainer() {
                 textAlignVertical="center"
                 editable={!usdcWithdraw.isLoading}
                 className={cn(
-                  'h-16 min-w-16 border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl leading-tight shadow-none',
+                  'h-16 min-w-16 border-0 bg-transparent px-0 py-0 text-center font-ops text-5xl leading-tight shadow-none',
                   !hasValue && 'text-muted-foreground/30'
                 )}
                 style={{ width: Math.max(64, amount.length * 28 + 16) }}
@@ -193,7 +193,7 @@ export function WithdrawContainer() {
                 onPress={handleMaxPress}
                 disabled={usdcWithdraw.isLoading}
                 className="rounded-lg bg-secondary px-3 py-2 active:bg-secondary/70">
-                <Text variant="caption" className="font-sans-semibold text-secondary-foreground">
+                <Text variant="caption" className="font-brutal text-secondary-foreground">
                   Max
                 </Text>
               </Pressable>
@@ -237,7 +237,7 @@ export function WithdrawContainer() {
                 'mt-6 self-center rounded-full border border-amber-200 bg-amber-50 px-4 py-2 active:bg-amber-100',
                 usdcWithdraw.isLoading && 'opacity-50'
               )}>
-              <Text variant="caption" className="font-sans-medium text-amber-800">
+              <Text variant="caption" className="font-mono text-amber-800">
                 Or split across networks
               </Text>
             </Pressable>

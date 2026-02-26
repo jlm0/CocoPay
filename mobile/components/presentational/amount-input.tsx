@@ -11,7 +11,7 @@ type AmountInputProps = {
 export function AmountInput({ value, onChangeText, className = '' }: AmountInputProps) {
   return (
     <View className={className}>
-      <Label className="mb-2 font-sans-semibold">Amount</Label>
+      <Label className="mb-2 font-brutal">Amount</Label>
       <Input
         value={value}
         onChangeText={onChangeText}

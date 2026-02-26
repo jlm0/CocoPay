@@ -28,7 +28,7 @@ export function SectionHeader({ title, actions, action, className = '' }: Sectio
       <Text variant="heading">{title}</Text>
       {action && (
         <Pressable onPress={action.onPress} className="active:opacity-70">
-          <Text className="font-sans-medium text-sm text-primary">{action.label}</Text>
+          <Text className="font-mono text-sm text-primary">{action.label}</Text>
         </Pressable>
       )}
       {actions && actions.length > 0 && (

@@ -25,7 +25,7 @@ export function DiscoverStoreCard({ store, onPress }: DiscoverStoreCardProps) {
         />
         <View className="flex-1 gap-1">
           <View className="flex-row items-center gap-2">
-            <Text className="font-sans-semibold text-lg">{store.name}</Text>
+            <Text className="font-brutal text-lg">{store.name}</Text>
             <Text className="text-muted-foreground">{store.tokenSymbol}</Text>
           </View>
           {store.address?.formatted && (

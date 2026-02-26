@@ -55,7 +55,7 @@ export function WithdrawBalanceInfo({
           disabled={disabled}
           className="flex-row items-center gap-1.5 active:opacity-70">
           <View className="size-2 rounded-full" style={{ backgroundColor: chainColor }} />
-          <Text variant="caption" className="font-sans-medium">
+          <Text variant="caption" className="font-mono">
             {chainName}
           </Text>
           <Icon as={ChevronDown} size={12} className="text-muted-foreground" />
@@ -63,7 +63,7 @@ export function WithdrawBalanceInfo({
       ) : chainId ? (
         <View className="flex-row items-center gap-1.5">
           <View className="size-2 rounded-full" style={{ backgroundColor: chainColor }} />
-          <Text variant="caption" className="font-sans-medium">
+          <Text variant="caption" className="font-mono">
             {chainName}
           </Text>
         </View>

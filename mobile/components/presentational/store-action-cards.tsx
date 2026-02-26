@@ -18,7 +18,7 @@ export function StoreActionCards({ onDiscoverPress, onCreatePress }: StoreAction
           <Icon as={Compass} size={20} className="text-primary" />
         </View>
         <View className="flex-1">
-          <Text className="font-sans-semibold text-foreground">Discover</Text>
+          <Text className="font-brutal text-foreground">Discover</Text>
           <Text className="text-xs text-muted-foreground">Find new stores</Text>
         </View>
       </Pressable>
@@ -30,7 +30,7 @@ export function StoreActionCards({ onDiscoverPress, onCreatePress }: StoreAction
           <Icon as={Plus} size={20} className="text-accent-warm" />
         </View>
         <View className="flex-1">
-          <Text className="font-sans-semibold text-foreground">Create</Text>
+          <Text className="font-brutal text-foreground">Create</Text>
           <Text className="text-xs text-muted-foreground">Start your store</Text>
         </View>
       </Pressable>

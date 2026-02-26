@@ -26,7 +26,7 @@ export function WithdrawSuccess({
         Withdrawal Successful
       </Text>
 
-      <Text className="mb-8 text-center font-sans-bold text-5xl">
+      <Text className="mb-8 text-center font-ops text-5xl">
         {amount} {tokenSymbol}
       </Text>
 

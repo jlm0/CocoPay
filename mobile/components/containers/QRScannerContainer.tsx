@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: CORNER_SIZE,
     height: CORNER_SIZE,
-    borderColor: '#2DD4BF',
+    borderColor: '#BAFF29',
   },
   topLeft: {
     top: 0,

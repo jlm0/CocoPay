@@ -14,7 +14,7 @@ export function StoreBalance({ balance, tokenSymbol, className = '' }: StoreBala
       <Text variant="caption">Your balance</Text>
       <View className="flex-row items-baseline">
         <Text variant="display">{formatTokenAmount(balance, CHARACTER_LIMITS.STORE_BALANCE)}</Text>
-        <Text className="ml-2 font-sans-semibold text-xl text-muted-foreground">{tokenSymbol}</Text>
+        <Text className="ml-2 font-brutal text-xl text-muted-foreground">{tokenSymbol}</Text>
       </View>
     </View>
   );

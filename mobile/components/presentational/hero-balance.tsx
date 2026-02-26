@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
   hero: {
     fontSize: 48,
     lineHeight: 52,
-    fontFamily: 'PlusJakartaSans_700Bold',
+    fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 48 * -0.025,
-    color: '#09090b',
+    color: '#0A0A0A',
   },
 });

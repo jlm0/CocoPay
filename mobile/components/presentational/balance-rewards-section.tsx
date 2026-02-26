@@ -56,13 +56,13 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 32,
     lineHeight: 36,
-    fontFamily: 'PlusJakartaSans_700Bold',
+    fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 32 * -0.025,
   },
   amountHighlight: {
-    color: '#2DD4BF',
+    color: '#BAFF29',
   },
   amountMuted: {
-    color: '#71717a',
+    color: 'rgba(250, 250, 250, 0.5)',
   },
 });

@@ -34,7 +34,7 @@ export function WithdrawalQueueBar({
           <Text variant="caption">
             {queueCount} withdrawal{queueCount !== 1 ? 's' : ''}
           </Text>
-          <Text className="font-sans-semibold">${formattedTotal}</Text>
+          <Text className="font-ops">${formattedTotal}</Text>
         </View>
       )}
       <Button

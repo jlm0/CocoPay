@@ -121,7 +121,7 @@ export function ParaProvider({ children }: ParaProviderProps) {
   if (initError) {
     return (
       <View className="flex-1 items-center justify-center bg-background p-6">
-        <Text className="mb-2 text-center font-sans-semibold text-lg text-destructive">
+        <Text className="mb-2 text-center font-brutal text-lg text-destructive">
           Initialization Error
         </Text>
         <Text className="text-center text-muted-foreground">{initError}</Text>

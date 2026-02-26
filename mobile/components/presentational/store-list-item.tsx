@@ -26,13 +26,13 @@ export function StoreListItem({ store, onPress }: StoreListItemProps) {
           of
         </Text>
         <Text
-          className="font-sans-bold text-sm text-primary"
+          className="font-brutal text-sm text-primary"
           style={{ textDecorationLine: 'underline', textDecorationStyle: 'dashed' }}>
           {store.tokenSymbol}
         </Text>
         {store.isOwned && (
           <View className="ml-2 rounded bg-primary/10 px-1.5 py-0.5">
-            <Text className="font-sans-semibold text-xs text-primary">Yours</Text>
+            <Text className="font-brutal text-xs text-primary">Yours</Text>
           </View>
         )}
       </View>

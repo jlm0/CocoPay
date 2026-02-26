@@ -34,7 +34,7 @@ export function BalanceWalletSection({
       <Pressable
         onPress={() => setIsExpanded(!isExpanded)}
         className="mt-4 flex-row items-center active:opacity-70">
-        <Text className="font-sans-medium text-sm text-primary">
+        <Text className="font-mono text-sm text-primary">
           {isExpanded ? 'Hide network breakdown' : 'View network breakdown'}
         </Text>
         <Icon

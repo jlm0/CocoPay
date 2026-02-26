@@ -67,7 +67,7 @@ export function ChainOptionCard({
               style={{ backgroundColor: chainColorMuted }}>
               <View className="size-4 rounded-full" style={{ backgroundColor: chainColor }} />
             </View>
-            <Text className="font-sans-semibold">{chainName}</Text>
+            <Text className="font-brutal">{chainName}</Text>
           </View>
           <View className="flex-row items-center gap-2">
             <Text variant="caption">${formattedBalance}</Text>
@@ -88,7 +88,7 @@ export function ChainOptionCard({
           <View className="flex-row items-center justify-between">
             <Text variant="caption">${formattedBalance} available</Text>
             <Pressable onPress={onMaxPress} disabled={disabled} className="active:opacity-70">
-              <Text variant="caption" className="font-sans-semibold text-primary">
+              <Text variant="caption" className="font-brutal text-primary">
                 Max
               </Text>
             </Pressable>

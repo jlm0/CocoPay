@@ -31,7 +31,7 @@ export function QRCodeDisplay({
         <QRCode value={value} size={size} backgroundColor="white" color="black" />
       </View>
 
-      <Text className="mb-2 text-center font-sans-bold text-5xl">${amount}</Text>
+      <Text className="mb-2 text-center font-ops text-5xl">${amount}</Text>
 
       <Text variant="caption" className="text-center">
         Scan to pay with CocoPay

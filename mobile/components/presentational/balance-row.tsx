@@ -57,7 +57,7 @@ export function BalanceRow({
           <Text variant="caption">on</Text>
           <View className="flex-row items-center gap-1">
             <View className="size-2 rounded-full" style={{ backgroundColor: chainColor }} />
-            <Text variant="caption" className="font-sans-medium">
+            <Text variant="caption" className="font-mono">
               {chainName}
             </Text>
             <Icon as={ChevronDown} size={12} className="text-muted-foreground" />
@@ -70,7 +70,7 @@ export function BalanceRow({
       <Text variant="caption">·</Text>
 
       <Pressable onPress={onMaxPress} disabled={disabled} className="active:opacity-70">
-        <Text variant="caption" className="font-sans-semibold text-primary">
+        <Text variant="caption" className="font-brutal text-primary">
           Max
         </Text>
       </Pressable>

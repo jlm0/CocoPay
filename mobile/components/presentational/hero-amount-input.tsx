@@ -29,7 +29,7 @@ export function HeroAmountInput({
     return (
       <View className={cn('items-center py-8', className)}>
         <View className="flex-row items-center gap-2">
-          <Text className="font-sans-bold text-5xl">{value || '$0'}</Text>
+          <Text className="font-ops text-5xl">{value || '$0'}</Text>
           {onEditPress && (
             <Button
               variant="ghost"
@@ -55,7 +55,7 @@ export function HeroAmountInput({
         textAlignVertical="center"
         editable={!disabled}
         className={cn(
-          'h-16 w-full border-0 bg-transparent px-0 py-0 text-center font-sans-bold text-5xl leading-tight shadow-none',
+          'h-16 w-full border-0 bg-transparent px-0 py-0 text-center font-ops text-5xl leading-tight shadow-none',
           !hasValue && 'text-muted-foreground/30'
         )}
       />

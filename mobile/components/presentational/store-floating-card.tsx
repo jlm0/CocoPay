@@ -24,7 +24,7 @@ export function StoreFloatingCard({ store, onPress }: StoreFloatingCardProps) {
           alt={`${store.name} logo`}
         />
         <View className="flex-1 gap-0.5">
-          <Text className="font-sans-semibold text-lg">{store.name}</Text>
+          <Text className="font-brutal text-lg">{store.name}</Text>
           <Text variant="caption" className="text-muted-foreground">
             {store.tokenSymbol}
           </Text>

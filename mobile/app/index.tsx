@@ -93,7 +93,7 @@ function GradientWaveTop() {
   return (
     <View className="absolute left-0 right-0 top-0" style={{ height }}>
       <LinearGradient
-        colors={['rgba(45, 212, 191, 0.18)', 'rgba(45, 212, 191, 0.10)', 'transparent']}
+        colors={['rgba(186, 255, 41, 0.18)', 'rgba(186, 255, 41, 0.10)', 'transparent']}
         locations={[0, 0.5, 1]}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
@@ -162,7 +162,7 @@ export default function WelcomePage() {
           transform: [{ translateY: buttonAnim.translateY }],
         }}>
         <Button onPress={handleGetStarted} size="lg" className="h-14 rounded-2xl">
-          <Text className="font-sans-semibold">Get started</Text>
+          <Text className="font-brutal">Get started</Text>
         </Button>
       </Animated.View>
     </ScreenContainer>

@@ -38,23 +38,23 @@ export function HomeStoreCard({ store, onPress }: HomeStoreCardProps) {
           alt={`${store.name} logo`}
         />
         <View className="flex-1 gap-0.5">
-          <Text className="font-sans-medium text-sm text-foreground" numberOfLines={1}>
+          <Text className="font-mono text-sm text-foreground" numberOfLines={1}>
             {store.name}
           </Text>
           <Badge variant="secondary" className="self-start px-1.5 py-0">
-            <Text className="font-sans-medium text-xs text-muted-foreground">
+            <Text className="font-mono text-xs text-muted-foreground">
               {store.tokenSymbol}
             </Text>
           </Badge>
         </View>
       </View>
       <View className="mt-3 flex-row items-baseline justify-between">
-        <Text className="font-sans-bold text-2xl text-foreground">
+        <Text className="font-ops text-2xl text-foreground">
           {formatBalance(store.balance)}
         </Text>
         {store.isOwned && (
           <Badge variant="outline" className="border-primary/30 bg-primary/5 px-1.5 py-0">
-            <Text className="font-sans-semibold text-xs text-primary">Yours</Text>
+            <Text className="font-brutal text-xs text-primary">Yours</Text>
           </Badge>
         )}
       </View>

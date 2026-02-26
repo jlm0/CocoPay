@@ -51,7 +51,7 @@ export const ChainSelectorSheet = forwardRef<BottomSheetMethods, ChainSelectorSh
                     <View className="size-4 rounded-full" style={{ backgroundColor: chainColor }} />
                   </View>
                   <View>
-                    <Text className="font-sans-semibold">{chainName}</Text>
+                    <Text className="font-brutal">{chainName}</Text>
                     <Text variant="caption">${formattedBalance} available</Text>
                   </View>
                 </View>

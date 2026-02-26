@@ -88,15 +88,15 @@ const styles = StyleSheet.create({
   display: {
     fontSize: 36,
     lineHeight: 40,
-    fontFamily: 'PlusJakartaSans_700Bold',
+    fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 36 * -0.025,
-    color: '#09090b',
+    color: '#0A0A0A',
   },
   body: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: 'PlusJakartaSans_400Regular',
+    fontFamily: 'SpaceMono_400Regular',
     letterSpacing: 0,
-    color: '#71717a',
+    color: 'rgba(250, 250, 250, 0.5)',
   },
 });

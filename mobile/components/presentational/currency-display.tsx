@@ -53,15 +53,15 @@ const styles = StyleSheet.create({
   displayLarge: {
     fontSize: 36,
     lineHeight: 40,
-    fontFamily: 'PlusJakartaSans_700Bold',
+    fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 36 * -0.025,
-    color: '#09090b',
+    color: '#0A0A0A',
   },
   displayValue: {
     fontSize: 30,
     lineHeight: 36,
-    fontFamily: 'PlusJakartaSans_700Bold',
+    fontFamily: 'BlackOpsOne_400Regular',
     letterSpacing: 30 * -0.025,
-    color: '#09090b',
+    color: '#0A0A0A',
   },
 });

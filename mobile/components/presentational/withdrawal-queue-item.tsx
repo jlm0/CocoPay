@@ -42,10 +42,10 @@ export function WithdrawalQueueItem({
           style={{ backgroundColor: chainColorMuted }}>
           <View className="size-3 rounded-full" style={{ backgroundColor: chainColor }} />
         </View>
-        <Text className="font-sans-medium">{chainName}</Text>
+        <Text className="font-mono">{chainName}</Text>
       </View>
       <View className="flex-row items-center gap-3">
-        <Text className="font-sans-semibold">${formattedAmount}</Text>
+        <Text className="font-ops">${formattedAmount}</Text>
         <Pressable
           onPress={onRemove}
           disabled={disabled}

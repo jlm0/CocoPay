@@ -27,7 +27,7 @@ export function CashOutSuccess({
         Cash Out Successful
       </Text>
 
-      <Text className="mb-8 text-center font-sans-bold text-5xl">${usdcAmount}</Text>
+      <Text className="mb-8 text-center font-ops text-5xl">${usdcAmount}</Text>
 
       <Text variant="caption" className="text-center">
         USDC received
@@ -36,7 +36,7 @@ export function CashOutSuccess({
       <View className="mt-8 w-full rounded-xl bg-muted/50 p-4">
         <Text className="text-center text-sm text-muted-foreground">
           You cashed out{' '}
-          <Text className="font-sans-semibold text-foreground">
+          <Text className="font-brutal text-foreground">
             {tokenAmount} {tokenSymbol}
           </Text>{' '}
           from {storeName}

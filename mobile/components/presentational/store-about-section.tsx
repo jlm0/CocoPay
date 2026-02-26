@@ -60,7 +60,7 @@ export function StoreAboutSection({
           </Text>
           {showExpandButton && (
             <Pressable onPress={() => setIsExpanded(!isExpanded)} hitSlop={8}>
-              <Text className="font-sans-medium text-sm text-primary">
+              <Text className="font-mono text-sm text-primary">
                 {isExpanded ? 'Show less' : 'Read more'}
               </Text>
             </Pressable>
