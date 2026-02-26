@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useColorScheme } from 'nativewind';
 import { PortalHost } from '@rn-primitives/portal';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import GooglePlacesSdk from 'react-native-google-places-sdk';
@@ -20,6 +21,13 @@ const GOOGLE_PLACES_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY ?? '
 
 export default function RootLayout() {
   const fontsLoaded = useLoadFonts();
+  const { colorScheme, setColorScheme } = useColorScheme();
+
+  useEffect(() => {
+    if (colorScheme !== 'dark') {
+      setColorScheme('dark');
+    }
+  }, [colorScheme, setColorScheme]);
 
   useEffect(() => {
     initializeStoresStorage();
@@ -43,7 +51,7 @@ export default function RootLayout() {
           persistOptions={{ persister: asyncStoragePersister }}>
           <StoreRegistryHydrator />
           <ParaProvider>
-            <StatusBar style="auto" />
+            <StatusBar style="light" />
             <Stack screenOptions={{ headerShown: false }} />
             <PortalHost />
           </ParaProvider>

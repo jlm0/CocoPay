@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "android": "expo run:android ",
-    "ios": "expo run:ios --device Cocopay --port 8183",
-    "start": "expo start --ios --device Cocopay --port 8183",
+    "ios": "expo run:ios --device Cocopay --port 8182",
+    "start": "expo start --ios --device Cocopay --port 8182",
     "prebuild": "expo prebuild --clean",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",

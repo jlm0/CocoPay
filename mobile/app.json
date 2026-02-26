@@ -39,11 +39,11 @@
     },
     "orientation": "portrait",
     "icon": "./assets/coconut.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/coconut.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0A0A0A"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -63,7 +63,7 @@
       "package": "com.cocopay.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/coconut.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0A0A0A"
       },
       "config": {
         "googleMaps": {
