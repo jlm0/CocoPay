@@ -45,8 +45,8 @@ export function LogoPicker({
     return (
       <View className={cn('items-center', className)}>
         <View className="items-center gap-2">
-          <Skeleton className="h-24 w-24 rounded-full" />
-          <Skeleton className="h-4 w-16 rounded" />
+          <Skeleton className="h-24 w-24" />
+          <Skeleton className="h-4 w-16" />
         </View>
       </View>
     );
@@ -59,7 +59,7 @@ export function LogoPicker({
           <View className="relative">
             <Image
               source={{ uri: imageUri }}
-              style={{ width: 96, height: 96, borderRadius: 48 }}
+              style={{ width: 96, height: 96 }}
               contentFit="cover"
               cachePolicy="disk"
               transition={200}
@@ -67,7 +67,8 @@ export function LogoPicker({
             <Pressable
               onPress={onImageRemoved}
               disabled={disabled}
-              className="absolute -right-1 -top-1 h-6 w-6 items-center justify-center rounded-full bg-destructive">
+              hitSlop={12}
+              className="absolute -right-1 -top-1 h-6 w-6 items-center justify-center bg-destructive">
               <Icon as={X} className="text-destructive-foreground" size={14} />
             </Pressable>
           </View>
@@ -81,8 +82,8 @@ export function LogoPicker({
             onPress={handlePickImage}
             disabled={disabled}
             className={cn(
-              'h-24 w-24 items-center justify-center rounded-full',
-              'border-2 border-dashed border-muted-foreground/30',
+              'h-24 w-24 items-center justify-center',
+              'border-muted-foreground/30 border-2 border-dashed',
               disabled ? 'opacity-50' : 'active:bg-muted'
             )}>
             <Icon as={ImagePlus} className="text-muted-foreground" size={28} />

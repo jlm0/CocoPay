@@ -72,7 +72,7 @@ function AccentLine() {
   }, [width]);
 
   return (
-    <View className="mt-3 h-0.5 w-24 overflow-hidden rounded-full bg-muted">
+    <View className="mt-3 h-0.5 w-24 overflow-hidden bg-muted">
       <Animated.View
         className="h-full bg-primary"
         style={{
@@ -161,8 +161,8 @@ export default function WelcomePage() {
           opacity: buttonAnim.opacity,
           transform: [{ translateY: buttonAnim.translateY }],
         }}>
-        <Button onPress={handleGetStarted} size="lg" className="h-14 rounded-2xl">
-          <Text className="font-brutal">Get started</Text>
+        <Button onPress={handleGetStarted} size="lg" className="h-14">
+          <Text className="font-brutal uppercase">Get started</Text>
         </Button>
       </Animated.View>
     </ScreenContainer>

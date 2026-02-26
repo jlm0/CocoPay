@@ -26,9 +26,7 @@ function formatBalance(value: number): string {
 
 export function HomeStoreCard({ store, onPress }: HomeStoreCardProps) {
   return (
-    <Pressable
-      onPress={onPress}
-      className="rounded-2xl border border-border bg-card p-3 active:bg-muted">
+    <Pressable onPress={onPress} className="border-2 border-border bg-card p-3 active:bg-muted">
       <View className="flex-row items-center gap-2.5">
         <CachedAvatar
           source={store.logoUri}
@@ -42,19 +40,15 @@ export function HomeStoreCard({ store, onPress }: HomeStoreCardProps) {
             {store.name}
           </Text>
           <Badge variant="secondary" className="self-start px-1.5 py-0">
-            <Text className="font-mono text-xs text-muted-foreground">
-              {store.tokenSymbol}
-            </Text>
+            <Text className="font-mono text-xs text-muted-foreground">{store.tokenSymbol}</Text>
           </Badge>
         </View>
       </View>
       <View className="mt-3 flex-row items-baseline justify-between">
-        <Text className="font-ops text-2xl text-foreground">
-          {formatBalance(store.balance)}
-        </Text>
+        <Text className="font-ops text-2xl text-foreground">{formatBalance(store.balance)}</Text>
         {store.isOwned && (
           <Badge variant="outline" className="border-primary/30 bg-primary/5 px-1.5 py-0">
-            <Text className="font-brutal text-xs text-primary">Yours</Text>
+            <Text className="font-brutal text-xs uppercase text-primary">Yours</Text>
           </Badge>
         )}
       </View>

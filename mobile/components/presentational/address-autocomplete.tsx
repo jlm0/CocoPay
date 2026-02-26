@@ -59,7 +59,7 @@ export function AddressAutocomplete({
           <Label>Location</Label>
           <Text variant="fine">Optional</Text>
         </View>
-        <View className="flex-row items-center justify-between rounded-md border border-input bg-transparent px-3 py-3">
+        <View className="flex-row items-center justify-between border-2 border-input bg-transparent px-3 py-3">
           <View className="flex-1 flex-row items-center gap-2">
             <Icon as={MapPin} className="text-primary" size={16} />
             <Text className="flex-1" numberOfLines={1}>
@@ -98,7 +98,7 @@ export function AddressAutocomplete({
       </View>
 
       {showDropdown && predictions.length > 0 && (
-        <View className="absolute left-0 right-0 top-[76px] z-50 rounded-md border border-border bg-background shadow-lg">
+        <View className="absolute left-0 right-0 top-[76px] z-50 border-2 border-border bg-background shadow-brutal-md">
           <FlatList
             data={predictions}
             keyExtractor={(item) => item.placeID}

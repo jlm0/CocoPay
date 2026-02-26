@@ -15,7 +15,7 @@ export function StoreFloatingCard({ store, onPress }: StoreFloatingCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="absolute bottom-32 left-4 right-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      className="absolute bottom-32 left-4 right-4 border-2 border-border bg-card p-4 shadow-brutal-sm">
       <View className="flex-row items-center gap-3">
         <CachedAvatar
           source={store.logoUri}
@@ -24,7 +24,7 @@ export function StoreFloatingCard({ store, onPress }: StoreFloatingCardProps) {
           alt={`${store.name} logo`}
         />
         <View className="flex-1 gap-0.5">
-          <Text className="font-brutal text-lg">{store.name}</Text>
+          <Text className="font-brutal text-lg uppercase">{store.name}</Text>
           <Text variant="caption" className="text-muted-foreground">
             {store.tokenSymbol}
           </Text>

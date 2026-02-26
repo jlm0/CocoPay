@@ -13,9 +13,7 @@ type DiscoverStoreCardProps = {
 
 export function DiscoverStoreCard({ store, onPress }: DiscoverStoreCardProps) {
   return (
-    <Pressable
-      onPress={onPress}
-      className="rounded-xl border border-border bg-card p-4 active:bg-muted">
+    <Pressable onPress={onPress} className="border-2 border-border bg-card p-4 active:bg-muted">
       <View className="flex-row items-start gap-3">
         <CachedAvatar
           source={store.logoUri}
@@ -25,7 +23,7 @@ export function DiscoverStoreCard({ store, onPress }: DiscoverStoreCardProps) {
         />
         <View className="flex-1 gap-1">
           <View className="flex-row items-center gap-2">
-            <Text className="font-brutal text-lg">{store.name}</Text>
+            <Text className="font-brutal text-lg uppercase">{store.name}</Text>
             <Text className="text-muted-foreground">{store.tokenSymbol}</Text>
           </View>
           {store.address?.formatted && (

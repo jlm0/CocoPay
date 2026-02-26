@@ -34,8 +34,8 @@ const ReceiveBottomSheet = forwardRef<BottomSheetMethods>((_, ref) => {
           Receive USDC
         </Text>
 
-        <View className="mb-6 rounded-2xl bg-white p-4">
-          <QRCode value={address ?? ''} size={200} backgroundColor="white" color="black" />
+        <View className="mb-6 bg-[#FAFAFA] p-4">
+          <QRCode value={address ?? ''} size={200} backgroundColor="#FAFAFA" color="#0A0A0A" />
         </View>
 
         <Text variant="small" className="mb-2 text-muted-foreground">
@@ -44,7 +44,7 @@ const ReceiveBottomSheet = forwardRef<BottomSheetMethods>((_, ref) => {
 
         <Pressable
           onPress={handleCopy}
-          className="flex-row items-center gap-3 rounded-xl bg-muted/50 px-4 py-3 active:bg-muted">
+          className="bg-muted/50 flex-row items-center gap-3 px-4 py-3 active:bg-muted">
           <Text className={copied ? 'text-sm text-primary' : 'font-mono text-sm'}>
             {copied ? 'Copied' : truncateAddress(address ?? '')}
           </Text>

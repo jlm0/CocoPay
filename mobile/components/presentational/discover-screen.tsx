@@ -42,17 +42,17 @@ function DiscoverSkeleton() {
   return (
     <View className="gap-3">
       {[0, 1, 2, 3].map((i) => (
-        <View key={i} className="rounded-xl border border-border p-4">
+        <View key={i} className="border-2 border-border p-4">
           <View className="flex-row items-center gap-2">
-            <Skeleton className="h-6 w-32 rounded" />
-            <Skeleton className="h-5 w-16 rounded" />
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-5 w-16" />
           </View>
           <View className="mt-2 flex-row items-center gap-1">
-            <Skeleton className="h-4 w-48 rounded" />
+            <Skeleton className="h-4 w-48" />
           </View>
           <View className="mt-3 flex-row gap-2">
-            <Skeleton className="h-6 w-24 rounded-full" />
-            <Skeleton className="h-6 w-24 rounded-full" />
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-6 w-24" />
           </View>
         </View>
       ))}

@@ -28,12 +28,12 @@ export function ChainSelectorChip({
       onPress={onPress}
       disabled={disabled}
       className={cn(
-        'flex-row items-center gap-2 self-center rounded-full px-3 py-2 active:opacity-70',
+        'min-h-11 flex-row items-center gap-2 self-center px-3 py-2 active:opacity-70',
         disabled && 'opacity-50',
         className
       )}
       style={{ backgroundColor: chainColorMuted }}>
-      <View className="size-3 rounded-full" style={{ backgroundColor: chainColor }} />
+      <View className="size-3" style={{ backgroundColor: chainColor }} />
       <Text className="font-mono">{chainName}</Text>
       <Icon as={ChevronDown} size={16} className="text-muted-foreground" />
     </Pressable>

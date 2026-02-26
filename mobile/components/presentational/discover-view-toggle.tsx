@@ -12,13 +12,10 @@ type DiscoverViewToggleProps = {
 export function DiscoverViewToggle({ value, onValueChange }: DiscoverViewToggleProps) {
   return (
     <View className="absolute bottom-20 left-0 right-0 items-center">
-      <View className="flex-row rounded-full border border-border bg-card p-1">
+      <View className="flex-row border-2 border-border bg-card p-1">
         <Pressable
           onPress={() => onValueChange('map')}
-          className={cn(
-            'items-center justify-center rounded-full px-4 py-1.5',
-            value === 'map' && 'bg-primary'
-          )}
+          className={cn('min-h-11 items-center justify-center px-4 py-1.5', value === 'map' && 'bg-primary')}
           accessibilityLabel="Map view"
           accessibilityRole="button">
           <Icon
@@ -30,7 +27,7 @@ export function DiscoverViewToggle({ value, onValueChange }: DiscoverViewToggleP
         <Pressable
           onPress={() => onValueChange('list')}
           className={cn(
-            'items-center justify-center rounded-full px-4 py-1.5',
+            'min-h-11 items-center justify-center px-4 py-1.5',
             value === 'list' && 'bg-primary'
           )}
           accessibilityLabel="List view"

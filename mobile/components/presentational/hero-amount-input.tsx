@@ -36,7 +36,7 @@ export function HeroAmountInput({
               size="icon"
               onPress={onEditPress}
               disabled={disabled}
-              className="h-10 w-10">
+              className="h-11 w-11">
               <Icon as={Pencil} size={20} className="text-muted-foreground" />
             </Button>
           )}
