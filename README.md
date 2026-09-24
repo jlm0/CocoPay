@@ -1,5 +1,3 @@
-![CocoPay](docs/assets/banner.png)
-
 # CocoPay
 
 An exploration of a mobile version of [Juicebox v5](https://docs.juicebox.money/dev) — a payments and rewards app where stores are Juicebox projects and customers earn store tokens when they pay.
